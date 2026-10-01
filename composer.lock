@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1da4c27d5ce9342c64a05550440e24f8",
+    "content-hash": "5e897b4522fdf61c9464ae95a0c26ffa",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1009,11 +1009,17 @@
         },
         {
             "name": "dophp/laravel-mail-builder",
-            "version": "1.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "../laravel-mail-builder",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doPhp/laravel-mail-builder.git",
                 "reference": "b9eb0aebcf84ddc95cb4e08c7e05590a3bf23d53"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doPhp/laravel-mail-builder/zipball/b9eb0aebcf84ddc95cb4e08c7e05590a3bf23d53",
+                "reference": "b9eb0aebcf84ddc95cb4e08c7e05590a3bf23d53",
+                "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
@@ -1051,25 +1057,7 @@
                     "DoPHP\\MailBuilder\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "DoPHP\\MailBuilder\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ],
-                "lint": [
-                    "vendor/bin/pint --test"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1094,10 +1082,7 @@
                 "issues": "https://github.com/doPHP/laravel-mail-builder/issues",
                 "source": "https://github.com/doPHP/laravel-mail-builder"
             },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "time": "2026-10-01T22:02:18+00:00"
         },
         {
             "name": "dragonmantank/cron-expression",
@@ -1802,7 +1787,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/filament",
-                "reference": "5c42ee03447e4f76294be9ed84748a432978c16f"
+                "reference": "9566841c9670d8397ccfa08d16fcd5f66027123c"
             },
             "require": {
                 "filament/filament": "^5.9",
@@ -1883,7 +1868,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/marketing",
-                "reference": "fc7d7faba65354d03c435ef65478767e70a4486b"
+                "reference": "e668affe070b05768746d3bd52dab97999d61d2d"
             },
             "require": {
                 "dophp/laravel-mail-builder": "^1.0",
@@ -12977,7 +12962,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "dophp/laravel-mail-builder": 20,
         "focalcrm/core": 20,
         "focalcrm/filament": 20,
         "focalcrm/marketing": 20,

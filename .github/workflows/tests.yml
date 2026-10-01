@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Authenticated GitHub API access for installing dophp/laravel-mail-builder from its repository.
+  # Authenticated GitHub API access avoids rate limits when downloading package archives.
   COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
 
 jobs:
@@ -84,10 +84,6 @@ jobs:
 
       - name: Name the checkout branch
         run: git checkout -B main
-
-      # The workbench links dophp/laravel-mail-builder from a sibling checkout, as in local development.
-      - name: Check out the mail builder alongside
-        run: git clone --depth 1 --branch v1.0.0 https://github.com/doPHP/laravel-mail-builder.git ../laravel-mail-builder
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2

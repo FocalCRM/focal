@@ -78,7 +78,6 @@ graph TD
 1. **Clone the repository and install dependencies:**
    ```bash
    git clone https://github.com/focalcrm/focal.git
-   git clone https://github.com/doPHP/laravel-mail-builder.git  # until it is published on Packagist
    cd focal
    composer install
    ```

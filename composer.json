@@ -18,7 +18,7 @@
         "focalcrm/sales": "^0.1@dev",
         "focalcrm/service": "^0.1@dev",
         "focalcrm/marketing": "^0.1@dev",
-        "dophp/laravel-mail-builder": "^1.0@dev",
+        "dophp/laravel-mail-builder": "^1.0",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0"
     },
@@ -34,16 +34,6 @@
                     "focalcrm/marketing": "0.1.x-dev",
                     "focalcrm/sales": "0.1.x-dev",
                     "focalcrm/service": "0.1.x-dev"
-                }
-            }
-        },
-        {
-            "type": "path",
-            "url": "../laravel-mail-builder",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "dophp/laravel-mail-builder": "1.x-dev"
                 }
             }
         }
