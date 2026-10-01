@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Service\Models\TicketRoutingRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class TicketRoutingRuleResourceTest extends TestCase
 {

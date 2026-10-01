@@ -13,7 +13,6 @@ use Focal\Core\Models\Contact;
 use Focal\Core\Models\CustomObjectRecord;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
 
 class CustomObjectsTest extends TestCase
 {

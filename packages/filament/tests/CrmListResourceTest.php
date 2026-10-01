@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Core\Enums\ListType;
 use Focal\Core\Models\Contact;
 use Focal\Core\Models\CrmList;
+use Focal\Filament\Tests\Fixtures\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class CrmListResourceTest extends TestCase
 {

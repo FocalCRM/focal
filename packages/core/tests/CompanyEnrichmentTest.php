@@ -13,7 +13,6 @@ use Focal\Core\Support\Enrichment\EnrichmentManager;
 use Focal\Core\Support\Enrichment\HeuristicEnrichmentDriver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
 
 class CompanyEnrichmentTest extends TestCase
 {

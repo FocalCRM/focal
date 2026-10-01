@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Pages\MarketingCockpit;
 use Focal\Filament\Pages\UtmLinkBuilder;
 use Focal\Filament\Resources\MarketingTemplateResource;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Marketing\Enums\CampaignStatus;
 use Focal\Marketing\Enums\SubscriptionStatus;
 use Focal\Marketing\Models\Campaign;
@@ -17,7 +17,6 @@ use Focal\Marketing\Models\MarketingSubscription;
 use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class MarketingFilamentTest extends TestCase
 {

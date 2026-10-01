@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Pages\ServiceCockpit;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Service\Enums\TicketPriority;
 use Focal\Service\Enums\TicketStatus;
 use Focal\Service\Models\CannedResponse;
@@ -14,7 +14,6 @@ use Focal\Service\Models\KnowledgeArticle;
 use Focal\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class ServiceCockpitTest extends TestCase
 {

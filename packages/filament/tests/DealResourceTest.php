@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Filament\Resources\DealResource\Pages\KanbanDeals;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Sales\Enums\DealStatus;
 use Focal\Sales\Models\Deal;
 use Focal\Sales\Models\Pipeline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class DealResourceTest extends TestCase
 {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Core\Enums\CustomerHealthStatus;
 use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Pages\ExecutiveOverview;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Sales\Models\Deal;
 use Focal\Sales\Models\Pipeline;
 use Focal\Sales\Models\PipelineStage;
@@ -20,7 +20,6 @@ use Focal\Service\Enums\TicketStatus;
 use Focal\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class ExecutiveOverviewTest extends TestCase
 {

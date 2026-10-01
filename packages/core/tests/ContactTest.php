@@ -11,7 +11,6 @@ use Focal\Core\Events\ContactCreated;
 use Focal\Core\Models\Contact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Tests\TestCase;
 
 class ContactTest extends TestCase
 {

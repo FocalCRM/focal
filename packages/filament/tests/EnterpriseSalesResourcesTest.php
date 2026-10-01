@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Sales\Database\Seeders\SalesDatabaseSeeder;
 use Focal\Sales\Enums\LeadRoutingStrategy;
 use Focal\Sales\Models\Deal;
@@ -14,7 +14,6 @@ use Focal\Sales\Models\SalesMeetingLink;
 use Focal\Sales\Models\SalesPlaybook;
 use Focal\Sales\Models\SalesSequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class EnterpriseSalesResourcesTest extends TestCase
 {

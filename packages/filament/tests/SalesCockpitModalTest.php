@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Core\Enums\ActivityType;
 use Focal\Core\Enums\LeadStatus;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Pages\SalesCockpit;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Sales\Enums\CallDisposition;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class SalesCockpitModalTest extends TestCase
 {

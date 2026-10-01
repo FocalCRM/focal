@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Pages\DataQuality;
+use Focal\Filament\Tests\Fixtures\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class DataQualityPageTest extends TestCase
 {

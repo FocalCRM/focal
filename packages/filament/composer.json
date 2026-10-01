@@ -12,17 +12,67 @@
         "php": "^8.3",
         "filament/filament": "^5.0",
         "focalcrm/core": "self.version",
-        "laravel/framework": "^11.0 || ^12.0 || ^13.0"
+        "laravel/framework": "^12.0 || ^13.0"
+    },
+    "require-dev": {
+        "focalcrm/marketing": "self.version",
+        "focalcrm/sales": "self.version",
+        "focalcrm/service": "self.version",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+        "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
     },
     "suggest": {
         "focalcrm/sales": "Adds Deals, Pipelines, Quotes, Sequences, and the Sales Cockpit",
         "focalcrm/service": "Adds Tickets, SLAs, Knowledge Articles, and the Service Cockpit",
         "focalcrm/marketing": "Adds Campaigns, Workflows, Forms, and the Marketing Cockpit"
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../core",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../sales",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../service",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "path",
+            "url": "../marketing",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/doPHP/laravel-mail-builder"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Focal\\Filament\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Focal\\Filament\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest"
     },
     "extra": {
         "laravel": {
@@ -35,6 +85,11 @@
         }
     },
     "config": {
-        "sort-packages": true
-    }
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

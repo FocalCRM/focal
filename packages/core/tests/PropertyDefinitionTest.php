@@ -7,7 +7,6 @@ namespace Focal\Core\Tests;
 use Focal\Core\Enums\PropertyType;
 use Focal\Core\Models\PropertyDefinition;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class PropertyDefinitionTest extends TestCase
 {

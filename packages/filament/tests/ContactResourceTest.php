@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Resources\ContactResource\Pages\ViewContact;
 use Focal\Filament\Resources\RelationManagers\ActivitiesRelationManager;
 use Focal\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
+use Focal\Filament\Tests\Fixtures\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class ContactResourceTest extends TestCase
 {

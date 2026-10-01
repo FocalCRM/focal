@@ -1013,20 +1013,21 @@
             "dist": {
                 "type": "path",
                 "url": "../laravel-mail-builder",
-                "reference": "8e75b946f135f56817e6af680c6067fa2b92e233"
+                "reference": "c2dbdb0bb8a8c773d71540344d2c63fa743dc9ab"
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
-                "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+                "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.3",
                 "tijsverkoyen/css-to-inline-styles": "^2.2.5"
             },
             "require-dev": {
                 "filament/forms": "^5.0",
                 "larastan/larastan": "^3.0",
-                "orchestra/testbench": "^9.0 || ^10.0 || ^11.0",
+                "laravel/pint": "^1.32",
+                "orchestra/testbench": "^10.0 || ^11.0",
                 "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
                 "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
             },
@@ -1061,6 +1062,12 @@
                 ],
                 "analyse": [
                     "vendor/bin/phpstan analyse"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ],
+                "lint": [
+                    "vendor/bin/pint --test"
                 ]
             },
             "license": [
@@ -1722,11 +1729,16 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "1c91c971b5c663daaa031691b7091c85c04e4082"
+                "reference": "8e3599eb90607e75ea9f3f6962b26c7f151c3e69"
             },
             "require": {
-                "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+                "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
             },
             "type": "library",
             "extra": {
@@ -1744,6 +1756,16 @@
                     "Focal\\Core\\": "src/",
                     "Focal\\Core\\Database\\Factories\\": "database/factories/"
                 }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Focal\\Core\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
             },
             "license": [
                 "MIT"
@@ -1765,13 +1787,21 @@
             "dist": {
                 "type": "path",
                 "url": "packages/filament",
-                "reference": "c6b5c8a4e63438525077debc3a66569dc42b5b8a"
+                "reference": "a48aabd1a81de0bba5175e0b0eaf94fff145c4e4"
             },
             "require": {
                 "filament/filament": "^5.0",
                 "focalcrm/core": "self.version",
-                "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+                "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.3"
+            },
+            "require-dev": {
+                "focalcrm/marketing": "self.version",
+                "focalcrm/sales": "self.version",
+                "focalcrm/service": "self.version",
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
             },
             "suggest": {
                 "focalcrm/marketing": "Adds Campaigns, Workflows, Forms, and the Marketing Cockpit",
@@ -1794,6 +1824,16 @@
                     "Focal\\Filament\\": "src/"
                 }
             },
+            "autoload-dev": {
+                "psr-4": {
+                    "Focal\\Filament\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -1814,14 +1854,21 @@
             "dist": {
                 "type": "path",
                 "url": "packages/marketing",
-                "reference": "7b6d3b8c144d9e125f1d6fb3b15c6cd5d4ec768d"
+                "reference": "fdf81bf5555fbe0a3a4474432fca20c5ef44abce"
             },
             "require": {
                 "dophp/laravel-mail-builder": "^1.0",
                 "focalcrm/core": "self.version",
                 "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
-                "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+                "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.3"
+            },
+            "require-dev": {
+                "filament/forms": "^5.0",
+                "focalcrm/sales": "self.version",
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
             },
             "suggest": {
                 "focalcrm/sales": "Enables closed-loop revenue attribution, sales cycle velocity, and automated deal creation"
@@ -1843,6 +1890,16 @@
                     "Focal\\Marketing\\Database\\Factories\\": "database/factories/"
                 }
             },
+            "autoload-dev": {
+                "psr-4": {
+                    "Focal\\Marketing\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -1863,12 +1920,17 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sales",
-                "reference": "409aa05ec65e0fd9f8b052ccc903a2fffe0926d5"
+                "reference": "afd9f3a98b5bcdffb1eb953d25904a217ddad6da"
             },
             "require": {
                 "focalcrm/core": "self.version",
-                "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+                "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
             },
             "type": "library",
             "extra": {
@@ -1886,6 +1948,16 @@
                     "Focal\\Sales\\": "src/",
                     "Focal\\Sales\\Database\\Factories\\": "database/factories/"
                 }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Focal\\Sales\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
             },
             "license": [
                 "MIT"
@@ -1907,12 +1979,17 @@
             "dist": {
                 "type": "path",
                 "url": "packages/service",
-                "reference": "96b94a22293cd2f093208d22f184f082695c704f"
+                "reference": "ea178f2c7f51d69d06a6ce6d92aaf434b3826021"
             },
             "require": {
                 "focalcrm/core": "self.version",
-                "laravel/framework": "^11.0 || ^12.0 || ^13.0",
+                "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
             },
             "type": "library",
             "extra": {
@@ -1930,6 +2007,16 @@
                     "Focal\\Service\\": "src/",
                     "Focal\\Service\\Database\\Factories\\": "database/factories/"
                 }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Focal\\Service\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
             },
             "license": [
                 "MIT"

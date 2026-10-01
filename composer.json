@@ -70,9 +70,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/",
-            "Focal\\Service\\Tests\\": "packages/service/tests/",
-            "Focal\\Marketing\\Tests\\": "packages/marketing/tests/"
+            "Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -110,6 +108,10 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "test:packages": [
+            "Composer\\Config::disableProcessTimeout",
+            "for package in core sales service marketing filament; do echo \"== focalcrm/$package\" && (cd packages/$package && composer update --no-interaction --quiet && vendor/bin/pest --compact) || exit 1; done"
         ]
     },
     "extra": {

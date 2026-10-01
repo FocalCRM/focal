@@ -16,7 +16,7 @@ return new class extends Migration
         $tableName = config('focal-core.tables.companies', 'focal_companies');
 
         Schema::table($tableName, function (Blueprint $table): void {
-            $table->unsignedSmallInteger('health_score')->default(70)->after('intent_surge');
+            $table->unsignedSmallInteger('health_score')->default(70);
             $table->string('health_status', 20)->default('healthy')->after('health_score');
             $table->timestamp('last_health_calculated_at')->nullable()->after('health_status');
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
-use App\Models\User;
 use Focal\Filament\Resources\TicketResource\Pages\KanbanTickets;
 use Focal\Filament\Resources\TicketResource\Pages\ListTickets;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Service\Database\Seeders\ServiceDatabaseSeeder;
 use Focal\Service\Enums\TicketPriority;
 use Focal\Service\Enums\TicketSource;
@@ -17,7 +17,6 @@ use Focal\Service\Models\SlaPolicy;
 use Focal\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use Tests\TestCase;
 
 class ServiceResourcesTest extends TestCase
 {
