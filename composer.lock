@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e897b4522fdf61c9464ae95a0c26ffa",
+    "content-hash": "97bfb89b81573cf597ea85b381423278",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1710,11 +1710,11 @@
         },
         {
             "name": "focalcrm/core",
-            "version": "0.1.x-dev",
+            "version": "0.2.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "5d04fe64eb8c3925f524f07200d75a5679aecae1"
+                "reference": "aafcb9cffa36b3b98b648c17ee3ade926113552e"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
@@ -1733,7 +1733,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {
@@ -1783,11 +1783,11 @@
         },
         {
             "name": "focalcrm/filament",
-            "version": "0.1.x-dev",
+            "version": "0.2.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/filament",
-                "reference": "9566841c9670d8397ccfa08d16fcd5f66027123c"
+                "reference": "f0a510e56b9b0651677fc6095adbdb6e05578ffd"
             },
             "require": {
                 "filament/filament": "^5.9",
@@ -1816,7 +1816,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {
@@ -1864,11 +1864,11 @@
         },
         {
             "name": "focalcrm/marketing",
-            "version": "0.1.x-dev",
+            "version": "0.2.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/marketing",
-                "reference": "e668affe070b05768746d3bd52dab97999d61d2d"
+                "reference": "9b8c5d0f4b8f2e13a32a90a7c4960e4abb973976"
             },
             "require": {
                 "dophp/laravel-mail-builder": "^1.0",
@@ -1895,7 +1895,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {
@@ -1945,11 +1945,11 @@
         },
         {
             "name": "focalcrm/sales",
-            "version": "0.1.x-dev",
+            "version": "0.2.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/sales",
-                "reference": "56c38f566a3cd8466dfa1c1604d93ca64daa361c"
+                "reference": "ee8999ca0b1de523fda83183439030178549495d"
             },
             "require": {
                 "focalcrm/core": "self.version",
@@ -1969,7 +1969,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {
@@ -2020,11 +2020,11 @@
         },
         {
             "name": "focalcrm/service",
-            "version": "0.1.x-dev",
+            "version": "0.2.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/service",
-                "reference": "161e1907f7ce3e10733b29d337654f792e907324"
+                "reference": "e1b4625de60f35a62cc8ce72acc0345617e6d7d8"
             },
             "require": {
                 "focalcrm/core": "self.version",
@@ -2044,7 +2044,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "0.1.x-dev"
+                    "dev-main": "0.2.x-dev"
                 }
             },
             "autoload": {

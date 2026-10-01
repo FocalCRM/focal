@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+use Focal\Core\Http\Middleware\RequireApiToken;
+use Illuminate\Support\Facades\Route;
+
+beforeEach(function (): void {
+    Route::post('/_test/protected', fn () => response()->json(['ok' => true]))
+        ->middleware(RequireApiToken::class.':focal-test.api.token');
+});
+
+it('keeps protected endpoints disabled until a token is configured', function (): void {
+    $this->withToken('anything')->postJson('/_test/protected')->assertForbidden();
+});
+
+it('rejects a missing token', function (): void {
+    config(['focal-test.api.token' => 'secret-token']);
+
+    $this->postJson('/_test/protected')->assertUnauthorized();
+});
+
+it('rejects a wrong token', function (): void {
+    config(['focal-test.api.token' => 'secret-token']);
+
+    $this->withToken('wrong-token')->postJson('/_test/protected')->assertUnauthorized();
+    $this->flushHeaders()->withHeader('X-Focal-Token', 'wrong-token')->postJson('/_test/protected')->assertUnauthorized();
+    $this->flushHeaders()->postJson('/_test/protected?token=wrong-token')->assertUnauthorized();
+});
+
+it('accepts the token as a bearer token, a header, or a query parameter', function (): void {
+    config(['focal-test.api.token' => 'secret-token']);
+
+    $this->withToken('secret-token')->postJson('/_test/protected')->assertOk();
+    $this->flushHeaders()->withHeader('X-Focal-Token', 'secret-token')->postJson('/_test/protected')->assertOk();
+    $this->flushHeaders()->postJson('/_test/protected?token=secret-token')->assertOk();
+});
+
+it('rate limits public routes per IP using the configured limit', function (): void {
+    config(['focal-core.rate_limits.public' => 2]);
+    Route::post('/_test/public', fn () => 'ok')->middleware('throttle:focal-public');
+
+    $this->post('/_test/public')->assertOk();
+    $this->post('/_test/public')->assertOk();
+    $this->post('/_test/public')->assertTooManyRequests();
+});
+
+it('rate limits authenticated API routes separately', function (): void {
+    config(['focal-core.rate_limits.api' => 1]);
+    Route::post('/_test/api', fn () => 'ok')->middleware('throttle:focal-api');
+
+    $this->post('/_test/api')->assertOk();
+    $this->post('/_test/api')->assertTooManyRequests();
+});

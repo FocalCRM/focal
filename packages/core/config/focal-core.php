@@ -75,6 +75,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Rate Limits
+    |--------------------------------------------------------------------------
+    |
+    | Requests per minute, per IP address, for the public routes Focal packages
+    | register. "public" covers browser-facing submissions (forms, chat, portal
+    | replies); "api" covers token-authenticated webhooks and sending APIs.
+    |
+    */
+    'rate_limits' => [
+        'public' => (int) env('FOCAL_PUBLIC_RATE_LIMIT', 30),
+        'api' => (int) env('FOCAL_API_RATE_LIMIT', 600),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Pluggable Enrichment Engine
     |--------------------------------------------------------------------------
     |
