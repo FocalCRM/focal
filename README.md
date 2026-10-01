@@ -152,4 +152,4 @@ vendor/bin/pint --format agent
 
 ## License
 
-Focal is open-sourced software licensed under the [MIT license](LICENSE).
+Focal is open-sourced software licensed under the [MIT license](LICENSE.md).

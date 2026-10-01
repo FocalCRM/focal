@@ -1,0 +1,63 @@
+name: split
+
+# Publishes each package to its read-only repository (focalcrm/core, focalcrm/sales, ...),
+# which Packagist reads. Pushes to main update each split's main branch; version tags are
+# mirrored to every split so a single tag releases all packages.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: split-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  split:
+    name: Split ${{ matrix.package }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [core, sales, service, marketing, filament]
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Split and push
+        env:
+          # One write-access deploy key per split repository, stored as SPLIT_DEPLOY_KEY_<PACKAGE>.
+          DEPLOY_KEY: ${{ secrets[format('SPLIT_DEPLOY_KEY_{0}', matrix.package)] }}
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "::error::Missing secret SPLIT_DEPLOY_KEY_${PACKAGE^^}"
+            exit 1
+          fi
+
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/split_key
+          chmod 600 ~/.ssh/split_key
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/split_key -o IdentitiesOnly=yes"
+
+          remote="git@github.com:focalcrm/${PACKAGE}.git"
+          sha=$(git subtree split --prefix="packages/${PACKAGE}" HEAD)
+          echo "packages/${PACKAGE} at ${GITHUB_SHA::7} -> split ${sha::7}"
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            git push "$remote" "${sha}:refs/tags/${GITHUB_REF_NAME}"
+          else
+            git push "$remote" "${sha}:refs/heads/main"
+          fi

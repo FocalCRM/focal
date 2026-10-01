@@ -1,5 +1,7 @@
 # Focal Core (`focalcrm/core`)
 
+> This is a read-only split of the [focalcrm/focal](https://github.com/focalcrm/focal) monorepo. Please open issues and pull requests there.
+
 The headless CRM foundation engine for the Focal RevOps platform. Manages contacts, companies, extensible custom properties (EAV), polymorphic associations, activity audit timelines, list segmentation, and lifecycle stage state transitions.
 
 ---

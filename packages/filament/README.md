@@ -1,5 +1,7 @@
 # Focal Filament (`focalcrm/filament`)
 
+> This is a read-only split of the [focalcrm/focal](https://github.com/focalcrm/focal) monorepo. Please open issues and pull requests there.
+
 The unified administrative dashboard and RevOps cockpit for the Focal platform, built on Filament v4. Integrates Core CRM, Sales, Service, Marketing, and Mail Builder into a modular, plug-and-play admin interface with auto-discovering resources, executive cockpits, and dynamic EAV form rendering.
 
 ---
