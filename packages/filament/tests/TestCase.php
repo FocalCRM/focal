@@ -25,14 +25,14 @@ use Focal\Sales\SalesServiceProvider;
 use Focal\Service\ServiceHubServiceProvider;
 use Kirschbaum\PowerJoins\PowerJoinsServiceProvider;
 use Livewire\LivewireServiceProvider;
-use Orchestra\Testbench\Concerns\WithLaravelMigrations;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
+use function Orchestra\Testbench\after_resolving;
+use function Orchestra\Testbench\default_migration_path;
+
 abstract class TestCase extends Orchestra
 {
-    use WithLaravelMigrations;
-
     /**
      * Boots the full Focal stack and Filament, with a fixture admin panel.
      *
@@ -70,5 +70,17 @@ abstract class TestCase extends Orchestra
     {
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
         $app['config']->set('auth.providers.users.model', User::class);
+    }
+
+    /**
+     * Laravel's own migrations (users, cache, jobs). Registered on the migrator rather than
+     * run and rolled back per test: RefreshDatabase owns the schema, and rolling back
+     * users fails on databases that enforce foreign keys (PostgreSQL, MySQL).
+     */
+    protected function defineDatabaseMigrations(): void
+    {
+        after_resolving($this->app, 'migrator', static function ($migrator): void {
+            $migrator->path(default_migration_path());
+        });
     }
 }

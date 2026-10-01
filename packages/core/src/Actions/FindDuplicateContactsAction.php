@@ -29,7 +29,7 @@ class FindDuplicateContactsAction
             ->whereNotNull('email')
             ->where('email', '!=', '')
             ->groupBy('email')
-            ->having('count', '>', 1)
+            ->havingRaw('count(*) > ?', [1])
             ->pluck('email');
 
         foreach ($duplicateEmails as $email) {
@@ -49,7 +49,7 @@ class FindDuplicateContactsAction
             ->whereNotNull('phone')
             ->where('phone', '!=', '')
             ->groupBy('phone')
-            ->having('count', '>', 1)
+            ->havingRaw('count(*) > ?', [1])
             ->pluck('phone');
 
         foreach ($duplicatePhones as $phone) {

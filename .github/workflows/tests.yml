@@ -74,6 +74,65 @@ jobs:
       - name: Run tests
         run: vendor/bin/pest --ci
 
+  postgres:
+    name: ${{ matrix.package }} / PostgreSQL 17
+    runs-on: ubuntu-latest
+
+    # SQLite tolerates column-alias HAVING clauses, unknown quoted columns, case-insensitive
+    # LIKE, and fractions in integer columns; PostgreSQL does not. Run every suite against it.
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [core, sales, service, marketing, filament]
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: focal
+          POSTGRES_PASSWORD: focal
+          POSTGRES_DB: focal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U focal"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: packages/${{ matrix.package }}
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: focal_test
+      DB_USERNAME: focal
+      DB_PASSWORD: focal
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Name the checkout branch
+        run: git checkout -B main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, libxml, mbstring, zip, pdo_pgsql
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Run tests
+        run: vendor/bin/pest --ci
+
   quality:
     name: Workbench, static analysis, and code style
     runs-on: ubuntu-latest

@@ -29,7 +29,7 @@ class FindDuplicateCompaniesAction
             ->whereNotNull('domain')
             ->where('domain', '!=', '')
             ->groupBy('domain')
-            ->having('count', '>', 1)
+            ->havingRaw('count(*) > ?', [1])
             ->pluck('domain');
 
         foreach ($duplicateDomains as $domain) {
@@ -47,7 +47,7 @@ class FindDuplicateCompaniesAction
         $duplicateNames = Company::query()
             ->select('name', DB::raw('count(*) as count'))
             ->groupBy('name')
-            ->having('count', '>', 1)
+            ->havingRaw('count(*) > ?', [1])
             ->pluck('name');
 
         foreach ($duplicateNames as $name) {
