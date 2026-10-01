@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "79b8b250fefa5ed45279c76aec4ddea9",
+    "content-hash": "1da4c27d5ce9342c64a05550440e24f8",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1013,7 +1013,7 @@
             "dist": {
                 "type": "path",
                 "url": "../laravel-mail-builder",
-                "reference": "c2dbdb0bb8a8c773d71540344d2c63fa743dc9ab"
+                "reference": "b9eb0aebcf84ddc95cb4e08c7e05590a3bf23d53"
             },
             "require": {
                 "ext-dom": "*",
@@ -1725,11 +1725,11 @@
         },
         {
             "name": "focalcrm/core",
-            "version": "1.x-dev",
+            "version": "0.1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "8e3599eb90607e75ea9f3f6962b26c7f151c3e69"
+                "reference": "5d04fe64eb8c3925f524f07200d75a5679aecae1"
             },
             "require": {
                 "laravel/framework": "^12.0 || ^13.0",
@@ -1748,7 +1748,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "1.x-dev"
+                    "dev-main": "0.1.x-dev"
                 }
             },
             "autoload": {
@@ -1772,10 +1772,25 @@
             ],
             "authors": [
                 {
-                    "name": "Focal Team"
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://focalcrm.io"
                 }
             ],
             "description": "Headless CRM Core Engine for Focal (Contacts, Companies, Custom Properties, Associations, Timeline)",
+            "homepage": "https://focalcrm.io",
+            "keywords": [
+                "companies",
+                "contacts",
+                "crm",
+                "custom-properties",
+                "focalcrm",
+                "headless",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/focalcrm/focal/issues",
+                "source": "https://github.com/focalcrm/focal"
+            },
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -1783,14 +1798,14 @@
         },
         {
             "name": "focalcrm/filament",
-            "version": "1.x-dev",
+            "version": "0.1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/filament",
-                "reference": "a48aabd1a81de0bba5175e0b0eaf94fff145c4e4"
+                "reference": "5c42ee03447e4f76294be9ed84748a432978c16f"
             },
             "require": {
-                "filament/filament": "^5.0",
+                "filament/filament": "^5.9",
                 "focalcrm/core": "self.version",
                 "laravel/framework": "^12.0 || ^13.0",
                 "php": "^8.3"
@@ -1816,7 +1831,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "1.x-dev"
+                    "dev-main": "0.1.x-dev"
                 }
             },
             "autoload": {
@@ -1839,10 +1854,24 @@
             ],
             "authors": [
                 {
-                    "name": "Focal Team"
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://focalcrm.io"
                 }
             ],
             "description": "Unified Filament CRM Panel & UI Plugin for Focal",
+            "homepage": "https://focalcrm.io",
+            "keywords": [
+                "admin-panel",
+                "crm",
+                "filament",
+                "filament-plugin",
+                "focalcrm",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/focalcrm/focal/issues",
+                "source": "https://github.com/focalcrm/focal"
+            },
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -1850,11 +1879,11 @@
         },
         {
             "name": "focalcrm/marketing",
-            "version": "1.x-dev",
+            "version": "0.1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/marketing",
-                "reference": "fdf81bf5555fbe0a3a4474432fca20c5ef44abce"
+                "reference": "fc7d7faba65354d03c435ef65478767e70a4486b"
             },
             "require": {
                 "dophp/laravel-mail-builder": "^1.0",
@@ -1881,7 +1910,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "1.x-dev"
+                    "dev-main": "0.1.x-dev"
                 }
             },
             "autoload": {
@@ -1905,10 +1934,25 @@
             ],
             "authors": [
                 {
-                    "name": "Focal Team"
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://focalcrm.io"
                 }
             ],
             "description": "Email Marketing, Lead Capture Forms, Drip Campaigns, and Analytics for Focal CRM",
+            "homepage": "https://focalcrm.io",
+            "keywords": [
+                "crm",
+                "email-marketing",
+                "focalcrm",
+                "forms",
+                "laravel",
+                "lead-scoring",
+                "marketing-automation"
+            ],
+            "support": {
+                "issues": "https://github.com/focalcrm/focal/issues",
+                "source": "https://github.com/focalcrm/focal"
+            },
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -1916,11 +1960,11 @@
         },
         {
             "name": "focalcrm/sales",
-            "version": "1.x-dev",
+            "version": "0.1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/sales",
-                "reference": "afd9f3a98b5bcdffb1eb953d25904a217ddad6da"
+                "reference": "56c38f566a3cd8466dfa1c1604d93ca64daa361c"
             },
             "require": {
                 "focalcrm/core": "self.version",
@@ -1940,7 +1984,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "1.x-dev"
+                    "dev-main": "0.1.x-dev"
                 }
             },
             "autoload": {
@@ -1964,10 +2008,26 @@
             ],
             "authors": [
                 {
-                    "name": "Focal Team"
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://focalcrm.io"
                 }
             ],
             "description": "Sales, Deals, and Pipeline Management for Focal CRM",
+            "homepage": "https://focalcrm.io",
+            "keywords": [
+                "crm",
+                "deals",
+                "focalcrm",
+                "forecasting",
+                "laravel",
+                "pipeline",
+                "quotes",
+                "sales"
+            ],
+            "support": {
+                "issues": "https://github.com/focalcrm/focal/issues",
+                "source": "https://github.com/focalcrm/focal"
+            },
             "transport-options": {
                 "symlink": true,
                 "relative": true
@@ -1975,11 +2035,11 @@
         },
         {
             "name": "focalcrm/service",
-            "version": "1.x-dev",
+            "version": "0.1.x-dev",
             "dist": {
                 "type": "path",
                 "url": "packages/service",
-                "reference": "ea178f2c7f51d69d06a6ce6d92aaf434b3826021"
+                "reference": "161e1907f7ce3e10733b29d337654f792e907324"
             },
             "require": {
                 "focalcrm/core": "self.version",
@@ -1999,7 +2059,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-main": "1.x-dev"
+                    "dev-main": "0.1.x-dev"
                 }
             },
             "autoload": {
@@ -2023,10 +2083,25 @@
             ],
             "authors": [
                 {
-                    "name": "Focal Team"
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://focalcrm.io"
                 }
             ],
             "description": "Customer Service, Help Desk, Tickets, SLAs, and Knowledge Base for Focal CRM",
+            "homepage": "https://focalcrm.io",
+            "keywords": [
+                "crm",
+                "focalcrm",
+                "helpdesk",
+                "knowledge-base",
+                "laravel",
+                "sla",
+                "tickets"
+            ],
+            "support": {
+                "issues": "https://github.com/focalcrm/focal/issues",
+                "source": "https://github.com/focalcrm/focal"
+            },
             "transport-options": {
                 "symlink": true,
                 "relative": true

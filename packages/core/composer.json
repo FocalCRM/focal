@@ -3,9 +3,24 @@
     "description": "Headless CRM Core Engine for Focal (Contacts, Companies, Custom Properties, Associations, Timeline)",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "laravel",
+        "crm",
+        "focalcrm",
+        "contacts",
+        "companies",
+        "custom-properties",
+        "headless"
+    ],
+    "homepage": "https://focalcrm.io",
+    "support": {
+        "issues": "https://github.com/focalcrm/focal/issues",
+        "source": "https://github.com/focalcrm/focal"
+    },
     "authors": [
         {
-            "name": "Focal Team"
+            "name": "CaskStack, LLC",
+            "homepage": "https://focalcrm.io"
         }
     ],
     "require": {
@@ -38,7 +53,7 @@
             ]
         },
         "branch-alias": {
-            "dev-main": "1.x-dev"
+            "dev-main": "0.1.x-dev"
         }
     },
     "config": {
