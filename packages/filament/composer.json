@@ -1,0 +1,40 @@
+{
+    "name": "focalcrm/filament",
+    "description": "Unified Filament CRM Panel & UI Plugin for Focal",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Focal Team"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "filament/filament": "^5.0",
+        "focalcrm/core": "self.version",
+        "laravel/framework": "^11.0 || ^12.0 || ^13.0"
+    },
+    "suggest": {
+        "focalcrm/sales": "Adds Deals, Pipelines, Quotes, Sequences, and the Sales Cockpit",
+        "focalcrm/service": "Adds Tickets, SLAs, Knowledge Articles, and the Service Cockpit",
+        "focalcrm/marketing": "Adds Campaigns, Workflows, Forms, and the Marketing Cockpit"
+    },
+    "autoload": {
+        "psr-4": {
+            "Focal\\Filament\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Focal\\Filament\\FilamentServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

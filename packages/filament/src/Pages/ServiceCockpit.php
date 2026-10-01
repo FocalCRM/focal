@@ -1,0 +1,502 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Focal\Filament\Pages;
+
+use BackedEnum;
+use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Filament\Support\Icons\Heroicon;
+use Focal\Core\Support\UserModel;
+use Focal\Filament\Resources\TicketResource;
+use Focal\Service\Actions\DeflectTicketAction;
+use Focal\Service\Enums\MessageSenderType;
+use Focal\Service\Enums\TicketStatus;
+use Focal\Service\Models\CannedResponse;
+use Focal\Service\Models\Ticket;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
+
+class ServiceCockpit extends Page
+{
+    protected static UnitEnum|string|null $navigationGroup = 'Service';
+
+    protected static ?int $navigationSort = 0;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Lifebuoy;
+
+    protected static ?string $navigationLabel = 'Support Cockpit';
+
+    protected static ?string $title = 'Support Agent Workspace';
+
+    protected string $view = 'focal-filament::pages.service-cockpit';
+
+    public string $activeTab = 'triage';
+
+    public ?int $selectedUserId = null;
+
+    public string $search = '';
+
+    public ?string $priorityFilter = null;
+
+    public ?string $sourceFilter = null;
+
+    public bool $showReplyModal = false;
+
+    public ?int $replyTicketId = null;
+
+    public string $replyBody = '';
+
+    public string $replyStatus = 'waiting_on_customer';
+
+    public bool $replyIsInternalNote = false;
+
+    public ?int $selectedCannedResponseId = null;
+
+    public bool $showResolveModal = false;
+
+    public ?int $resolveTicketId = null;
+
+    public string $resolveNote = '';
+
+    public function mount(): void
+    {
+        $this->selectedUserId = (int) (auth()->id() ?? 1);
+    }
+
+    public function setActiveTab(string $tab): void
+    {
+        if (in_array($tab, ['triage', 'my_tickets', 'sla_watch', 'all'], true)) {
+            $this->activeTab = $tab;
+        }
+    }
+
+    public function setPriorityFilter(?string $priority): void
+    {
+        $this->priorityFilter = $priority ?: null;
+    }
+
+    public function setSourceFilter(?string $source): void
+    {
+        $this->sourceFilter = $source ?: null;
+    }
+
+    public function setSelectedUser(int|string|null $userId = null): void
+    {
+        $this->selectedUserId = ! empty($userId) ? (int) $userId : null;
+    }
+
+    public function getOpenTicketsCountProperty(): int
+    {
+        return Ticket::query()
+            ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value])
+            ->count();
+    }
+
+    public function getUnassignedTicketsCountProperty(): int
+    {
+        return Ticket::query()
+            ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value])
+            ->whereNull('owner_id')
+            ->count();
+    }
+
+    public function getMyActiveCountProperty(): int
+    {
+        $userId = $this->selectedUserId ?? (int) (auth()->id() ?? 1);
+
+        return Ticket::query()
+            ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value, TicketStatus::WaitingOnCustomer->value])
+            ->where('owner_id', $userId)
+            ->count();
+    }
+
+    public function getSlaAtRiskCountProperty(): int
+    {
+        $oneHourFromNow = now()->addHour();
+
+        return Ticket::query()
+            ->whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])
+            ->where(function (Builder $query) use ($oneHourFromNow): void {
+                $query->where('is_sla_response_breached', true)
+                    ->orWhere('is_sla_resolution_breached', true)
+                    ->orWhere(function (Builder $q) use ($oneHourFromNow): void {
+                        $q->whereNull('first_responded_at')
+                            ->whereNotNull('first_response_due_at')
+                            ->where('first_response_due_at', '<=', $oneHourFromNow);
+                    })
+                    ->orWhere(function (Builder $q) use ($oneHourFromNow): void {
+                        $q->whereNull('resolved_at')
+                            ->whereNotNull('resolution_due_at')
+                            ->where('resolution_due_at', '<=', $oneHourFromNow);
+                    });
+            })
+            ->count();
+    }
+
+    public function getAverageCsatRatingProperty(): ?float
+    {
+        $avg = Ticket::query()->whereNotNull('csat_rating')->avg('csat_rating');
+
+        return $avg !== null ? round((float) $avg, 1) : null;
+    }
+
+    /**
+     * @return Collection<int, Ticket>
+     */
+    public function getTriageTicketsProperty(): Collection
+    {
+        $query = Ticket::query()
+            ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value])
+            ->whereNull('owner_id')
+            ->with(['contact', 'company', 'slaPolicy'])
+            ->orderByRaw("CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
+            ->orderBy('created_at', 'asc');
+
+        $this->applyFilters($query);
+
+        return $query->take(50)->get();
+    }
+
+    /**
+     * @return Collection<int, Ticket>
+     */
+    public function getMyTicketsProperty(): Collection
+    {
+        $userId = $this->selectedUserId ?? (int) (auth()->id() ?? 1);
+
+        $query = Ticket::query()
+            ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value, TicketStatus::WaitingOnCustomer->value])
+            ->where('owner_id', $userId)
+            ->with(['contact', 'company', 'slaPolicy'])
+            ->orderByRaw("CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
+            ->orderBy('updated_at', 'desc');
+
+        $this->applyFilters($query);
+
+        return $query->take(50)->get();
+    }
+
+    /**
+     * @return Collection<int, Ticket>
+     */
+    public function getSlaWatchTicketsProperty(): Collection
+    {
+        $twoHoursFromNow = now()->addHours(2);
+
+        $query = Ticket::query()
+            ->whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])
+            ->where(function (Builder $q) use ($twoHoursFromNow): void {
+                $q->where('is_sla_response_breached', true)
+                    ->orWhere('is_sla_resolution_breached', true)
+                    ->orWhere(function (Builder $sub) use ($twoHoursFromNow): void {
+                        $sub->whereNull('first_responded_at')
+                            ->whereNotNull('first_response_due_at')
+                            ->where('first_response_due_at', '<=', $twoHoursFromNow);
+                    })
+                    ->orWhere(function (Builder $sub) use ($twoHoursFromNow): void {
+                        $sub->whereNull('resolved_at')
+                            ->whereNotNull('resolution_due_at')
+                            ->where('resolution_due_at', '<=', $twoHoursFromNow);
+                    });
+            })
+            ->with(['contact', 'company', 'owner', 'slaPolicy'])
+            ->orderByRaw('CASE WHEN is_sla_response_breached = 1 OR is_sla_resolution_breached = 1 THEN 1 ELSE 2 END')
+            ->orderBy('first_response_due_at', 'asc');
+
+        $this->applyFilters($query);
+
+        return $query->take(50)->get();
+    }
+
+    /**
+     * @return Collection<int, Ticket>
+     */
+    public function getAllTicketsProperty(): Collection
+    {
+        $query = Ticket::query()
+            ->whereNotIn('status', [TicketStatus::Closed->value])
+            ->with(['contact', 'company', 'owner', 'slaPolicy'])
+            ->orderByRaw("CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
+            ->orderBy('created_at', 'desc');
+
+        $this->applyFilters($query);
+
+        return $query->take(50)->get();
+    }
+
+    /**
+     * @return Collection<int, CannedResponse>
+     */
+    public function getCannedResponsesProperty(): Collection
+    {
+        $userId = auth()->id();
+
+        return CannedResponse::query()
+            ->where(function (Builder $query) use ($userId): void {
+                $query->where('is_shared', true);
+                if ($userId !== null) {
+                    $query->orWhere('user_id', $userId);
+                }
+            })
+            ->orderBy('title')
+            ->get();
+    }
+
+    /**
+     * @return Collection<int, Model>
+     */
+    public function getUsersProperty(): Collection
+    {
+        return UserModel::query()->orderBy('name')->get();
+    }
+
+    public function claimTicket(int $ticketId): void
+    {
+        /** @var Ticket|null $ticket */
+        $ticket = Ticket::query()->find($ticketId);
+
+        if ($ticket === null) {
+            Notification::make()->title('Ticket not found')->danger()->send();
+
+            return;
+        }
+
+        $userId = (int) (auth()->id() ?? 1);
+
+        $updates = ['owner_id' => $userId];
+        if ($ticket->status === TicketStatus::New) {
+            $updates['status'] = TicketStatus::Open;
+        }
+
+        $ticket->update($updates);
+
+        Notification::make()
+            ->title('Ticket Claimed')
+            ->body("You claimed ticket {$ticket->ticket_number}.")
+            ->success()
+            ->send();
+    }
+
+    public function claimAndOpen(int $ticketId): mixed
+    {
+        $this->claimTicket($ticketId);
+
+        return redirect()->to(TicketResource::getUrl('edit', ['record' => $ticketId]));
+    }
+
+    public function openReplyModal(int $ticketId): void
+    {
+        /** @var Ticket|null $ticket */
+        $ticket = Ticket::query()->find($ticketId);
+
+        if ($ticket === null) {
+            Notification::make()->title('Ticket not found')->danger()->send();
+
+            return;
+        }
+
+        $this->replyTicketId = $ticketId;
+        $this->replyBody = '';
+        $this->replyStatus = 'waiting_on_customer';
+        $this->replyIsInternalNote = false;
+        $this->selectedCannedResponseId = null;
+        $this->showReplyModal = true;
+    }
+
+    public function insertCannedResponse(int|string|null $id = null): void
+    {
+        if (empty($id)) {
+            return;
+        }
+
+        $id = (int) $id;
+
+        /** @var CannedResponse|null $canned */
+        $canned = CannedResponse::query()->find($id);
+        if ($canned !== null) {
+            $this->replyBody = empty($this->replyBody)
+                ? $canned->content
+                : $this->replyBody."\n\n".$canned->content;
+        }
+    }
+
+    /**
+     * AI Copilot: Smart knowledge base suggestions based on ticket inquiry context.
+     *
+     * @return \Illuminate\Support\Collection<int, array{id: int, title: string, slug: string, category: string, excerpt: string, helpful_count: int, deflections_count: int, url: string}>
+     */
+    public function getSuggestedArticlesProperty(): \Illuminate\Support\Collection
+    {
+        if ($this->replyTicketId === null) {
+            return collect();
+        }
+
+        /** @var Ticket|null $ticket */
+        $ticket = Ticket::query()->find($this->replyTicketId);
+        if ($ticket === null) {
+            return collect();
+        }
+
+        return app(DeflectTicketAction::class)->execute($ticket->subject.' '.($ticket->description ?? ''), 3);
+    }
+
+    public function insertArticleLink(string $title, string $url): void
+    {
+        $linkMarkdown = "For step-by-step instructions, see our Help Center guide: [{$title}]({$url})";
+        $this->replyBody = empty($this->replyBody)
+            ? $linkMarkdown
+            : $this->replyBody."\n\n".$linkMarkdown;
+    }
+
+    public function sendQuickReply(): void
+    {
+        if ($this->replyTicketId === null || trim($this->replyBody) === '') {
+            Notification::make()->title('Reply message cannot be empty')->warning()->send();
+
+            return;
+        }
+
+        /** @var Ticket|null $ticket */
+        $ticket = Ticket::query()->find($this->replyTicketId);
+
+        if ($ticket === null) {
+            Notification::make()->title('Ticket not found')->danger()->send();
+            $this->closeReplyModal();
+
+            return;
+        }
+
+        $userId = auth()->id() !== null ? (int) auth()->id() : null;
+
+        $ticket->addMessage(
+            body: $this->replyBody,
+            senderType: MessageSenderType::Agent,
+            userId: $userId,
+            contactId: null,
+            isInternalNote: $this->replyIsInternalNote,
+        );
+
+        if (! $this->replyIsInternalNote && in_array($this->replyStatus, ['open', 'waiting_on_customer', 'resolved'], true)) {
+            if ($this->replyStatus === 'resolved') {
+                $ticket->resolve();
+            } else {
+                $ticket->update(['status' => $this->replyStatus]);
+            }
+        }
+
+        Notification::make()
+            ->title($this->replyIsInternalNote ? 'Internal Note Added' : 'Reply Sent')
+            ->body("Response recorded for {$ticket->ticket_number}.")
+            ->success()
+            ->send();
+
+        $this->closeReplyModal();
+    }
+
+    public function closeReplyModal(): void
+    {
+        $this->showReplyModal = false;
+        $this->replyTicketId = null;
+        $this->replyBody = '';
+        $this->selectedCannedResponseId = null;
+    }
+
+    public function openResolveModal(int $ticketId): void
+    {
+        /** @var Ticket|null $ticket */
+        $ticket = Ticket::query()->find($ticketId);
+
+        if ($ticket === null) {
+            Notification::make()->title('Ticket not found')->danger()->send();
+
+            return;
+        }
+
+        $this->resolveTicketId = $ticketId;
+        $this->resolveNote = '';
+        $this->showResolveModal = true;
+    }
+
+    public function quickResolveTicket(): void
+    {
+        if ($this->resolveTicketId === null) {
+            return;
+        }
+
+        /** @var Ticket|null $ticket */
+        $ticket = Ticket::query()->find($this->resolveTicketId);
+
+        if ($ticket === null) {
+            Notification::make()->title('Ticket not found')->danger()->send();
+            $this->closeResolveModal();
+
+            return;
+        }
+
+        $ticket->resolve(trim($this->resolveNote) !== '' ? $this->resolveNote : null);
+
+        Notification::make()
+            ->title('Ticket Resolved')
+            ->body("Ticket {$ticket->ticket_number} marked as resolved.")
+            ->success()
+            ->send();
+
+        $this->closeResolveModal();
+    }
+
+    public function closeResolveModal(): void
+    {
+        $this->showResolveModal = false;
+        $this->resolveTicketId = null;
+        $this->resolveNote = '';
+    }
+
+    public function getActiveTicketForReply(): ?Ticket
+    {
+        if ($this->replyTicketId === null) {
+            return null;
+        }
+
+        return Ticket::query()->with(['contact', 'company'])->find($this->replyTicketId);
+    }
+
+    public function getActiveTicketForResolve(): ?Ticket
+    {
+        if ($this->resolveTicketId === null) {
+            return null;
+        }
+
+        return Ticket::query()->with(['contact', 'company'])->find($this->resolveTicketId);
+    }
+
+    /**
+     * @param  Builder<Ticket>  $query
+     */
+    protected function applyFilters(Builder $query): void
+    {
+        if (trim($this->search) !== '') {
+            $search = '%'.trim($this->search).'%';
+            $query->where(function (Builder $q) use ($search): void {
+                $q->where('ticket_number', 'like', $search)
+                    ->orWhere('subject', 'like', $search)
+                    ->orWhereHas('contact', function (Builder $cq) use ($search): void {
+                        $cq->where('first_name', 'like', $search)
+                            ->orWhere('last_name', 'like', $search)
+                            ->orWhere('email', 'like', $search);
+                    });
+            });
+        }
+
+        if ($this->priorityFilter !== null) {
+            $query->where('priority', $this->priorityFilter);
+        }
+
+        if ($this->sourceFilter !== null) {
+            $query->where('source', $this->sourceFilter);
+        }
+    }
+}

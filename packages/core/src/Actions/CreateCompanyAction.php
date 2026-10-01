@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Focal\Core\Actions;
+
+use Focal\Core\Events\CompanyCreated;
+use Focal\Core\Models\Company;
+
+class CreateCompanyAction
+{
+    /**
+     * Execute the action to create a company.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function execute(array $attributes, bool $enrich = false): Company
+    {
+        if (isset($attributes['domain']) && is_string($attributes['domain'])) {
+            $domain = preg_replace('#^https?://#', '', strtolower(trim($attributes['domain'])));
+            $attributes['domain'] = rtrim((string) $domain, '/');
+        }
+
+        $company = Company::create($attributes);
+
+        event(new CompanyCreated($company));
+
+        if ($enrich || (bool) config('focal-core.enrichment.auto_enrich', false)) {
+            app(EnrichCompanyAction::class)->execute($company);
+        }
+
+        return $company;
+    }
+}

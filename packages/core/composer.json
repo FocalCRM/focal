@@ -1,0 +1,34 @@
+{
+    "name": "focalcrm/core",
+    "description": "Headless CRM Core Engine for Focal (Contacts, Companies, Custom Properties, Associations, Timeline)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Focal Team"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^11.0 || ^12.0 || ^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Focal\\Core\\": "src/",
+            "Focal\\Core\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Focal\\Core\\CoreServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
