@@ -1,0 +1,113 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Authenticated GitHub API access for installing dophp/laravel-mail-builder from its repository.
+  COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
+
+jobs:
+  packages:
+    name: ${{ matrix.package }} / PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / ${{ matrix.dependencies }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [core, sales, service, marketing, filament]
+        php: ['8.3', '8.5']
+        laravel: ['12.*', '13.*']
+        dependencies: [lowest, highest]
+        include:
+          - laravel: '12.*'
+            testbench: '10.*'
+          - laravel: '13.*'
+            testbench: '11.*'
+
+    defaults:
+      run:
+        working-directory: packages/${{ matrix.package }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Sibling packages are linked through Composer path repositories, which take their
+      # version from the current git branch. Pull requests check out a detached commit,
+      # so name a local branch to give every package the same version.
+      - name: Name the checkout branch
+        run: git checkout -B main
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, libxml, mbstring, zip, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+
+      - name: Pin Laravel and Testbench
+        run: |
+          composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
+          composer require --dev "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress ${{ matrix.dependencies == 'lowest' && '--prefer-lowest --prefer-stable' || '' }}
+
+      - name: Show resolved versions
+        run: |
+          for package in laravel/framework orchestra/testbench pestphp/pest; do
+            composer show "$package" --no-interaction | grep -E '^(name|versions)\s+:'
+          done
+
+      - name: Run tests
+        run: vendor/bin/pest --ci
+
+  quality:
+    name: Workbench, static analysis, and code style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Name the checkout branch
+        run: git checkout -B main
+
+      # The workbench links dophp/laravel-mail-builder from a sibling checkout, as in local development.
+      - name: Check out the mail builder alongside
+        run: git clone --depth 1 --branch v1.0.0 https://github.com/doPHP/laravel-mail-builder.git ../laravel-mail-builder
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, libxml, mbstring, zip, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          cp .env.example .env
+          composer install --prefer-dist --no-interaction --no-progress
+          php artisan key:generate --ansi
+
+      - name: Pint
+        run: vendor/bin/pint --test
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --no-progress --error-format=github --memory-limit=2G
+
+      - name: Workbench tests
+        run: php artisan test

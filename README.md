@@ -1,5 +1,7 @@
 # Focal CRM
 
+[![tests](https://github.com/focalcrm/focal/actions/workflows/tests.yml/badge.svg)](https://github.com/focalcrm/focal/actions/workflows/tests.yml)
+
 **Focal** is a modular, enterprise Revenue Operations (RevOps) platform and CRM engine built on Laravel and Filament v5. Designed for extensibility and scale, Focal organizes business operations across independent packages that work together seamlessly or run as standalone headless libraries.
 
 > **About this repository:** this is the open-source home of the Focal packages. The Laravel application at the root (`focalcrm/workbench`) is a development and demo harness for working on the packages; it is not the hosted Focal Cloud service at [focalcrm.io](https://focalcrm.io), which lives in its own private repository and installs these packages like any other consumer.
