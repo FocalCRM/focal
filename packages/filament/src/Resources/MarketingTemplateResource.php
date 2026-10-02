@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Odden\Filament\Resources;
 
 use BackedEnum;
-use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
-use Odden\MailBuilder\MailBuilder;
-use Odden\MailBuilder\Presets\PresetRegistry;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -28,17 +25,20 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Mail;
 use Odden\Filament\Resources\MarketingTemplateResource\Pages\CreateMarketingTemplate;
 use Odden\Filament\Resources\MarketingTemplateResource\Pages\EditMarketingTemplate;
 use Odden\Filament\Resources\MarketingTemplateResource\Pages\ListMarketingTemplates;
 use Odden\Filament\Support\OddenAuthorization;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\MailBuilder\MailBuilder;
+use Odden\MailBuilder\Presets\PresetRegistry;
 use Odden\Marketing\Actions\EvaluateTemplateAbTestsAction;
 use Odden\Marketing\Actions\GenerateAiSubjectLinesAction;
 use Odden\Marketing\Models\MarketingSavedBlock;
 use Odden\Marketing\Models\MarketingTemplate;
 use Odden\Marketing\Services\EmailBlockRenderer;
-use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Mail;
 use UnitEnum;
 
 class MarketingTemplateResource extends Resource

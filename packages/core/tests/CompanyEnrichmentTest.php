@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Core\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Odden\Core\Actions\CreateCompanyAction;
 use Odden\Core\Actions\EnrichCompanyAction;
 use Odden\Core\Contracts\EnrichmentDriver;
@@ -11,8 +13,6 @@ use Odden\Core\Events\CompanyEnriched;
 use Odden\Core\Models\Company;
 use Odden\Core\Support\Enrichment\EnrichmentManager;
 use Odden\Core\Support\Enrichment\HeuristicEnrichmentDriver;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 
 class CompanyEnrichmentTest extends TestCase
 {

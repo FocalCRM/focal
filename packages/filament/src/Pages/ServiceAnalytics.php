@@ -7,6 +7,8 @@ namespace Odden\Filament\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Odden\Core\Support\UserModel;
 use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
 use Odden\Filament\Resources\TicketResource;
@@ -14,8 +16,6 @@ use Odden\Service\Enums\TicketPriority;
 use Odden\Service\Enums\TicketSource;
 use Odden\Service\Enums\TicketStatus;
 use Odden\Service\Models\Ticket;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use UnitEnum;
 
 class ServiceAnalytics extends Page

@@ -21,13 +21,13 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
 use Odden\Filament\Resources\MarketingWorkflowResource\Pages\CreateMarketingWorkflow;
 use Odden\Filament\Resources\MarketingWorkflowResource\Pages\EditMarketingWorkflow;
 use Odden\Filament\Resources\MarketingWorkflowResource\Pages\ListMarketingWorkflows;
 use Odden\Filament\Resources\MarketingWorkflowResource\RelationManagers\StepsRelationManager;
 use Odden\Marketing\Enums\WorkflowTriggerType;
 use Odden\Marketing\Models\MarketingWorkflow;
-use Illuminate\Contracts\View\View;
 use UnitEnum;
 
 class MarketingWorkflowResource extends Resource

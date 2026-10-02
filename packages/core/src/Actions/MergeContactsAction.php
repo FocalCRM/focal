@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Events\ContactsMerged;
 use Odden\Core\Models\Contact;
 use Odden\Core\Support\RecordMerger;
-use Illuminate\Support\Facades\DB;
 
 class MergeContactsAction
 {

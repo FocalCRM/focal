@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Filament\Pages\DataQuality;
@@ -13,8 +15,6 @@ use Odden\Filament\Tests\Fixtures\User;
 use Odden\Marketing\Models\Campaign;
 use Odden\Sales\Models\Deal;
 use Odden\Service\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 class PageAuthorizationTest extends TestCase

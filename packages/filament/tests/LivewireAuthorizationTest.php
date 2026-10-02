@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Core\Enums\ActivityStatus;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Enums\LeadStatus;
@@ -29,8 +31,6 @@ use Odden\Service\Enums\TicketPriority;
 use Odden\Service\Enums\TicketStatus;
 use Odden\Service\Models\CannedResponse;
 use Odden\Service\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class LivewireAuthorizationTest extends TestCase
 {

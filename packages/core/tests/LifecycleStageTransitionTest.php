@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Event;
 use Odden\Core\Actions\CalculateFunnelVelocityAction;
 use Odden\Core\Actions\TransitionLifecycleStageAction;
 use Odden\Core\Enums\LifecycleStage;
@@ -9,7 +10,6 @@ use Odden\Core\Events\LifecycleStageChanged;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\LifecycleStageTransition;
-use Illuminate\Support\Facades\Event;
 
 it('transitions contact lifecycle stage and records transition history', function () {
     Event::fake([LifecycleStageChanged::class]);

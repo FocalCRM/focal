@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
-use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Odden\Core\Models\Contact;
 
 class FindDuplicateContactsAction
 {

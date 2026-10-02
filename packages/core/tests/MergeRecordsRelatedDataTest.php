@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Event;
 use Odden\Core\Actions\MergeCompaniesAction;
 use Odden\Core\Actions\MergeContactsAction;
 use Odden\Core\Actions\TransitionLifecycleStageAction;
@@ -18,7 +19,6 @@ use Odden\Core\Models\PropertyHistory;
 use Odden\Core\Tests\Fixtures\CrossHubRelations;
 use Odden\Core\Tests\Fixtures\Deal;
 use Odden\Core\Tests\Fixtures\Ticket;
-use Illuminate\Support\Facades\Event;
 
 function mergeContacts(Contact $primary, Contact $secondary): Contact
 {

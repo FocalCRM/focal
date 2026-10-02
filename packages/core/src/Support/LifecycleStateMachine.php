@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Core\Support;
 
+use Illuminate\Database\Eloquent\Model;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Exceptions\InvalidLifecycleStageTransitionException;
-use Illuminate\Database\Eloquent\Model;
 
 class LifecycleStateMachine
 {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Core\Models\Contact;
 use Odden\Filament\Pages\ServiceCockpit;
 use Odden\Filament\Tests\Fixtures\User;
@@ -12,8 +14,6 @@ use Odden\Service\Enums\TicketStatus;
 use Odden\Service\Models\CannedResponse;
 use Odden\Service\Models\KnowledgeArticle;
 use Odden\Service\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class ServiceCockpitTest extends TestCase
 {

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Filament\Pages\ServiceAnalytics;
 use Odden\Filament\Tests\Fixtures\User;
 use Odden\Service\Enums\TicketPriority;
 use Odden\Service\Enums\TicketSource;
 use Odden\Service\Enums\TicketStatus;
 use Odden\Service\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class ServiceAnalyticsTest extends TestCase
 {

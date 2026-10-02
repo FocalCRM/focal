@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Odden\Core\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Odden\Core\Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)

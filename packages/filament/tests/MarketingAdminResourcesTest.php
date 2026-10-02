@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Company;
 use Odden\Filament\Tests\Fixtures\User;
 use Odden\Marketing\Models\MarketingAsset;
 use Odden\Marketing\Models\MarketingEvent;
 use Odden\Marketing\Models\NpsSurvey;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingAdminResourcesTest extends TestCase
 {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Events\CompaniesMerged;
 use Odden\Core\Models\Company;
 use Odden\Core\Support\RecordMerger;
-use Illuminate\Support\Facades\DB;
 
 class MergeCompaniesAction
 {

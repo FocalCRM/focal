@@ -28,6 +28,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Odden\Core\Support\UserModel;
 use Odden\Filament\Resources\DealResource\Pages\CreateDeal;
 use Odden\Filament\Resources\DealResource\Pages\EditDeal;
@@ -51,8 +53,6 @@ use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\PipelineStage;
 use Odden\Sales\Models\SalesPlaybook;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 
 class DealResource extends Resource

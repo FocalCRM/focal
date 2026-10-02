@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Core\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Odden\Core\Actions\AssociateRecordsAction;
 use Odden\Core\Events\RecordsAssociated;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 
 class AssociationTest extends TestCase
 {

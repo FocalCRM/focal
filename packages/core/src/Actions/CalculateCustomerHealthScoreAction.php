@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
-use Odden\Core\Enums\CustomerHealthStatus;
-use Odden\Core\Models\Company;
-use Odden\Core\Support\OptionalRelation;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Odden\Core\Enums\CustomerHealthStatus;
+use Odden\Core\Models\Company;
+use Odden\Core\Support\OptionalRelation;
 
 class CalculateCustomerHealthScoreAction
 {

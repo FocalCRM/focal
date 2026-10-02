@@ -8,11 +8,11 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
 use Odden\Filament\Resources\TicketResource;
 use Odden\Filament\Support\OddenAuthorization;
 use Odden\Service\Enums\TicketStatus;
 use Odden\Service\Models\Ticket;
-use Illuminate\Database\Eloquent\Collection;
 
 class KanbanTickets extends Page
 {

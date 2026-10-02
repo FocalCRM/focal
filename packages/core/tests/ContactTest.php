@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Core\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Odden\Core\Actions\CreateContactAction;
 use Odden\Core\Enums\LeadStatus;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Events\ContactCreated;
 use Odden\Core\Models\Contact;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 
 class ContactTest extends TestCase
 {

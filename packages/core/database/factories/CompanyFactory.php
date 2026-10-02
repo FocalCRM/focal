@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Core\Database\Factories;
 
-use Odden\Core\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Odden\Core\Models\Company;
 
 /**
  * @extends Factory<Company>

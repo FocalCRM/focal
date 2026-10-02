@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Odden\Core\Support\UserModel;
 use Odden\Core\Traits\AuditsProperties;
 use Odden\Core\Traits\BelongsToTeam;
 use Odden\Core\Traits\HasActivities;
 use Odden\Core\Traits\HasAssociations;
 use Odden\Core\Traits\HasCustomProperties;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id

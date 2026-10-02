@@ -21,6 +21,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Filament\Resources\CampaignResource\Pages\CreateCampaign;
@@ -37,7 +38,6 @@ use Odden\Marketing\Exceptions\CampaignHasNoAudienceException;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\MarketingSubscriptionTopic;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Contracts\View\View;
 use UnitEnum;
 
 class CampaignResource extends Resource

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Odden\Core\Actions;
 
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Model;
 use Odden\Core\Enums\ActivityStatus;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Events\ActivityLogged;
 use Odden\Core\Models\Activity;
-use Illuminate\Database\Eloquent\Model;
 
 class LogActivityAction
 {

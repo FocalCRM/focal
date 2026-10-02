@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Resources\MarketingTemplateResource\Pages;
 
-use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
-use Odden\MailBuilder\MailBuilder;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\Textarea;
@@ -13,11 +11,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
-use Odden\Filament\Resources\MarketingTemplateResource;
-use Odden\Filament\Support\OddenAuthorization;
-use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
+use Odden\Filament\Resources\MarketingTemplateResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\MailBuilder\MailBuilder;
+use Odden\Marketing\Models\MarketingTemplate;
 
 class EditMarketingTemplate extends EditRecord
 {

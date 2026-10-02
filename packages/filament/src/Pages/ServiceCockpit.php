@@ -9,6 +9,9 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Odden\Core\Support\UserModel;
 use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
 use Odden\Filament\Resources\TicketResource;
@@ -18,9 +21,6 @@ use Odden\Service\Enums\MessageSenderType;
 use Odden\Service\Enums\TicketStatus;
 use Odden\Service\Models\CannedResponse;
 use Odden\Service\Models\Ticket;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use UnitEnum;
 
 class ServiceCockpit extends Page

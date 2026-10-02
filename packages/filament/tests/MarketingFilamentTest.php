@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Filament\Pages\MarketingCockpit;
@@ -16,8 +18,6 @@ use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Models\MarketingSubscription;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class MarketingFilamentTest extends TestCase
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Resources\MarketingTemplateResource\Pages;
 
-use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
-use Odden\MailBuilder\MailBuilder;
 use Filament\Resources\Pages\CreateRecord;
 use Odden\Filament\Resources\MarketingTemplateResource;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\MailBuilder\MailBuilder;
 
 class CreateMarketingTemplate extends CreateRecord
 {

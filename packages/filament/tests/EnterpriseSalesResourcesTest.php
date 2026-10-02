@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Filament\Resources\SalesMeetingLinkResource\Pages\CreateSalesMeetingLink;
 use Odden\Filament\Resources\SalesMeetingLinkResource\Pages\EditSalesMeetingLink;
 use Odden\Filament\Tests\Fixtures\User;
@@ -15,8 +17,6 @@ use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\SalesMeetingLink;
 use Odden\Sales\Models\SalesPlaybook;
 use Odden\Sales\Models\SalesSequence;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class EnterpriseSalesResourcesTest extends TestCase
 {

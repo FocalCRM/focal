@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
+use InvalidArgumentException;
 use Odden\Core\Events\CustomObjectRecordCreated;
 use Odden\Core\Models\CustomObjectDefinition;
 use Odden\Core\Models\CustomObjectRecord;
-use InvalidArgumentException;
 
 class CreateCustomObjectRecordAction
 {

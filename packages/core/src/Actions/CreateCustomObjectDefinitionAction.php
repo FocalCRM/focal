@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
+use Illuminate\Support\Str;
 use Odden\Core\Events\CustomObjectDefinitionCreated;
 use Odden\Core\Models\CustomObjectDefinition;
-use Illuminate\Support\Str;
 
 class CreateCustomObjectDefinitionAction
 {

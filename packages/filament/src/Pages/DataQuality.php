@@ -8,6 +8,7 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
 use Odden\Core\Actions\FindDuplicateCompaniesAction;
 use Odden\Core\Actions\FindDuplicateContactsAction;
 use Odden\Core\Actions\MergeCompaniesAction;
@@ -18,7 +19,6 @@ use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
 use Odden\Filament\Resources\CompanyResource;
 use Odden\Filament\Resources\ContactResource;
 use Odden\Filament\Support\OddenAuthorization;
-use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
 /**

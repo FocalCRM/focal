@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Core\Traits;
 
-use Odden\Core\Models\LifecycleStageTransition;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Odden\Core\Models\LifecycleStageTransition;
 
 trait HasLifecycleStageTransitions
 {

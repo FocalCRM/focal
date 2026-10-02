@@ -8,10 +8,10 @@ use BackedEnum;
 use Carbon\Carbon;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
 use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
 use Odden\Filament\Resources\CampaignResource;
 use Odden\Marketing\Models\Campaign;
-use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
 /**

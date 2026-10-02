@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Core\Models\ListMembership;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
 
 class EvaluateActiveListAction
 {

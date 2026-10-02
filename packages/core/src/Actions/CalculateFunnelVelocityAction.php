@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Odden\Core\Actions;
 
 use Carbon\CarbonInterface;
-use Odden\Core\Enums\LifecycleStage;
-use Odden\Core\Models\LifecycleStageTransition;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\LifecycleStageTransition;
 
 class CalculateFunnelVelocityAction
 {

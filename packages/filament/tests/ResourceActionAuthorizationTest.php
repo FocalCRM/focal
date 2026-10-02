@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
@@ -23,8 +25,6 @@ use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\SalesSequence;
 use Odden\Service\Enums\TicketStatus;
 use Odden\Service\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class ResourceActionAuthorizationTest extends TestCase
 {

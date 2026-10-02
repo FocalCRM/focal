@@ -7,6 +7,9 @@ namespace Odden\Filament\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Odden\Core\Enums\CustomerHealthStatus;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Company;
@@ -24,9 +27,6 @@ use Odden\Marketing\Models\Campaign;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\SalesQuota;
 use Odden\Service\Models\Ticket;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Carbon;
 use UnitEnum;
 
 class ExecutiveOverview extends Page

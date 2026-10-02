@@ -8,6 +8,7 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
@@ -25,7 +26,6 @@ use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\FormSubmission;
 use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Models\MarketingWorkflow;
-use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
 class MarketingCockpit extends Page

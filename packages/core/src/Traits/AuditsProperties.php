@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Odden\Core\Traits;
 
 use BackedEnum;
-use Odden\Core\Models\PropertyHistory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Odden\Core\Models\PropertyHistory;
 
 trait AuditsProperties
 {
