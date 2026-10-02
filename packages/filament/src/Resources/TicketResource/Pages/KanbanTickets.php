@@ -9,6 +9,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Focal\Filament\Resources\TicketResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Service\Enums\TicketStatus;
 use Focal\Service\Models\Ticket;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,6 +25,14 @@ class KanbanTickets extends Page
     protected string $view = 'focal-filament::pages.ticket-kanban';
 
     /**
+     * @param  array<string, mixed>  $parameters
+     */
+    public static function canAccess(array $parameters = []): bool
+    {
+        return FocalAuthorization::canViewAny([TicketResource::class]);
+    }
+
+    /**
      * @return array<int, array{status: TicketStatus, tickets: Collection<int, Ticket>}>
      */
     public function getColumnsProperty(): array
@@ -32,7 +41,7 @@ class KanbanTickets extends Page
         $result = [];
 
         foreach ($statuses as $status) {
-            $tickets = Ticket::query()
+            $tickets = FocalAuthorization::query(TicketResource::class, Ticket::class)
                 ->where('status', $status->value)
                 ->with(['contact', 'company', 'owner', 'slaPolicy'])
                 ->orderBy('created_at', 'desc')
@@ -49,8 +58,7 @@ class KanbanTickets extends Page
 
     public function moveTicket(int $ticketId, string $statusValue): void
     {
-        /** @var Ticket $ticket */
-        $ticket = Ticket::findOrFail($ticketId);
+        $ticket = FocalAuthorization::findAndAuthorize(TicketResource::class, Ticket::class, $ticketId, 'update');
 
         $status = TicketStatus::tryFrom($statusValue);
         if ($status === null) {

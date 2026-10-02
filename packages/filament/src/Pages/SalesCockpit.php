@@ -7,16 +7,22 @@ namespace Focal\Filament\Pages;
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Focal\Core\Enums\ActivityStatus;
 use Focal\Core\Enums\ActivityType;
 use Focal\Core\Enums\LeadStatus;
 use Focal\Core\Models\Activity;
+use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Core\Support\UserModel;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CompanyResource;
 use Focal\Filament\Resources\ContactResource;
 use Focal\Filament\Resources\DealResource;
 use Focal\Filament\Resources\QuoteResource;
+use Focal\Filament\Resources\SalesSequenceResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Sales\Enums\CallDisposition;
 use Focal\Sales\Enums\DealStatus;
 use Focal\Sales\Enums\QuoteStatus;
@@ -31,6 +37,8 @@ use UnitEnum;
 
 class SalesCockpit extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 0;
@@ -87,9 +95,22 @@ class SalesCockpit extends Page
 
     public string $meetingNotes = '';
 
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            ContactResource::class,
+            DealResource::class,
+            QuoteResource::class,
+            SalesSequenceResource::class,
+        ];
+    }
+
     public function mount(): void
     {
-        $this->selectedUserId = (int) (auth()->id() ?? 1);
+        $this->selectedUserId = (int) FocalAuthorization::userId();
     }
 
     public function setWorkspaceTab(string $tab): void
@@ -591,18 +612,14 @@ class SalesCockpit extends Page
      */
     public function advanceEnrollment(int $enrollmentId): void
     {
-        /** @var SalesSequenceEnrollment|null $enrollment */
-        $enrollment = SalesSequenceEnrollment::with(['contact', 'sequence'])->find($enrollmentId);
+        /** @var SalesSequenceEnrollment $enrollment */
+        $enrollment = SalesSequenceEnrollment::query()->with('sequence')->findOrFail($enrollmentId);
 
-        if (! $enrollment) {
-            Notification::make()->title('Enrollment not found')->warning()->send();
-
-            return;
-        }
+        $contact = $this->findContactForUpdate($enrollment->contact_id);
+        FocalAuthorization::authorize('update', $enrollment);
 
         $enrollment->advanceStep();
 
-        $contact = $enrollment->contact;
         $contact->markContacted();
         if ($contact->lead_status === LeadStatus::New) {
             $contact->updateQuietly(['lead_status' => LeadStatus::InProgress]);
@@ -620,13 +637,21 @@ class SalesCockpit extends Page
      */
     public function completeActivity(int $activityId): void
     {
-        /** @var Activity|null $activity */
-        $activity = Activity::find($activityId);
+        /** @var Activity $activity */
+        $activity = Activity::query()->findOrFail($activityId);
 
-        if (! $activity) {
-            Notification::make()->title('Task not found')->warning()->send();
+        FocalAuthorization::authorize('update', $activity);
 
-            return;
+        // Completing a task changes the record it belongs to, so that record must be in scope and updatable.
+        $subjectResource = match (true) {
+            $activity->subject instanceof Contact => ContactResource::class,
+            $activity->subject instanceof Company => CompanyResource::class,
+            $activity->subject instanceof Deal => DealResource::class,
+            default => null,
+        };
+
+        if ($subjectResource !== null) {
+            FocalAuthorization::findAndAuthorize($subjectResource, $activity->subject::class, $activity->subject->getKey(), 'update');
         }
 
         $activity->update([
@@ -646,14 +671,7 @@ class SalesCockpit extends Page
      */
     public function logQuickTouch(int $contactId, string $type): void
     {
-        /** @var Contact|null $contact */
-        $contact = Contact::find($contactId);
-
-        if (! $contact) {
-            Notification::make()->title('Contact not found')->warning()->send();
-
-            return;
-        }
+        $contact = $this->findContactForUpdate($contactId);
 
         $activityType = match ($type) {
             'call' => ActivityType::Call,
@@ -686,6 +704,8 @@ class SalesCockpit extends Page
 
     public function openCallModal(int $contactId): void
     {
+        $this->findContactForUpdate($contactId);
+
         $this->callContactId = $contactId;
         $this->callDisposition = 'connected';
         $this->callDurationMinutes = 5;
@@ -708,13 +728,7 @@ class SalesCockpit extends Page
             return;
         }
 
-        /** @var Contact|null $contact */
-        $contact = Contact::find($this->callContactId);
-        if (! $contact) {
-            $this->closeCallModal();
-
-            return;
-        }
+        $contact = $this->findContactForUpdate($this->callContactId);
 
         $disposition = CallDisposition::tryFrom($this->callDisposition) ?? CallDisposition::Connected;
 
@@ -759,6 +773,10 @@ class SalesCockpit extends Page
 
     public function openMeetingModal(?int $contactId = null): void
     {
+        if ($contactId !== null) {
+            $this->findContactForUpdate($contactId);
+        }
+
         $this->meetingContactId = $contactId;
         $this->meetingTitle = 'Discovery & Demo Call';
         $this->meetingDate = Carbon::tomorrow()->toDateString();
@@ -782,23 +800,23 @@ class SalesCockpit extends Page
         }
 
         if ($this->meetingContactId) {
-            /** @var Contact|null $contact */
-            $contact = Contact::find($this->meetingContactId);
-            if ($contact) {
-                $contact->logActivity(
-                    type: ActivityType::Meeting,
-                    title: $this->meetingTitle,
-                    body: $this->meetingNotes,
-                    metadata: ['duration_minutes' => $this->meetingDurationMinutes],
-                    dueAt: $dueAt,
-                    status: ActivityStatus::Pending
-                );
+            $contact = $this->findContactForUpdate($this->meetingContactId);
 
-                if ($contact->lead_status === LeadStatus::New) {
-                    $contact->updateQuietly(['lead_status' => LeadStatus::InProgress]);
-                }
+            $contact->logActivity(
+                type: ActivityType::Meeting,
+                title: $this->meetingTitle,
+                body: $this->meetingNotes,
+                metadata: ['duration_minutes' => $this->meetingDurationMinutes],
+                dueAt: $dueAt,
+                status: ActivityStatus::Pending
+            );
+
+            if ($contact->lead_status === LeadStatus::New) {
+                $contact->updateQuietly(['lead_status' => LeadStatus::InProgress]);
             }
         } else {
+            FocalAuthorization::authorize('create', Activity::class);
+
             Activity::query()->create([
                 'type' => ActivityType::Meeting,
                 'title' => $this->meetingTitle,
@@ -806,7 +824,7 @@ class SalesCockpit extends Page
                 'metadata' => ['duration_minutes' => $this->meetingDurationMinutes],
                 'due_at' => $dueAt,
                 'status' => ActivityStatus::Pending,
-                'creator_id' => auth()->id(),
+                'creator_id' => FocalAuthorization::userId(),
             ]);
         }
 
@@ -817,6 +835,14 @@ class SalesCockpit extends Page
             ->send();
 
         $this->closeMeetingModal();
+    }
+
+    /**
+     * Find a contact within the contact resource's query and authorize `update` on it (404 / 403 otherwise).
+     */
+    protected function findContactForUpdate(int $contactId): Contact
+    {
+        return FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $contactId, 'update');
     }
 
     protected function getInitials(string $name): string

@@ -46,6 +46,8 @@ use Focal\Filament\Resources\RelationManagers\ActivitiesRelationManager;
 use Focal\Filament\Resources\RelationManagers\DealsRelationManager;
 use Focal\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
 use Focal\Filament\Support\CustomPropertyFieldBuilder;
+use Focal\Filament\Support\FocalAuthorization;
+use Focal\Filament\Support\FocalPackages;
 use Focal\Marketing\Models\Campaign;
 use Focal\Sales\Actions\ExecuteSalesPlaybookAction;
 use Focal\Sales\Actions\RouteLeadAction;
@@ -220,6 +222,8 @@ class ContactResource extends Resource
                     ->label('Playbook')
                     ->icon(Heroicon::BookOpen)
                     ->color('primary')
+                    ->visible(fn (): bool => FocalPackages::hasSales())
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->form(function (): array {
                         $playbooks = SalesPlaybook::query()->where('is_active', true)->get();
                         if ($playbooks->isEmpty()) {
@@ -274,7 +278,7 @@ class ContactResource extends Resource
                         $playbook = SalesPlaybook::findOrFail($data['playbook_id']);
                         $answers = isset($data['answers']) && is_array($data['answers']) ? $data['answers'] : [];
 
-                        app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, auth()->id());
+                        app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, FocalAuthorization::userId());
 
                         Notification::make()
                             ->title('Playbook Completed')
@@ -286,6 +290,8 @@ class ContactResource extends Resource
                     ->label('Auto-Route')
                     ->icon(Heroicon::ArrowsRightLeft)
                     ->color('gray')
+                    ->visible(fn (): bool => FocalPackages::hasSales())
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->requiresConfirmation()
                     ->modalHeading('Auto-Route Contact Owner')
                     ->modalDescription('Run active lead routing rules to assign this contact to a sales representative based on criteria, round-robin, or quota attainment.')
@@ -315,6 +321,7 @@ class ContactResource extends Resource
                     ->label('AI Briefing')
                     ->icon(Heroicon::Sparkles)
                     ->color('info')
+                    ->authorize(FocalAuthorization::forRecord('view', self::class))
                     ->modalHeading(fn (Contact $record): string => "Focal Breeze: {$record->full_name}")
                     ->modalDescription('AI timeline and relationship intelligence summary.')
                     ->modalSubmitAction(false)
@@ -326,13 +333,14 @@ class ContactResource extends Resource
                     ->label('Merge')
                     ->icon(Heroicon::ArrowsRightLeft)
                     ->color('warning')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->modalHeading('Merge Duplicate Contact')
                     ->modalDescription('Merge another duplicate contact into this record. All activities, deals, tickets, and associations will be reparented and preserved.')
                     ->form([
                         Select::make('secondary_contact_id')
                             ->label('Select Duplicate Contact to Merge into This Record')
-                            ->options(fn (Contact $record): array => Contact::query()
-                                ->where('id', '!=', $record->id)
+                            ->options(fn (Contact $record): array => FocalAuthorization::query(self::class, Contact::class)
+                                ->whereKeyNot($record->getKey())
                                 ->orderBy('last_name')
                                 ->limit(50)
                                 ->get()
@@ -342,17 +350,17 @@ class ContactResource extends Resource
                             ->required(),
                     ])
                     ->action(function (Contact $record, array $data): void {
-                        /** @var Contact|null $secondary */
-                        $secondary = Contact::query()->find($data['secondary_contact_id']);
-                        if ($secondary !== null) {
-                            app(MergeContactsAction::class)->execute($record, $secondary);
+                        // The duplicate is deleted by the merge, so it needs `delete` as well.
+                        $secondary = FocalAuthorization::findAndAuthorize(self::class, Contact::class, $data['secondary_contact_id'], 'delete');
+                        abort_if($secondary->is($record), 422);
 
-                            Notification::make()
-                                ->title('Contacts Merged')
-                                ->body("Merged duplicate {$secondary->email} into this record.")
-                                ->success()
-                                ->send();
-                        }
+                        app(MergeContactsAction::class)->execute($record, $secondary);
+
+                        Notification::make()
+                            ->title('Contacts Merged')
+                            ->body("Merged duplicate {$secondary->email} into this record.")
+                            ->success()
+                            ->send();
                     }),
                 ViewAction::make(),
                 EditAction::make(),

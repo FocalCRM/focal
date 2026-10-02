@@ -18,11 +18,14 @@ use Filament\Support\SupportServiceProvider;
 use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\WidgetsServiceProvider;
 use Focal\Core\CoreServiceProvider;
+use Focal\Filament\Support\FocalPackages;
 use Focal\Filament\Tests\Fixtures\AdminPanelProvider;
+use Focal\Filament\Tests\Fixtures\ConfigurablePolicy;
 use Focal\Filament\Tests\Fixtures\User;
 use Focal\Marketing\MarketingServiceProvider;
 use Focal\Sales\SalesServiceProvider;
 use Focal\Service\ServiceHubServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use Kirschbaum\PowerJoins\PowerJoinsServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -33,6 +36,29 @@ use function Orchestra\Testbench\default_migration_path;
 
 abstract class TestCase extends Orchestra
 {
+    protected function tearDown(): void
+    {
+        ConfigurablePolicy::$denied = [];
+        FocalPackages::reset();
+
+        parent::tearDown();
+    }
+
+    /**
+     * Register a policy for the given models that denies the given abilities and allows the rest.
+     *
+     * @param  list<class-string>  $models
+     * @param  list<string>  $abilities
+     */
+    protected function denyAbilities(array $models, array $abilities): void
+    {
+        ConfigurablePolicy::$denied = $abilities;
+
+        foreach ($models as $model) {
+            Gate::policy($model, ConfigurablePolicy::class);
+        }
+    }
+
     /**
      * Boots the full Focal stack and Filament, with a fixture admin panel.
      *

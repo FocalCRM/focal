@@ -29,6 +29,7 @@ use Focal\Filament\Resources\TicketResource\Pages\EditTicket;
 use Focal\Filament\Resources\TicketResource\Pages\KanbanTickets;
 use Focal\Filament\Resources\TicketResource\Pages\ListTickets;
 use Focal\Filament\Resources\TicketResource\RelationManagers\MessagesRelationManager;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Service\Actions\MergeTicketsAction;
 use Focal\Service\Actions\ResolveTicketAction;
 use Focal\Service\Actions\RouteTicketAction;
@@ -194,6 +195,7 @@ class TicketResource extends Resource
                     ->icon('heroicon-m-check-circle')
                     ->color('success')
                     ->visible(fn (Ticket $record): bool => ! $record->status->isClosed())
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->form([
                         Textarea::make('resolution_note')
                             ->label('Resolution Summary Note')
@@ -208,12 +210,13 @@ class TicketResource extends Resource
                     ->icon('heroicon-m-arrows-pointing-in')
                     ->color('gray')
                     ->visible(fn (Ticket $record): bool => ! $record->status->isClosed() && $record->merged_into_ticket_id === null)
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->form([
                         Select::make('primary_ticket_id')
                             ->label('Primary Ticket (Destination)')
                             ->helperText('Select the destination ticket to merge this ticket into.')
-                            ->options(fn (Ticket $record): array => Ticket::query()
-                                ->where('id', '!=', $record->id)
+                            ->options(fn (Ticket $record): array => FocalAuthorization::query(self::class, Ticket::class)
+                                ->whereKeyNot($record->getKey())
                                 ->whereNull('merged_into_ticket_id')
                                 ->where('status', '!=', TicketStatus::Closed->value)
                                 ->latest()
@@ -232,10 +235,11 @@ class TicketResource extends Resource
                     ->modalHeading('Merge Duplicate Ticket')
                     ->modalDescription('This action will transfer all conversation messages to the primary ticket and close this ticket.')
                     ->action(function (Ticket $record, array $data): void {
-                        /** @var Ticket $primaryTicket */
-                        $primaryTicket = Ticket::query()->findOrFail((int) $data['primary_ticket_id']);
+                        // The destination ticket receives this ticket's messages, so it needs `update` as well.
+                        $primaryTicket = FocalAuthorization::findAndAuthorize(self::class, Ticket::class, (int) $data['primary_ticket_id'], 'update');
+                        abort_if($primaryTicket->is($record), 422);
                         $reason = ! empty($data['merge_reason']) ? (string) $data['merge_reason'] : null;
-                        $userId = auth()->id() !== null ? (int) auth()->id() : null;
+                        $userId = (int) FocalAuthorization::userId();
                         app(MergeTicketsAction::class)->execute($primaryTicket, $record, $reason, $userId);
                     }),
                 Action::make('portalLink')
@@ -249,6 +253,7 @@ class TicketResource extends Resource
                     ->icon('heroicon-m-arrows-right-left')
                     ->color('gray')
                     ->requiresConfirmation()
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->modalHeading('Auto-Route Ticket Agent')
                     ->modalDescription('Run active ticket routing rules to assign this ticket to an available agent based on channel, priority, and keywords.')
                     ->action(function (Ticket $record): void {

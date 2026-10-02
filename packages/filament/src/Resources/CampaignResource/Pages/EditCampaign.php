@@ -13,6 +13,8 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Resources\CampaignResource;
+use Focal\Filament\Resources\ContactResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\SendCampaignProofAction;
 use Focal\Marketing\Enums\CampaignStatus;
 use Focal\Marketing\Models\Campaign;
@@ -26,6 +28,7 @@ class EditCampaign extends EditRecord
         return [
             Action::make('sendTestEmail')
                 ->label('Send Test')
+                ->authorize(FocalAuthorization::forRecord('update', CampaignResource::class))
                 ->icon(Heroicon::PaperAirplane)
                 ->color('info')
                 ->modalHeading('Send Proof / Test Email')
@@ -39,7 +42,7 @@ class EditCampaign extends EditRecord
                         ->required(),
                     Select::make('sample_contact_id')
                         ->label('Simulate Merge Tags As Contact (Optional)')
-                        ->options(fn (): array => Contact::query()->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
+                        ->options(fn (): array => FocalAuthorization::query(ContactResource::class, Contact::class)->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
                             $contact = Contact::find($id);
 
                             return "{$name} {$contact?->last_name} ({$contact?->email})";
@@ -51,7 +54,7 @@ class EditCampaign extends EditRecord
                     /** @var Campaign $campaign */
                     $campaign = $this->getRecord();
                     /** @var Contact|null $sampleContact */
-                    $sampleContact = ! empty($data['sample_contact_id']) ? Contact::find($data['sample_contact_id']) : null;
+                    $sampleContact = ! empty($data['sample_contact_id']) ? FocalAuthorization::query(ContactResource::class, Contact::class)->find($data['sample_contact_id']) : null;
                     $result = app(SendCampaignProofAction::class)->execute($campaign, (string) $data['recipient_emails'], $sampleContact);
 
                     if ($result['success']) {
@@ -70,6 +73,7 @@ class EditCampaign extends EditRecord
                 }),
             Action::make('duplicate')
                 ->label('Duplicate')
+                ->authorize(fn (): bool => FocalAuthorization::allows('create', Campaign::class, CampaignResource::class))
                 ->icon(Heroicon::DocumentDuplicate)
                 ->color('gray')
                 ->requiresConfirmation()

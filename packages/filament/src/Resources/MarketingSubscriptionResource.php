@@ -24,6 +24,7 @@ use Filament\Tables\Table;
 use Focal\Core\Models\Contact;
 use Focal\Filament\Resources\MarketingSubscriptionResource\Pages\CreateMarketingSubscription;
 use Focal\Filament\Resources\MarketingSubscriptionResource\Pages\ListMarketingSubscriptions;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Enums\SubscriptionStatus;
 use Focal\Marketing\Models\EmailSuppression;
 use Focal\Marketing\Models\MarketingSubscription;
@@ -114,6 +115,7 @@ class MarketingSubscriptionResource extends Resource
                     ->icon(Heroicon::CheckCircle)
                     ->color('success')
                     ->visible(fn (MarketingSubscription $record): bool => $record->status !== SubscriptionStatus::Subscribed)
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->requiresConfirmation()
                     ->modalHeading('Lift Suppression')
                     ->modalDescription('Are you sure you want to lift this suppression and allow marketing communications to this address?')
@@ -136,6 +138,7 @@ class MarketingSubscriptionResource extends Resource
                     ->icon(Heroicon::NoSymbol)
                     ->color('danger')
                     ->visible(fn (MarketingSubscription $record): bool => $record->status === SubscriptionStatus::Subscribed)
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->requiresConfirmation()
                     ->action(function (MarketingSubscription $record): void {
                         $record->update([

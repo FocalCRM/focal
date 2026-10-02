@@ -8,6 +8,8 @@ use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Focal\Core\Support\UserModel;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\TicketResource;
 use Focal\Service\Enums\TicketPriority;
 use Focal\Service\Enums\TicketSource;
 use Focal\Service\Enums\TicketStatus;
@@ -18,6 +20,8 @@ use UnitEnum;
 
 class ServiceAnalytics extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Service';
 
     protected static ?int $navigationSort = 6;
@@ -31,6 +35,16 @@ class ServiceAnalytics extends Page
     protected string $view = 'focal-filament::pages.service-analytics';
 
     public string $dateRange = '30_days';
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            TicketResource::class,
+        ];
+    }
 
     public function setDateRange(string $range): void
     {

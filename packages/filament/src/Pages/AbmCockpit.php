@@ -9,12 +9,17 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Focal\Core\Models\Company;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CompanyResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
 class AbmCockpit extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Marketing';
 
     protected static ?int $navigationSort = 1;
@@ -28,6 +33,16 @@ class AbmCockpit extends Page
     protected string $view = 'focal-filament::pages.abm-cockpit';
 
     public string $activeTier = 'all';
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            CompanyResource::class,
+        ];
+    }
 
     public function setTier(string $tier): void
     {
@@ -107,10 +122,17 @@ class AbmCockpit extends Page
     public function recalculateAll(CalculateCompanyIntentScoreAction $action): void
     {
         /** @var Collection<int, Company> $accounts */
-        $accounts = Company::query()
-            ->whereNotNull('account_tier')
-            ->orWhere('intent_surge', true)
+        $accounts = FocalAuthorization::query(CompanyResource::class, Company::class)
+            ->where(function ($query): void {
+                $query->whereNotNull('account_tier')
+                    ->orWhere('intent_surge', true);
+            })
             ->get();
+
+        // All-or-nothing: the bulk recalculation needs `update` on every account it touches.
+        foreach ($accounts as $account) {
+            FocalAuthorization::authorize('update', $account, CompanyResource::class);
+        }
 
         foreach ($accounts as $account) {
             $action->execute($account);
@@ -125,14 +147,7 @@ class AbmCockpit extends Page
 
     public function recalculateCompany(int $companyId, CalculateCompanyIntentScoreAction $action): void
     {
-        /** @var Company|null $company */
-        $company = Company::query()->find($companyId);
-
-        if ($company === null) {
-            Notification::make()->title('Account not found')->danger()->send();
-
-            return;
-        }
+        $company = FocalAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $companyId, 'update');
 
         $updated = $action->execute($company);
 

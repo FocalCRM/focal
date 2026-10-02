@@ -14,6 +14,10 @@ use Focal\Core\Actions\MergeCompaniesAction;
 use Focal\Core\Actions\MergeContactsAction;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CompanyResource;
+use Focal\Filament\Resources\ContactResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
@@ -26,6 +30,8 @@ use UnitEnum;
  */
 class DataQuality extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'CRM';
 
     protected static ?int $navigationSort = 10;
@@ -39,6 +45,17 @@ class DataQuality extends Page
     protected string $view = 'focal-filament::pages.data-quality';
 
     public string $activeTab = 'contacts';
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            ContactResource::class,
+            CompanyResource::class,
+        ];
+    }
 
     public function setActiveTab(string $tab): void
     {
@@ -87,18 +104,15 @@ class DataQuality extends Page
         return round(max(0.0, min(100.0, $score)), 1);
     }
 
+    /**
+     * Merge the secondary contact into the primary. Requires `update` on the primary and `delete` on the secondary.
+     */
     public function mergeContacts(int $primaryId, int $secondaryId): void
     {
-        /** @var Contact|null $primary */
-        $primary = Contact::query()->find($primaryId);
-        /** @var Contact|null $secondary */
-        $secondary = Contact::query()->find($secondaryId);
+        abort_if($primaryId === $secondaryId, 422);
 
-        if ($primary === null || $secondary === null) {
-            Notification::make()->title('Merge Failed')->body('One or more contacts could not be found.')->danger()->send();
-
-            return;
-        }
+        $primary = FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $primaryId, 'update');
+        $secondary = FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $secondaryId, 'delete');
 
         app(MergeContactsAction::class)->execute($primary, $secondary);
 
@@ -109,18 +123,15 @@ class DataQuality extends Page
             ->send();
     }
 
+    /**
+     * Merge the secondary company into the primary. Requires `update` on the primary and `delete` on the secondary.
+     */
     public function mergeCompanies(int $primaryId, int $secondaryId): void
     {
-        /** @var Company|null $primary */
-        $primary = Company::query()->find($primaryId);
-        /** @var Company|null $secondary */
-        $secondary = Company::query()->find($secondaryId);
+        abort_if($primaryId === $secondaryId, 422);
 
-        if ($primary === null || $secondary === null) {
-            Notification::make()->title('Merge Failed')->body('One or more companies could not be found.')->danger()->send();
-
-            return;
-        }
+        $primary = FocalAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $primaryId, 'update');
+        $secondary = FocalAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $secondaryId, 'delete');
 
         app(MergeCompaniesAction::class)->execute($primary, $secondary);
 

@@ -37,6 +37,7 @@ use Focal\Filament\Resources\RelationManagers\ActivitiesRelationManager;
 use Focal\Filament\Resources\RelationManagers\DealsRelationManager;
 use Focal\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
 use Focal\Filament\Support\CustomPropertyFieldBuilder;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
 use Focal\Sales\Models\Deal;
 use Illuminate\Database\Eloquent\Builder;
@@ -164,6 +165,7 @@ class CompanyResource extends Resource
                     ->icon(Heroicon::Heart)
                     ->color('success')
                     ->visible(fn (): bool => class_exists(CalculateCustomerHealthScoreAction::class))
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->action(function (Company $record): void {
                         app(CalculateCustomerHealthScoreAction::class)->execute($record);
 
@@ -178,6 +180,7 @@ class CompanyResource extends Resource
                     ->icon(Heroicon::Bolt)
                     ->color('warning')
                     ->visible(fn (): bool => class_exists(CalculateCompanyIntentScoreAction::class))
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->action(function (Company $record): void {
                         app(CalculateCompanyIntentScoreAction::class)->execute($record);
 
@@ -191,6 +194,7 @@ class CompanyResource extends Resource
                     ->label('AI Briefing')
                     ->icon(Heroicon::Sparkles)
                     ->color('info')
+                    ->authorize(FocalAuthorization::forRecord('view', self::class))
                     ->modalHeading(fn (Company $record): string => "Focal Breeze: {$record->name}")
                     ->modalDescription('AI timeline and relationship intelligence summary.')
                     ->modalSubmitAction(false)
@@ -202,13 +206,14 @@ class CompanyResource extends Resource
                     ->label('Merge')
                     ->icon(Heroicon::ArrowsRightLeft)
                     ->color('warning')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->modalHeading('Merge Duplicate Company')
                     ->modalDescription('Merge another duplicate company into this record. All contacts, activities, and tickets will be reparented and preserved.')
                     ->form([
                         Select::make('secondary_company_id')
                             ->label('Select Duplicate Company to Merge into This Record')
-                            ->options(fn (Company $record): array => Company::query()
-                                ->where('id', '!=', $record->id)
+                            ->options(fn (Company $record): array => FocalAuthorization::query(self::class, Company::class)
+                                ->whereKeyNot($record->getKey())
                                 ->orderBy('name')
                                 ->limit(50)
                                 ->get()
@@ -218,17 +223,17 @@ class CompanyResource extends Resource
                             ->required(),
                     ])
                     ->action(function (Company $record, array $data): void {
-                        /** @var Company|null $secondary */
-                        $secondary = Company::query()->find($data['secondary_company_id']);
-                        if ($secondary !== null) {
-                            app(MergeCompaniesAction::class)->execute($record, $secondary);
+                        // The duplicate is deleted by the merge, so it needs `delete` as well.
+                        $secondary = FocalAuthorization::findAndAuthorize(self::class, Company::class, $data['secondary_company_id'], 'delete');
+                        abort_if($secondary->is($record), 422);
 
-                            Notification::make()
-                                ->title('Companies Merged')
-                                ->body("Merged duplicate {$secondary->name} into this record.")
-                                ->success()
-                                ->send();
-                        }
+                        app(MergeCompaniesAction::class)->execute($record, $secondary);
+
+                        Notification::make()
+                            ->title('Companies Merged')
+                            ->body("Merged duplicate {$secondary->name} into this record.")
+                            ->success()
+                            ->send();
                     }),
                 ViewAction::make(),
                 EditAction::make(),

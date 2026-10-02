@@ -14,6 +14,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Focal\Filament\Resources\MarketingTemplateResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
@@ -39,6 +40,7 @@ class EditMarketingTemplate extends EditRecord
                 ])),
 
             Action::make('sendTest')
+                ->authorize(FocalAuthorization::forRecord('update', MarketingTemplateResource::class))
                 ->label('Send Test Email')
                 ->icon(Heroicon::PaperAirplane)
                 ->color('success')

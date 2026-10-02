@@ -8,6 +8,8 @@ use BackedEnum;
 use Carbon\Carbon;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CampaignResource;
 use Focal\Marketing\Models\Campaign;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
@@ -18,6 +20,8 @@ use UnitEnum;
  */
 class MarketingCalendar extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Marketing';
 
     protected static ?int $navigationSort = 3;
@@ -33,6 +37,16 @@ class MarketingCalendar extends Page
     public int $year;
 
     public int $month;
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            CampaignResource::class,
+        ];
+    }
 
     public function mount(): void
     {

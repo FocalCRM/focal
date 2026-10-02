@@ -7,6 +7,9 @@ namespace Focal\Filament\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CampaignResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\GetCampaignAttributionAction;
 use Focal\Marketing\Enums\AttributionModel;
 use Focal\Marketing\Models\Campaign;
@@ -20,6 +23,8 @@ use UnitEnum;
  */
 class CampaignBenchmarking extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Marketing';
 
     protected static ?int $navigationSort = 2;
@@ -37,10 +42,20 @@ class CampaignBenchmarking extends Page
      */
     public array $selectedCampaignIds = [];
 
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            CampaignResource::class,
+        ];
+    }
+
     public function mount(): void
     {
         /** @var list<int> $recentIds */
-        $recentIds = Campaign::query()
+        $recentIds = FocalAuthorization::query(CampaignResource::class, Campaign::class)
             ->where('delivered_count', '>', 0)
             ->orderBy('sent_at', 'desc')
             ->take(4)
@@ -50,7 +65,7 @@ class CampaignBenchmarking extends Page
 
         if (empty($recentIds)) {
             /** @var list<int> $recentIds */
-            $recentIds = Campaign::query()->orderBy('created_at', 'desc')->take(3)->pluck('id')->map(fn ($id): int => (int) $id)->all();
+            $recentIds = FocalAuthorization::query(CampaignResource::class, Campaign::class)->orderBy('created_at', 'desc')->take(3)->pluck('id')->map(fn ($id): int => (int) $id)->all();
         }
 
         $this->selectedCampaignIds = $recentIds;
@@ -61,7 +76,7 @@ class CampaignBenchmarking extends Page
      */
     public function getAvailableCampaignsProperty(): Collection
     {
-        return Campaign::query()->orderBy('created_at', 'desc')->get();
+        return FocalAuthorization::query(CampaignResource::class, Campaign::class)->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -73,7 +88,7 @@ class CampaignBenchmarking extends Page
             return [];
         }
 
-        $campaigns = Campaign::query()
+        $campaigns = FocalAuthorization::query(CampaignResource::class, Campaign::class)
             ->whereIn('id', $this->selectedCampaignIds)
             ->get();
 

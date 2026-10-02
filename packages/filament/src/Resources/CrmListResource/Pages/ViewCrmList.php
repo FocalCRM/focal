@@ -12,6 +12,7 @@ use Filament\Support\Icons\Heroicon;
 use Focal\Core\Enums\ListType;
 use Focal\Core\Models\CrmList;
 use Focal\Filament\Resources\CrmListResource;
+use Focal\Filament\Support\FocalAuthorization;
 
 class ViewCrmList extends ViewRecord
 {
@@ -25,6 +26,7 @@ class ViewCrmList extends ViewRecord
                 ->icon(Heroicon::ArrowPath)
                 ->color('primary')
                 ->visible(fn (): bool => $this->getRecord() instanceof CrmList && $this->getRecord()->type === ListType::Active)
+                ->authorize(FocalAuthorization::forRecord('update', CrmListResource::class))
                 ->action(function (): void {
                     /** @var CrmList $record */
                     $record = $this->getRecord();

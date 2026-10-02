@@ -31,6 +31,7 @@ use Filament\Tables\Table;
 use Focal\Filament\Resources\MarketingTemplateResource\Pages\CreateMarketingTemplate;
 use Focal\Filament\Resources\MarketingTemplateResource\Pages\EditMarketingTemplate;
 use Focal\Filament\Resources\MarketingTemplateResource\Pages\ListMarketingTemplates;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\EvaluateTemplateAbTestsAction;
 use Focal\Marketing\Actions\GenerateAiSubjectLinesAction;
 use Focal\Marketing\Models\MarketingSavedBlock;
@@ -406,6 +407,7 @@ class MarketingTemplateResource extends Resource
                         'template' => $record,
                     ])),
                 Action::make('sendTest')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->label('Send Test')
                     ->icon(Heroicon::PaperAirplane)
                     ->color('success')
@@ -438,6 +440,7 @@ class MarketingTemplateResource extends Resource
                             ->send();
                     }),
                 Action::make('applyModularPreset')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->label('Apply Layout Preset')
                     ->icon(Heroicon::Squares2x2)
                     ->color('gray')
@@ -496,6 +499,7 @@ class MarketingTemplateResource extends Resource
                     ->icon(Heroicon::Trophy)
                     ->color('warning')
                     ->visible(fn (MarketingTemplate $record): bool => $record->hasAbTest())
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->action(function (MarketingTemplate $record): void {
                         $action = app(EvaluateTemplateAbTestsAction::class);
                         $result = $action->execute($record);

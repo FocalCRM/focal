@@ -42,6 +42,7 @@ use Focal\Filament\Resources\DealResource\RelationManagers\StageHistoryRelationM
 use Focal\Filament\Resources\RelationManagers\ActivitiesRelationManager;
 use Focal\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
 use Focal\Filament\Support\CustomPropertyFieldBuilder;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Sales\Actions\ExecuteSalesPlaybookAction;
 use Focal\Sales\Actions\RouteLeadAction;
 use Focal\Sales\Enums\DealStatus;
@@ -237,6 +238,7 @@ class DealResource extends Resource
             ->recordActions([
                 Action::make('run_playbook')
                     ->label('Playbook')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::BookOpen)
                     ->color('primary')
                     ->form(function (): array {
@@ -293,7 +295,7 @@ class DealResource extends Resource
                         $playbook = SalesPlaybook::findOrFail($data['playbook_id']);
                         $answers = isset($data['answers']) && is_array($data['answers']) ? $data['answers'] : [];
 
-                        app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, auth()->id());
+                        app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, FocalAuthorization::userId());
 
                         Notification::make()
                             ->title('Playbook Completed')
@@ -303,6 +305,7 @@ class DealResource extends Resource
                     }),
                 Action::make('route_lead')
                     ->label('Auto-Route')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::ArrowsRightLeft)
                     ->color('gray')
                     ->requiresConfirmation()

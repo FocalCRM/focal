@@ -65,4 +65,28 @@ class AssociationTest extends TestCase
         $this->assertFalse($contact->isAssociatedWith($company));
         $this->assertCount(0, $contact->companies);
     }
+
+    public function test_association_checks_only_match_the_two_records(): void
+    {
+        $contact = Contact::factory()->create();
+        $otherContact = Contact::factory()->create();
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+
+        // Unrelated associations that share one side with the records being checked.
+        $otherContact->associateWith($company);
+        $contact->associateWith($otherCompany);
+
+        $this->assertFalse($contact->isAssociatedWith($company));
+        $this->assertFalse($company->isAssociatedWith($contact));
+
+        $this->assertSame(0, $contact->dissociateFrom($company));
+        $this->assertTrue($otherContact->isAssociatedWith($company));
+        $this->assertTrue($contact->isAssociatedWith($otherCompany));
+
+        $contact->associateWith($company);
+        $this->assertSame(1, $company->dissociateFrom($contact));
+        $this->assertTrue($otherContact->isAssociatedWith($company));
+        $this->assertTrue($contact->isAssociatedWith($otherCompany));
+    }
 }

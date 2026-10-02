@@ -7,6 +7,8 @@ namespace Focal\Filament\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CampaignResource;
 use Focal\Marketing\Actions\GetCampaignAttributionAction;
 use Focal\Marketing\Enums\AttributionModel;
 use Focal\Marketing\Models\Campaign;
@@ -25,6 +27,8 @@ use UnitEnum;
  */
 class MarketingAttribution extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Marketing';
 
     protected static ?int $navigationSort = 1;
@@ -38,6 +42,16 @@ class MarketingAttribution extends Page
     protected string $view = 'focal-filament::pages.marketing-attribution';
 
     public string $selectedModel = 'first_touch';
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            CampaignResource::class,
+        ];
+    }
 
     /**
      * @return array<int, array<string, mixed>>

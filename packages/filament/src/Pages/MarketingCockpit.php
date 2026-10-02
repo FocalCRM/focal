@@ -10,6 +10,12 @@ use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Contact;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CampaignResource;
+use Focal\Filament\Resources\ContactResource;
+use Focal\Filament\Resources\MarketingFormResource;
+use Focal\Filament\Resources\MarketingWorkflowResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\AnalyzeConversionFunnelAction;
 use Focal\Marketing\Actions\CalculateClosedLoopMetricsAction;
 use Focal\Marketing\Actions\DispatchCampaignAction;
@@ -23,6 +29,8 @@ use UnitEnum;
 
 class MarketingCockpit extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Marketing';
 
     protected static ?int $navigationSort = 0;
@@ -34,6 +42,19 @@ class MarketingCockpit extends Page
     protected static ?string $title = 'Marketing Campaigns & Lead Acquisition';
 
     protected string $view = 'focal-filament::pages.marketing-cockpit';
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            CampaignResource::class,
+            MarketingFormResource::class,
+            MarketingWorkflowResource::class,
+            ContactResource::class,
+        ];
+    }
 
     public function getTotalCampaignsCountProperty(): int
     {
@@ -180,14 +201,7 @@ class MarketingCockpit extends Page
 
     public function sendCampaignNow(int $campaignId): void
     {
-        /** @var Campaign|null $campaign */
-        $campaign = Campaign::query()->find($campaignId);
-
-        if ($campaign === null) {
-            Notification::make()->title('Campaign not found')->danger()->send();
-
-            return;
-        }
+        $campaign = FocalAuthorization::findAndAuthorize(CampaignResource::class, Campaign::class, $campaignId, 'update');
 
         $results = (new DispatchCampaignAction)->execute($campaign);
 

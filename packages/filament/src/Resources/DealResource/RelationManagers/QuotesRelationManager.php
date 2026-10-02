@@ -18,6 +18,9 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Focal\Filament\Resources\DealResource;
+use Focal\Filament\Resources\QuoteResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Sales\Actions\GenerateQuoteFromDealAction;
 use Focal\Sales\Enums\QuoteStatus;
 use Focal\Sales\Models\Deal;
@@ -110,6 +113,7 @@ class QuotesRelationManager extends RelationManager
             ->headerActions([
                 Action::make('generateFromDeal')
                     ->label('Generate from Products')
+                    ->authorize(fn (): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), DealResource::class))
                     ->icon(Heroicon::DocumentPlus)
                     ->color('primary')
                     ->action(function (): void {
@@ -137,6 +141,8 @@ class QuotesRelationManager extends RelationManager
                     ->icon(Heroicon::CheckBadge)
                     ->color('success')
                     ->visible(fn (Quote $record): bool => ! $record->status->isAccepted())
+                    ->authorize(fn (Quote $record): bool => FocalAuthorization::allows('update', $record, QuoteResource::class)
+                        && FocalAuthorization::allows('update', $this->getOwnerRecord(), DealResource::class))
                     ->schema([
                         TextInput::make('signed_by_name')
                             ->label('Signer Full Name')

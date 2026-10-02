@@ -7,6 +7,10 @@ namespace Focal\Filament\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CampaignResource;
+use Focal\Filament\Resources\LandingPageResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\LandingPage;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,6 +19,8 @@ use UnitEnum;
 
 class UtmLinkBuilder extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Marketing';
 
     protected static ?int $navigationSort = 9;
@@ -43,6 +49,17 @@ class UtmLinkBuilder extends Page
 
     public string $utmContent = '';
 
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            CampaignResource::class,
+            LandingPageResource::class,
+        ];
+    }
+
     public function mount(): void
     {
         $this->baseUrl = url('/');
@@ -52,7 +69,7 @@ class UtmLinkBuilder extends Page
     {
         if ($id !== null) {
             /** @var LandingPage|null $lp */
-            $lp = LandingPage::find($id);
+            $lp = FocalAuthorization::query(LandingPageResource::class, LandingPage::class)->find($id);
             if ($lp !== null) {
                 $this->baseUrl = $lp->getPublicUrl();
             }
@@ -63,7 +80,7 @@ class UtmLinkBuilder extends Page
     {
         if ($id !== null) {
             /** @var Campaign|null $campaign */
-            $campaign = Campaign::find($id);
+            $campaign = FocalAuthorization::query(CampaignResource::class, Campaign::class)->find($id);
             if ($campaign !== null) {
                 $this->customCampaign = Str::slug($campaign->name);
             }
@@ -115,7 +132,7 @@ class UtmLinkBuilder extends Page
      */
     public function getLandingPagesProperty(): Collection
     {
-        return LandingPage::query()->where('is_published', true)->get();
+        return FocalAuthorization::query(LandingPageResource::class, LandingPage::class)->where('is_published', true)->get();
     }
 
     /**
@@ -123,6 +140,6 @@ class UtmLinkBuilder extends Page
      */
     public function getCampaignsProperty(): Collection
     {
-        return Campaign::query()->orderBy('created_at', 'desc')->take(20)->get();
+        return FocalAuthorization::query(CampaignResource::class, Campaign::class)->orderBy('created_at', 'desc')->take(20)->get();
     }
 }

@@ -50,26 +50,7 @@ trait HasAssociations
      */
     public function dissociateFrom(Model $record, ?string $type = null): int
     {
-        $query = Association::query()
-            ->where(function (Builder $q) use ($record): void {
-                $q->where([
-                    'parent_type' => $this->getMorphClass(),
-                    'parent_id' => $this->getKey(),
-                    'child_type' => $record->getMorphClass(),
-                    'child_id' => $record->getKey(),
-                ])->orWhere([
-                    'parent_type' => $record->getMorphClass(),
-                    'parent_id' => $record->getKey(),
-                    'child_type' => $this->getMorphClass(),
-                    'child_id' => $this->getKey(),
-                ]);
-            });
-
-        if ($type !== null) {
-            $query->where('type', $type);
-        }
-
-        return $query->delete();
+        return $this->associationsWith($record, $type)->delete();
     }
 
     /**
@@ -77,26 +58,30 @@ trait HasAssociations
      */
     public function isAssociatedWith(Model $record, ?string $type = null): bool
     {
-        $query = Association::query()
-            ->where(function (Builder $q) use ($record): void {
-                $q->where([
-                    'parent_type' => $this->getMorphClass(),
-                    'parent_id' => $this->getKey(),
-                    'child_type' => $record->getMorphClass(),
-                    'child_id' => $record->getKey(),
-                ])->orWhere([
-                    'parent_type' => $record->getMorphClass(),
-                    'parent_id' => $record->getKey(),
-                    'child_type' => $this->getMorphClass(),
-                    'child_id' => $this->getKey(),
-                ]);
-            });
+        return $this->associationsWith($record, $type)->exists();
+    }
 
-        if ($type !== null) {
-            $query->where('type', $type);
-        }
-
-        return $query->exists();
+    /**
+     * Associations between this model and $record, in either direction.
+     *
+     * @return Builder<Association>
+     */
+    protected function associationsWith(Model $record, ?string $type = null): Builder
+    {
+        return Association::query()
+            ->where(function (Builder $query) use ($record): void {
+                $query->where(fn (Builder $direction) => $direction
+                    ->where('parent_type', $this->getMorphClass())
+                    ->where('parent_id', $this->getKey())
+                    ->where('child_type', $record->getMorphClass())
+                    ->where('child_id', $record->getKey()))
+                    ->orWhere(fn (Builder $direction) => $direction
+                        ->where('parent_type', $record->getMorphClass())
+                        ->where('parent_id', $record->getKey())
+                        ->where('child_type', $this->getMorphClass())
+                        ->where('child_id', $this->getKey()));
+            })
+            ->when($type !== null, fn (Builder $query) => $query->where('type', $type));
     }
 
     /**

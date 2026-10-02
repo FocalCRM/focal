@@ -14,6 +14,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Focal\Core\Models\Contact;
+use Focal\Filament\Resources\ContactResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Sales\Actions\EnrollContactInSequenceAction;
 use Focal\Sales\Models\SalesSequence;
 use Focal\Sales\Models\SalesSequenceEnrollment;
@@ -81,6 +83,7 @@ class SalesSequenceEnrollmentsRelationManager extends RelationManager
             ->headerActions([
                 Action::make('enrollInCadence')
                     ->label('Enroll in Cadence')
+                    ->authorize(fn (): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), ContactResource::class))
                     ->icon(Heroicon::UserPlus)
                     ->color('primary')
                     ->form([
@@ -111,6 +114,8 @@ class SalesSequenceEnrollmentsRelationManager extends RelationManager
                     ->icon(Heroicon::Forward)
                     ->color('info')
                     ->visible(fn (SalesSequenceEnrollment $record): bool => $record->status === 'active')
+                    ->authorize(fn (SalesSequenceEnrollment $record): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), ContactResource::class)
+                        && FocalAuthorization::allows('update', $record))
                     ->action(function (SalesSequenceEnrollment $record): void {
                         $record->advanceStep();
 
@@ -126,6 +131,8 @@ class SalesSequenceEnrollmentsRelationManager extends RelationManager
                     ->icon(Heroicon::XMark)
                     ->color('danger')
                     ->visible(fn (SalesSequenceEnrollment $record): bool => $record->status === 'active')
+                    ->authorize(fn (SalesSequenceEnrollment $record): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), ContactResource::class)
+                        && FocalAuthorization::allows('update', $record))
                     ->requiresConfirmation()
                     ->modalHeading('Unenroll from Cadence')
                     ->modalDescription('Stop all scheduled outbound emails and tasks for this contact in this cadence.')

@@ -26,6 +26,7 @@ use Focal\Core\Models\CrmList;
 use Focal\Filament\Resources\CampaignResource\Pages\CreateCampaign;
 use Focal\Filament\Resources\CampaignResource\Pages\EditCampaign;
 use Focal\Filament\Resources\CampaignResource\Pages\ListCampaigns;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\AuditCampaignDeliverabilityAction;
 use Focal\Marketing\Actions\DispatchCampaignAction;
 use Focal\Marketing\Actions\EvaluateAbTestWinnerAction;
@@ -260,6 +261,7 @@ class CampaignResource extends Resource
             ->actions([
                 Action::make('preview')
                     ->label('Preview')
+                    ->authorize(FocalAuthorization::forRecord('view', self::class))
                     ->icon(Heroicon::Eye)
                     ->color('info')
                     ->modalHeading(fn (Campaign $record): string => "Email Preview: {$record->name}")
@@ -272,6 +274,7 @@ class CampaignResource extends Resource
                     ])),
                 Action::make('deliverabilityAudit')
                     ->label('Spam Audit')
+                    ->authorize(FocalAuthorization::forRecord('view', self::class))
                     ->icon(Heroicon::ShieldCheck)
                     ->color('warning')
                     ->modalHeading(fn (Campaign $record): string => "Pre-Flight Deliverability Audit: {$record->name}")
@@ -286,6 +289,7 @@ class CampaignResource extends Resource
                     ->icon(Heroicon::PaperAirplane)
                     ->color('success')
                     ->visible(fn (Campaign $record): bool => in_array($record->status, [CampaignStatus::Draft, CampaignStatus::Scheduled], true))
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->requiresConfirmation()
                     ->modalHeading('Send Broadcast Campaign')
                     ->modalDescription('Are you sure you want to broadcast this campaign immediately to all targeted list recipients?')
@@ -303,6 +307,7 @@ class CampaignResource extends Resource
                     ->icon(Heroicon::Trophy)
                     ->color('warning')
                     ->visible(fn (Campaign $record): bool => $record->is_ab_test && $record->status === CampaignStatus::Sending && $record->ab_winner_variant === null)
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->requiresConfirmation()
                     ->modalHeading('Conclude A/B Test Experiment')
                     ->modalDescription('Calculate current engagement metrics, determine the winning variant, and immediately dispatch it to the remaining audience.')
@@ -320,6 +325,7 @@ class CampaignResource extends Resource
                     ->icon(Heroicon::Sparkles)
                     ->color('info')
                     ->visible(fn (Campaign $record): bool => in_array($record->status, [CampaignStatus::Draft, CampaignStatus::Scheduled], true))
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->modalHeading('AI Campaign Subject & Copy Assistant')
                     ->modalDescription('Generate high-converting subject lines and A/B test variants optimized for your campaign topic and tone.')
                     ->form([
@@ -383,6 +389,7 @@ class CampaignResource extends Resource
                     }),
                 Action::make('sendTestEmail')
                     ->label('Send Test')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::PaperAirplane)
                     ->color('info')
                     ->modalHeading(fn (Campaign $record): string => "Send Proof / Test Email: {$record->name}")
@@ -396,7 +403,7 @@ class CampaignResource extends Resource
                             ->required(),
                         Select::make('sample_contact_id')
                             ->label('Simulate Merge Tags As Contact (Optional)')
-                            ->options(fn (): array => Contact::query()->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
+                            ->options(fn (): array => FocalAuthorization::query(ContactResource::class, Contact::class)->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
                                 $contact = Contact::find($id);
 
                                 return "{$name} {$contact?->last_name} ({$contact?->email})";
@@ -406,7 +413,7 @@ class CampaignResource extends Resource
                     ])
                     ->action(function (Campaign $record, array $data): void {
                         /** @var Contact|null $sampleContact */
-                        $sampleContact = ! empty($data['sample_contact_id']) ? Contact::find($data['sample_contact_id']) : null;
+                        $sampleContact = ! empty($data['sample_contact_id']) ? FocalAuthorization::query(ContactResource::class, Contact::class)->find($data['sample_contact_id']) : null;
                         $result = app(SendCampaignProofAction::class)->execute($record, (string) $data['recipient_emails'], $sampleContact);
 
                         if ($result['success']) {
@@ -425,6 +432,7 @@ class CampaignResource extends Resource
                     }),
                 Action::make('duplicate')
                     ->label('Duplicate')
+                    ->authorize(fn (Campaign $record): bool => FocalAuthorization::allows('view', $record, self::class) && FocalAuthorization::allows('create', Campaign::class, self::class))
                     ->icon(Heroicon::DocumentDuplicate)
                     ->color('gray')
                     ->requiresConfirmation()

@@ -12,6 +12,13 @@ use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Core\Support\UserModel;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CampaignResource;
+use Focal\Filament\Resources\CompanyResource;
+use Focal\Filament\Resources\ContactResource;
+use Focal\Filament\Resources\DealResource;
+use Focal\Filament\Resources\SalesQuotaResource;
+use Focal\Filament\Resources\TicketResource;
 use Focal\Marketing\Actions\GetCampaignAttributionAction;
 use Focal\Marketing\Models\Campaign;
 use Focal\Sales\Models\Deal;
@@ -24,6 +31,8 @@ use UnitEnum;
 
 class ExecutiveOverview extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Executive';
 
     protected static ?int $navigationSort = -10;
@@ -37,6 +46,21 @@ class ExecutiveOverview extends Page
     protected string $view = 'focal-filament::pages.executive-overview';
 
     public string $timeframe = 'quarter';
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            ContactResource::class,
+            CompanyResource::class,
+            DealResource::class,
+            SalesQuotaResource::class,
+            CampaignResource::class,
+            TicketResource::class,
+        ];
+    }
 
     public function setTimeframe(string $timeframe): void
     {

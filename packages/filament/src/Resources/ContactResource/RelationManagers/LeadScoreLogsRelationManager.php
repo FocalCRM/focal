@@ -13,6 +13,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Focal\Core\Models\Contact;
+use Focal\Filament\Resources\ContactResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Enums\LeadScoringEventType;
 use Focal\Marketing\Models\LeadScoreLog;
 
@@ -84,6 +86,7 @@ class LeadScoreLogsRelationManager extends RelationManager
             ->headerActions([
                 Action::make('manualScoreAdjustment')
                     ->label('Adjust Score')
+                    ->authorize(fn (): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), ContactResource::class))
                     ->icon(Heroicon::Sparkles)
                     ->color('primary')
                     ->modalHeading('Manual Lead Score Adjustment')

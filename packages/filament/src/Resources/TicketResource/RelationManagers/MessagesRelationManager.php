@@ -13,11 +13,14 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Focal\Core\Support\UserModel;
+use Focal\Filament\Resources\TicketResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Service\Actions\ReplyTicketAction;
 use Focal\Service\Enums\MessageSenderType;
 use Focal\Service\Models\CannedResponse;
 use Focal\Service\Models\Ticket;
 use Focal\Service\Models\TicketMessage;
+use Illuminate\Database\Eloquent\Builder;
 
 class MessagesRelationManager extends RelationManager
 {
@@ -71,6 +74,7 @@ class MessagesRelationManager extends RelationManager
             ->headerActions([
                 Action::make('addMessage')
                     ->label('Add Reply / Note')
+                    ->authorize(fn (): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), TicketResource::class))
                     ->icon('heroicon-m-chat-bubble-left-ellipsis')
                     ->color('primary')
                     ->form([
@@ -78,9 +82,7 @@ class MessagesRelationManager extends RelationManager
                             ->label('Insert Canned Response (Optional)')
                             ->placeholder('Select a pre-approved template to insert...')
                             ->options(function (): array {
-                                return CannedResponse::query()
-                                    ->where('is_shared', true)
-                                    ->when(auth()->check(), fn ($q) => $q->orWhere('user_id', auth()->id()))
+                                return $this->cannedResponsesQuery()
                                     ->pluck('title', 'id')
                                     ->all();
                             })
@@ -92,7 +94,7 @@ class MessagesRelationManager extends RelationManager
                                 }
 
                                 /** @var CannedResponse|null $canned */
-                                $canned = CannedResponse::query()->find($state);
+                                $canned = $this->cannedResponsesQuery()->find($state);
                                 if ($canned !== null) {
                                     $set('body', $canned->content);
                                 }
@@ -121,5 +123,21 @@ class MessagesRelationManager extends RelationManager
                         );
                     }),
             ]);
+    }
+
+    /**
+     * Shared canned responses plus the current agent's own.
+     *
+     * @return Builder<CannedResponse>
+     */
+    protected function cannedResponsesQuery(): Builder
+    {
+        $userId = FocalAuthorization::userId();
+
+        return CannedResponse::query()
+            ->where(function (Builder $query) use ($userId): void {
+                $query->where('is_shared', true)
+                    ->orWhere('user_id', $userId);
+            });
     }
 }

@@ -25,6 +25,7 @@ use Focal\Core\Models\CrmList;
 use Focal\Filament\Resources\AdAudienceSyncResource\Pages\CreateAdAudienceSync;
 use Focal\Filament\Resources\AdAudienceSyncResource\Pages\EditAdAudienceSync;
 use Focal\Filament\Resources\AdAudienceSyncResource\Pages\ListAdAudienceSyncs;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Marketing\Actions\SyncAdAudienceAction;
 use Focal\Marketing\Models\AdAudienceSync;
 use UnitEnum;
@@ -124,6 +125,7 @@ class AdAudienceSyncResource extends Resource
             ->actions([
                 Action::make('syncNow')
                     ->label('Sync Now')
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::ArrowPath)
                     ->color('success')
                     ->action(function (AdAudienceSync $record): void {

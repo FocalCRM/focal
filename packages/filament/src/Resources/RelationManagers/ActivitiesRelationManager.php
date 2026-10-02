@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use Focal\Core\Enums\ActivityStatus;
 use Focal\Core\Enums\ActivityType;
 use Focal\Core\Models\Activity;
+use Focal\Filament\Support\FocalAuthorization;
 
 class ActivitiesRelationManager extends RelationManager
 {
@@ -121,6 +122,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->icon(Heroicon::CheckCircle)
                     ->color('success')
                     ->visible(fn (Activity $record): bool => $record->status === ActivityStatus::Pending)
+                    ->authorize(FocalAuthorization::forRecord('update'))
                     ->action(fn (Activity $record) => $record->update([
                         'status' => ActivityStatus::Completed,
                         'completed_at' => now(),

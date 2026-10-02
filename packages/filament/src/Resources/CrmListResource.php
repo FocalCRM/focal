@@ -32,6 +32,7 @@ use Focal\Filament\Resources\CrmListResource\Pages\EditCrmList;
 use Focal\Filament\Resources\CrmListResource\Pages\ListCrmLists;
 use Focal\Filament\Resources\CrmListResource\Pages\ViewCrmList;
 use Focal\Filament\Resources\CrmListResource\RelationManagers\MembersRelationManager;
+use Focal\Filament\Support\FocalAuthorization;
 use UnitEnum;
 
 class CrmListResource extends Resource
@@ -161,6 +162,7 @@ class CrmListResource extends Resource
                     ->icon(Heroicon::ArrowPath)
                     ->color('primary')
                     ->visible(fn (CrmList $record): bool => $record->type === ListType::Active)
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->action(function (CrmList $record): void {
                         $count = $record->syncActiveMembers();
 

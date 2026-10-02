@@ -9,6 +9,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Focal\Filament\Resources\DealResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Sales\Actions\CalculatePipelineForecastAction;
 use Focal\Sales\Models\Deal;
 use Focal\Sales\Models\Pipeline;
@@ -26,6 +27,14 @@ class KanbanDeals extends Page
     protected string $view = 'focal-filament::pages.deal-kanban';
 
     public ?int $pipelineId = null;
+
+    /**
+     * @param  array<string, mixed>  $parameters
+     */
+    public static function canAccess(array $parameters = []): bool
+    {
+        return FocalAuthorization::canViewAny([DealResource::class]);
+    }
 
     public function mount(): void
     {
@@ -54,7 +63,10 @@ class KanbanDeals extends Page
 
         return PipelineStage::query()
             ->where('pipeline_id', $this->pipelineId)
-            ->with(['deals' => fn ($q) => $q->with(['contacts', 'companies', 'stageHistory', 'stage'])->orderBy('created_at', 'desc')])
+            ->with(['deals' => fn ($q) => $q
+                ->whereIn((new Deal)->getQualifiedKeyName(), DealResource::getEloquentQuery()->select((new Deal)->getQualifiedKeyName()))
+                ->with(['contacts', 'companies', 'stageHistory', 'stage'])
+                ->orderBy('created_at', 'desc')])
             ->orderBy('sort_order')
             ->get();
     }
@@ -65,7 +77,7 @@ class KanbanDeals extends Page
             return 0.0;
         }
 
-        return (float) Deal::query()
+        return (float) FocalAuthorization::query(DealResource::class, Deal::class)
             ->where('pipeline_id', $this->pipelineId)
             ->where('status', 'open')
             ->sum('amount');
@@ -92,13 +104,12 @@ class KanbanDeals extends Page
 
     public function moveDeal(int $dealId, int $stageId): void
     {
-        /** @var Deal $deal */
-        $deal = Deal::findOrFail($dealId);
+        $deal = FocalAuthorization::findAndAuthorize(DealResource::class, Deal::class, $dealId, 'update');
 
         /** @var PipelineStage $stage */
-        $stage = PipelineStage::findOrFail($stageId);
+        $stage = PipelineStage::query()->findOrFail($stageId);
 
-        $deal->moveToStage($stage, auth()->id());
+        $deal->moveToStage($stage, FocalAuthorization::userId());
 
         Notification::make()
             ->title('Deal Updated')

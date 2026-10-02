@@ -7,6 +7,7 @@ namespace Focal\Filament\Tests;
 use Focal\Core\Models\Company;
 use Focal\Filament\Pages\AbmCockpit;
 use Focal\Filament\Resources\CampaignResource;
+use Focal\Filament\Tests\Fixtures\User;
 use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\MarketingTemplate;
@@ -18,6 +19,8 @@ class MarketingCockpitPagesTest extends TestCase
 
     public function test_abm_cockpit_page_metrics_and_actions(): void
     {
+        $this->actingAs(User::factory()->create());
+
         $tier1 = Company::create([
             'name' => 'Snowflake Computing',
             'domain' => 'snowflake.com',

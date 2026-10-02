@@ -14,6 +14,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Group;
 use Filament\Support\Icons\Heroicon;
 use Focal\Filament\Resources\DealResource;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Sales\Actions\ExecuteSalesPlaybookAction;
 use Focal\Sales\Actions\GenerateQuoteFromDealAction;
 use Focal\Sales\Enums\DealStatus;
@@ -57,6 +58,7 @@ class ViewDeal extends ViewRecord
 
             Action::make('generate_quote')
                 ->label('Generate Quote')
+                ->authorize(FocalAuthorization::forRecord('update', DealResource::class))
                 ->icon(Heroicon::DocumentText)
                 ->color('primary')
                 ->action(function (): void {
@@ -73,6 +75,7 @@ class ViewDeal extends ViewRecord
 
             Action::make('run_playbook')
                 ->label('Run Playbook')
+                ->authorize(FocalAuthorization::forRecord('update', DealResource::class))
                 ->icon(Heroicon::BookOpen)
                 ->color('gray')
                 ->form(function (): array {
@@ -131,7 +134,7 @@ class ViewDeal extends ViewRecord
                     $playbook = SalesPlaybook::findOrFail($data['playbook_id']);
                     $answers = isset($data['answers']) && is_array($data['answers']) ? $data['answers'] : [];
 
-                    app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, auth()->id());
+                    app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, FocalAuthorization::userId());
 
                     Notification::make()
                         ->title('Playbook Completed')
@@ -145,10 +148,11 @@ class ViewDeal extends ViewRecord
                 ->icon(Heroicon::CheckCircle)
                 ->color('success')
                 ->visible(fn (): bool => $this->getRecord() instanceof Deal && $this->getRecord()->status !== DealStatus::Won)
+                ->authorize(FocalAuthorization::forRecord('update', DealResource::class))
                 ->action(function (): void {
                     /** @var Deal $record */
                     $record = $this->getRecord();
-                    $record->markWon(auth()->id());
+                    $record->markWon(FocalAuthorization::userId());
 
                     Notification::make()
                         ->title('Deal Won!')
@@ -162,6 +166,7 @@ class ViewDeal extends ViewRecord
                 ->icon(Heroicon::XCircle)
                 ->color('danger')
                 ->visible(fn (): bool => $this->getRecord() instanceof Deal && $this->getRecord()->status !== DealStatus::Lost)
+                ->authorize(FocalAuthorization::forRecord('update', DealResource::class))
                 ->form([
                     Textarea::make('lost_reason')
                         ->label('Reason for Loss')
@@ -171,7 +176,7 @@ class ViewDeal extends ViewRecord
                 ->action(function (array $data): void {
                     /** @var Deal $record */
                     $record = $this->getRecord();
-                    $record->markLost($data['lost_reason'] ?? null, auth()->id());
+                    $record->markLost($data['lost_reason'] ?? null, FocalAuthorization::userId());
 
                     Notification::make()
                         ->title('Deal Closed as Lost')

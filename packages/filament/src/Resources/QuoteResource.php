@@ -29,6 +29,7 @@ use Focal\Filament\Resources\QuoteResource\Pages\CreateQuote;
 use Focal\Filament\Resources\QuoteResource\Pages\EditQuote;
 use Focal\Filament\Resources\QuoteResource\Pages\ListQuotes;
 use Focal\Filament\Resources\QuoteResource\Pages\ViewQuote;
+use Focal\Filament\Support\FocalAuthorization;
 use Focal\Sales\Enums\QuoteStatus;
 use Focal\Sales\Models\Quote;
 use UnitEnum;
@@ -225,6 +226,7 @@ class QuoteResource extends Resource
                     ->icon(Heroicon::CheckBadge)
                     ->color('success')
                     ->visible(fn (Quote $record): bool => ! $record->status->isAccepted())
+                    ->authorize(FocalAuthorization::forRecord('update', self::class))
                     ->form([
                         TextInput::make('signed_by_name')
                             ->label('Signer Full Name')

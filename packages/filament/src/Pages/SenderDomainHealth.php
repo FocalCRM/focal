@@ -8,6 +8,8 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Focal\Filament\Resources\CampaignResource;
 use Focal\Marketing\Services\DomainHealthCheckService;
 use UnitEnum;
 
@@ -16,6 +18,8 @@ use UnitEnum;
  */
 class SenderDomainHealth extends Page
 {
+    use AuthorizesPageAccess;
+
     protected static UnitEnum|string|null $navigationGroup = 'Marketing';
 
     protected static ?int $navigationSort = 10;
@@ -31,6 +35,16 @@ class SenderDomainHealth extends Page
     public string $domain = 'focal.test';
 
     public string $selector = 'focal';
+
+    /**
+     * @return list<class-string<\Filament\Resources\Resource>>
+     */
+    protected static function getAuthorizationResources(): array
+    {
+        return [
+            CampaignResource::class,
+        ];
+    }
 
     public function mount(): void
     {
