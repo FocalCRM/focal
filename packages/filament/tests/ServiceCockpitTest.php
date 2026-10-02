@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\ServiceCockpit;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\CannedResponse;
-use Focal\Service\Models\KnowledgeArticle;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\ServiceCockpit;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\CannedResponse;
+use Odden\Service\Models\KnowledgeArticle;
+use Odden\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 

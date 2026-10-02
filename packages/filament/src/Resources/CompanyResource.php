@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -23,23 +23,23 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Focal\Core\Actions\CalculateCustomerHealthScoreAction;
-use Focal\Core\Actions\MergeCompaniesAction;
-use Focal\Core\Actions\SummarizeTimelineAction;
-use Focal\Core\Enums\CustomerHealthStatus;
-use Focal\Core\Models\Company;
-use Focal\Filament\Resources\CompanyResource\Pages\CreateCompany;
-use Focal\Filament\Resources\CompanyResource\Pages\EditCompany;
-use Focal\Filament\Resources\CompanyResource\Pages\ListCompanies;
-use Focal\Filament\Resources\CompanyResource\Pages\ViewCompany;
-use Focal\Filament\Resources\CompanyResource\RelationManagers\ContactsRelationManager;
-use Focal\Filament\Resources\RelationManagers\ActivitiesRelationManager;
-use Focal\Filament\Resources\RelationManagers\DealsRelationManager;
-use Focal\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
-use Focal\Filament\Support\CustomPropertyFieldBuilder;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
-use Focal\Sales\Models\Deal;
+use Odden\Core\Actions\CalculateCustomerHealthScoreAction;
+use Odden\Core\Actions\MergeCompaniesAction;
+use Odden\Core\Actions\SummarizeTimelineAction;
+use Odden\Core\Enums\CustomerHealthStatus;
+use Odden\Core\Models\Company;
+use Odden\Filament\Resources\CompanyResource\Pages\CreateCompany;
+use Odden\Filament\Resources\CompanyResource\Pages\EditCompany;
+use Odden\Filament\Resources\CompanyResource\Pages\ListCompanies;
+use Odden\Filament\Resources\CompanyResource\Pages\ViewCompany;
+use Odden\Filament\Resources\CompanyResource\RelationManagers\ContactsRelationManager;
+use Odden\Filament\Resources\RelationManagers\ActivitiesRelationManager;
+use Odden\Filament\Resources\RelationManagers\DealsRelationManager;
+use Odden\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
+use Odden\Filament\Support\CustomPropertyFieldBuilder;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\CalculateCompanyIntentScoreAction;
+use Odden\Sales\Models\Deal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
@@ -165,7 +165,7 @@ class CompanyResource extends Resource
                     ->icon(Heroicon::Heart)
                     ->color('success')
                     ->visible(fn (): bool => class_exists(CalculateCustomerHealthScoreAction::class))
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->action(function (Company $record): void {
                         app(CalculateCustomerHealthScoreAction::class)->execute($record);
 
@@ -180,7 +180,7 @@ class CompanyResource extends Resource
                     ->icon(Heroicon::Bolt)
                     ->color('warning')
                     ->visible(fn (): bool => class_exists(CalculateCompanyIntentScoreAction::class))
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->action(function (Company $record): void {
                         app(CalculateCompanyIntentScoreAction::class)->execute($record);
 
@@ -194,25 +194,25 @@ class CompanyResource extends Resource
                     ->label('AI Briefing')
                     ->icon(Heroicon::Sparkles)
                     ->color('info')
-                    ->authorize(FocalAuthorization::forRecord('view', self::class))
-                    ->modalHeading(fn (Company $record): string => "Focal Breeze: {$record->name}")
+                    ->authorize(OddenAuthorization::forRecord('view', self::class))
+                    ->modalHeading(fn (Company $record): string => "Odden Breeze: {$record->name}")
                     ->modalDescription('AI timeline and relationship intelligence summary.')
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
-                    ->modalContent(fn (Company $record) => view('focal-filament::components.ai-briefing-modal', [
+                    ->modalContent(fn (Company $record) => view('odden-filament::components.ai-briefing-modal', [
                         'briefing' => app(SummarizeTimelineAction::class)->execute($record),
                     ])),
                 Action::make('merge')
                     ->label('Merge')
                     ->icon(Heroicon::ArrowsRightLeft)
                     ->color('warning')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->modalHeading('Merge Duplicate Company')
                     ->modalDescription('Merge another duplicate company into this record. All contacts, activities, and tickets will be reparented and preserved.')
                     ->form([
                         Select::make('secondary_company_id')
                             ->label('Select Duplicate Company to Merge into This Record')
-                            ->options(fn (Company $record): array => FocalAuthorization::query(self::class, Company::class)
+                            ->options(fn (Company $record): array => OddenAuthorization::query(self::class, Company::class)
                                 ->whereKeyNot($record->getKey())
                                 ->orderBy('name')
                                 ->limit(50)
@@ -224,7 +224,7 @@ class CompanyResource extends Resource
                     ])
                     ->action(function (Company $record, array $data): void {
                         // The duplicate is deleted by the merge, so it needs `delete` as well.
-                        $secondary = FocalAuthorization::findAndAuthorize(self::class, Company::class, $data['secondary_company_id'], 'delete');
+                        $secondary = OddenAuthorization::findAndAuthorize(self::class, Company::class, $data['secondary_company_id'], 'delete');
                         abort_if($secondary->is($record), 422);
 
                         app(MergeCompaniesAction::class)->execute($record, $secondary);

@@ -7,8 +7,8 @@ it('core domain remains strictly headless (no Filament or Livewire)', function (
     expect(sourceFilesMatching('/(?<![\\\\\w])(Filament|Livewire)\\\\+[A-Z]/'))->toBeEmpty();
 });
 
-it('core does not depend on the other Focal modules', function (): void {
-    expect(sourceFilesMatching('/\bFocal\\\\+(Sales|Service|Marketing|Filament)\\\\+/'))->toBeEmpty();
+it('core does not depend on the other Odden modules', function (): void {
+    expect(sourceFilesMatching('/\bOdden\\\\+(Sales|Service|Marketing|Filament)\\\\+/'))->toBeEmpty();
 });
 
 arch('no debug functions are left in the code')
@@ -16,9 +16,9 @@ arch('no debug functions are left in the code')
     ->not->toBeUsed();
 
 arch('all core domain actions have an execute method')
-    ->expect('Focal\Core\Actions')
+    ->expect('Odden\Core\Actions')
     ->toHaveMethod('execute');
 
 arch('all core enums are string backed for database agnosticism')
-    ->expect('Focal\Core\Enums')
+    ->expect('Odden\Core\Enums')
     ->toBeStringBackedEnums();

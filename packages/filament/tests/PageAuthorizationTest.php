@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\DataQuality;
-use Focal\Filament\Pages\ServiceCockpit;
-use Focal\Filament\Resources\DealResource\Pages\KanbanDeals;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Marketing\Models\Campaign;
-use Focal\Sales\Models\Deal;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\DataQuality;
+use Odden\Filament\Pages\ServiceCockpit;
+use Odden\Filament\Resources\DealResource\Pages\KanbanDeals;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Marketing\Models\Campaign;
+use Odden\Sales\Models\Deal;
+use Odden\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;

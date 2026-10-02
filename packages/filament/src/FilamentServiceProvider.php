@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament;
+namespace Odden\Filament;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +21,6 @@ class FilamentServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'focal-filament');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'odden-filament');
     }
 }

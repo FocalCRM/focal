@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Sales\Models\Pipeline;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Sales\Models\Pipeline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PipelineResourceTest extends TestCase

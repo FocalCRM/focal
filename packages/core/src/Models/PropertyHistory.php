@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Database\Factories\PropertyHistoryFactory;
-use Focal\Core\Support\UserModel;
+use Odden\Core\Database\Factories\PropertyHistoryFactory;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,7 +51,7 @@ class PropertyHistory extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.property_history', 'focal_property_history');
+        return config('odden-core.tables.property_history', 'odden_property_history');
     }
 
     /**

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LeadScoringRuleResource\Pages;
+namespace Odden\Filament\Resources\LeadScoringRuleResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\LeadScoringRuleResource;
+use Odden\Filament\Resources\LeadScoringRuleResource;
 
 class ListLeadScoringRules extends ListRecords
 {

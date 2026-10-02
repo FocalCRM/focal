@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -23,14 +23,14 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Resources\SalesSequenceResource\Pages\CreateSalesSequence;
-use Focal\Filament\Resources\SalesSequenceResource\Pages\EditSalesSequence;
-use Focal\Filament\Resources\SalesSequenceResource\Pages\ListSalesSequences;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Sales\Actions\EnrollContactInSequenceAction;
-use Focal\Sales\Models\SalesEmailTemplate;
-use Focal\Sales\Models\SalesSequence;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Resources\SalesSequenceResource\Pages\CreateSalesSequence;
+use Odden\Filament\Resources\SalesSequenceResource\Pages\EditSalesSequence;
+use Odden\Filament\Resources\SalesSequenceResource\Pages\ListSalesSequences;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Sales\Actions\EnrollContactInSequenceAction;
+use Odden\Sales\Models\SalesEmailTemplate;
+use Odden\Sales\Models\SalesSequence;
 use UnitEnum;
 
 class SalesSequenceResource extends Resource
@@ -144,14 +144,14 @@ class SalesSequenceResource extends Resource
             ->recordActions([
                 Action::make('enrollContact')
                     ->label('Enroll Contact')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::UserPlus)
                     ->color('primary')
                     ->modalHeading(fn (SalesSequence $record): string => "Enroll Contact in {$record->name}")
                     ->form([
                         Select::make('contact_id')
                             ->label('Select Contact')
-                            ->options(fn (): array => FocalAuthorization::query(ContactResource::class, Contact::class)->limit(100)->pluck('first_name', 'id')->map(function ($name, $id): string {
+                            ->options(fn (): array => OddenAuthorization::query(ContactResource::class, Contact::class)->limit(100)->pluck('first_name', 'id')->map(function ($name, $id): string {
                                 $c = Contact::find($id);
 
                                 return "{$name} {$c?->last_name} ({$c?->email})";
@@ -161,7 +161,7 @@ class SalesSequenceResource extends Resource
                     ])
                     ->action(function (SalesSequence $record, array $data): void {
                         // Enrolling changes the contact's outreach, so it needs `update` on the contact too.
-                        $contact = FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $data['contact_id'], 'update');
+                        $contact = OddenAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $data['contact_id'], 'update');
                         app(EnrollContactInSequenceAction::class)->execute($contact, $record);
 
                         Notification::make()

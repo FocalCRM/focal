@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests;
+namespace Odden\Core\Tests;
 
-use Focal\Core\CoreServiceProvider;
-use Focal\Core\Tests\Fixtures\User;
+use Odden\Core\CoreServiceProvider;
+use Odden\Core\Tests\Fixtures\User;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 use function Orchestra\Testbench\after_resolving;

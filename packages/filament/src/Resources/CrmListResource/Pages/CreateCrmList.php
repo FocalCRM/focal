@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CrmListResource\Pages;
+namespace Odden\Filament\Resources\CrmListResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Resources\CrmListResource;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Resources\CrmListResource;
 
 class CreateCrmList extends CreateRecord
 {

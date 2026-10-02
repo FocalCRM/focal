@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SalesQuotaResource\Pages;
+namespace Odden\Filament\Resources\SalesQuotaResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\SalesQuotaResource;
+use Odden\Filament\Resources\SalesQuotaResource;
 
 class EditSalesQuota extends EditRecord
 {

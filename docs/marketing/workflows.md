@@ -9,21 +9,21 @@ A workflow is a numbered sequence of steps that runs for each enrolled contact: 
 
 | Model | Table | Purpose |
 | --- | --- | --- |
-| `Focal\Marketing\Models\MarketingWorkflow` | `focal_marketing_workflows` | The workflow: `name`, `description`, `trigger_type`, `trigger_config`, `is_active` (default `true`), `enrollments_count`, `completed_count`, `created_by_id`. |
-| `Focal\Marketing\Models\WorkflowStep` | `focal_marketing_workflow_steps` | One step: `workflow_id`, `step_number`, `type`, `config` (array), `next_step_on_true`, `next_step_on_false`. |
-| `Focal\Marketing\Models\WorkflowEnrollment` | `focal_marketing_workflow_enrollments` | A contact's run through a workflow: `current_step_id`, `status`, `next_run_at`, `enrolled_at`, `completed_at`. |
-| `Focal\Marketing\Models\WorkflowLog` | `focal_marketing_workflow_logs` | One row per executed step: `action_taken`, `status` (`success`, `skipped`, or `failed`), `details`. |
+| `Odden\Marketing\Models\MarketingWorkflow` | `odden_marketing_workflows` | The workflow: `name`, `description`, `trigger_type`, `trigger_config`, `is_active` (default `true`), `enrollments_count`, `completed_count`, `created_by_id`. |
+| `Odden\Marketing\Models\WorkflowStep` | `odden_marketing_workflow_steps` | One step: `workflow_id`, `step_number`, `type`, `config` (array), `next_step_on_true`, `next_step_on_false`. |
+| `Odden\Marketing\Models\WorkflowEnrollment` | `odden_marketing_workflow_enrollments` | A contact's run through a workflow: `current_step_id`, `status`, `next_run_at`, `enrolled_at`, `completed_at`. |
+| `Odden\Marketing\Models\WorkflowLog` | `odden_marketing_workflow_logs` | One row per executed step: `action_taken`, `status` (`success`, `skipped`, or `failed`), `details`. |
 
 Relations: `$workflow->steps` (ordered by `step_number`), `$workflow->enrollments`, `$workflow->creator`, `$enrollment->workflow`, `$enrollment->contact`, `$enrollment->currentStep`, `$enrollment->logs`. The package also adds `workflowEnrollments` to `Contact`.
 
-`Focal\Marketing\Enums\WorkflowEnrollmentStatus` has the cases `Active`, `Paused`, `Completed`, and `Exited`. The package itself only sets `active` and `completed`. Only `active` enrollments run, so you can pause or exit one by updating its status.
+`Odden\Marketing\Enums\WorkflowEnrollmentStatus` has the cases `Active`, `Paused`, `Completed`, and `Exited`. The package itself only sets `active` and `completed`. Only `active` enrollments run, so you can pause or exit one by updating its status.
 
 ## Building a workflow
 
 ```php
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\MarketingWorkflow;
 
 $workflow = MarketingWorkflow::create([
     'name' => 'Demo request nurture',
@@ -36,7 +36,7 @@ $workflow->steps()->createMany([
     ['step_number' => 2, 'type' => WorkflowStepType::Delay, 'config' => ['delay_minutes' => 60 * 24 * 2]],
     ['step_number' => 3, 'type' => WorkflowStepType::Condition, 'config' => ['property' => 'lead_score', 'operator' => '>=', 'value' => 50], 'next_step_on_true' => 4, 'next_step_on_false' => 5],
     ['step_number' => 4, 'type' => WorkflowStepType::UpdateContact, 'config' => ['lifecycle_stage' => 'sales_qualified_lead', 'next_step' => null]],
-    ['step_number' => 5, 'type' => WorkflowStepType::Webhook, 'config' => ['url' => 'https://hooks.example.com/focal', 'secret' => 'shared-secret']],
+    ['step_number' => 5, 'type' => WorkflowStepType::Webhook, 'config' => ['url' => 'https://hooks.example.com/odden', 'secret' => 'shared-secret']],
 ]);
 ```
 
@@ -53,7 +53,7 @@ If no step has that number, the enrollment is completed. Conditions use `next_st
 
 ## Step types
 
-`Focal\Marketing\Enums\WorkflowStepType`:
+`Odden\Marketing\Enums\WorkflowStepType`:
 
 | Case | Value | `config` keys | What it does |
 | --- | --- | --- | --- |
@@ -63,7 +63,7 @@ If no step has that number, the enrollment is completed. Conditions use `next_st
 | `Condition` | `condition` | `property` (default `lead_score`), `operator` (default `>=`), `value` (default 50) | Compares a contact value and branches. See [conditions](#conditions). |
 | `UpdateContact` | `update_contact` | `lifecycle_stage` | Sets the contact's lifecycle stage. It's the only supported field. |
 | `AssignOwner` | `assign_owner` | `owner_id` | Sets the contact's owner, defaulting to the first user. |
-| `CreateDeal` | `create_deal` | `deal_name`, `amount` (default 10000), `pipeline_id`, `stage_id` | Creates an open deal (requires `focalcrm/sales`) owned by the contact's owner and associates it with the contact. Without `pipeline_id`, uses the first pipeline and its first stage. Logged as `skipped` when there's no pipeline. |
+| `CreateDeal` | `create_deal` | `deal_name`, `amount` (default 10000), `pipeline_id`, `stage_id` | Creates an open deal (requires `getodden/crm-sales`) owned by the contact's owner and associates it with the contact. Without `pipeline_id`, uses the first pipeline and its first stage. Logged as `skipped` when there's no pipeline. |
 | `CreateSalesTask` | `create_sales_task` | `title` (default `High-Priority Lead Follow-up`), `due_in_hours` (default 2) | Logs a task on the contact. |
 | `InternalNotification` | `internal_notification` | `message` | Logs an `Internal Alert: {message}` task on the contact. No notification is sent. |
 | `Webhook` | `webhook` | `url`, `method` (default `POST`), `secret`, `headers` | Calls a URL. See [outbound webhooks](#outbound-webhook-step). |
@@ -72,7 +72,7 @@ Every step writes a `WorkflowLog` row. Each case has `label()` and `getLabel()`.
 
 ### The email step
 
-`send_email` uses the same delivery as [campaigns](campaigns.md#delivering-the-messages): it queues a `Focal\Marketing\Mail\MarketingMessageMailable` on the `focal-marketing.mail` queue, through the `focal-marketing.mail.mailer` mailer, so a queue worker must be running (see [Sending mail](index.md#sending-mail)).
+`send_email` uses the same delivery as [campaigns](campaigns.md#delivering-the-messages): it queues an `Odden\Marketing\Mail\MarketingMessageMailable` on the `odden-marketing.mail` queue, through the `odden-marketing.mail.mailer` mailer, so a queue worker must be running (see [Sending mail](index.md#sending-mail)).
 
 - **Subject.** `config.subject`, or the template's subject, or `Marketing Update`. The subject gets the same merge tags as the body, unescaped.
 - **Sender.** `config.from_email`, `config.from_name`, and `config.reply_to`, falling back to the `defaults.*` [config values](index.md#configuration).
@@ -124,9 +124,9 @@ A `webhook` step sends this JSON with a five-second timeout:
 
 Headers:
 
-- `X-Focal-Signature`: HMAC-SHA256 of the JSON body, keyed with `config.secret`, or with `app.key` when no secret is set. Set a secret, so receivers don't need your app key to verify requests.
-- `X-Focal-Workflow-ID`: the workflow id.
-- `User-Agent`: `Focal-RevOps-Webhook/1.0`.
+- `X-Odden-Signature`: HMAC-SHA256 of the JSON body, keyed with `config.secret`, or with `app.key` when no secret is set. Set a secret, so receivers don't need your app key to verify requests.
+- `X-Odden-Workflow-ID`: the workflow id.
+- `User-Agent`: `Odden-RevOps-Webhook/1.0`.
 - Anything in `config.headers`, which can override the above.
 
 To verify a request on the receiving side:
@@ -134,14 +134,14 @@ To verify a request on the receiving side:
 ```php
 $expected = hash_hmac('sha256', $request->getContent(), 'shared-secret');
 
-abort_unless(hash_equals($expected, (string) $request->header('X-Focal-Signature')), 401);
+abort_unless(hash_equals($expected, (string) $request->header('X-Odden-Signature')), 401);
 ```
 
 A non-2xx response or an exception is logged with status `failed` and the response code (500 for exceptions). The workflow continues either way; there are no retries. The request runs synchronously in the process that executes the step.
 
 ## Triggers
 
-`Focal\Marketing\Enums\WorkflowTriggerType` describes what enrolls contacts. Only some triggers are wired up:
+`Odden\Marketing\Enums\WorkflowTriggerType` describes what enrolls contacts. Only some triggers are wired up:
 
 | Case | Value | Enrolls automatically when | `trigger_config` filter |
 | --- | --- | --- | --- |
@@ -160,7 +160,7 @@ A trigger without its filter key matches every form, asset, event, or event name
 ## Enrolling contacts in code
 
 ```php
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
 
 $enrollment = app(EnrollContactInWorkflowAction::class)->execute($workflow, $contact);
 ```
@@ -183,7 +183,7 @@ Schedule the command so that enrollments resume after their delays (see [schedul
 php artisan marketing:process-workflows
 ```
 
-It loads every `active` enrollment with a `next_run_at` in the past and runs its current step (and the steps after it, up to the next delay). It prints the number of enrollments advanced. `Focal\Marketing\Actions\ProcessDueWorkflowsAction::execute(): int` does the same from code.
+It loads every `active` enrollment with a `next_run_at` in the past and runs its current step (and the steps after it, up to the next delay). It prints the number of enrollments advanced. `Odden\Marketing\Actions\ProcessDueWorkflowsAction::execute(): int` does the same from code.
 
 Each step is claimed before it runs: `ExecuteWorkflowStepAction` first calls `$enrollment->claimStep($stepId)`, a single conditional `UPDATE` that only matches while the enrollment is `active`, still on that step, and due (`next_run_at` set), and clears `next_run_at`. If two workers pick up the same enrollment at once (overlapping scheduler runs, or the scheduler racing the immediate run after enrolment), only one sends the step's email, SMS, or webhook; the other does nothing. Completing an enrollment is claimed the same way, so `completed_count` goes up once. Because of this, `ExecuteWorkflowStepAction::execute()` does nothing for an enrollment whose `next_run_at` is `null`; set it to `now()` to run one by hand.
 
@@ -195,13 +195,13 @@ External systems (Zapier, Segment, Stripe, your own product) can enroll a contac
 
 | Method | URI | Route name | Auth |
 | --- | --- | --- | --- |
-| `POST` | `/api/marketing/workflows/{workflow}/enroll` | `focal.marketing.workflows.enroll-webhook` | `FOCAL_MARKETING_API_TOKEN`, rate limited by `focal-api`. CSRF exempt. |
+| `POST` | `/api/marketing/workflows/{workflow}/enroll` | `odden.marketing.workflows.enroll-webhook` | `ODDEN_MARKETING_API_TOKEN`, rate limited by `odden-api`. CSRF exempt. |
 
 `{workflow}` is the workflow's id or its exact `name` (URL-encoded). The workflow's trigger type doesn't matter. Send the token as described in [API tokens](../configuration.md#api-tokens).
 
 ```bash
 curl -X POST https://your-app.test/api/marketing/workflows/7/enroll \
-  -H "Authorization: Bearer $FOCAL_MARKETING_API_TOKEN" \
+  -H "Authorization: Bearer $ODDEN_MARKETING_API_TOKEN" \
   -H "Accept: application/json" -H "Content-Type: application/json" \
   -d '{"email": "trial@example.com", "first_name": "Tess", "company": "Initech", "trigger_event": "stripe.trial_started"}'
 ```
@@ -232,4 +232,4 @@ The endpoint loads or creates the contact (new contacts are `lead` / `new`), fil
 
 ## Journey view
 
-The package ships a `focal-marketing::workflow-journey` Blade view that renders a workflow's stats and steps. It expects a `$workflow` variable and is intended for admin panels such as the Filament plugin.
+The package ships a `odden-marketing::workflow-journey` Blade view that renders a workflow's stats and steps. It expects a `$workflow` variable and is intended for admin panels such as the Filament plugin.

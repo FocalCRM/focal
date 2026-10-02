@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Traits;
+namespace Odden\Core\Traits;
 
 use BackedEnum;
-use Focal\Core\Models\PropertyHistory;
+use Odden\Core\Models\PropertyHistory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -55,7 +55,7 @@ trait AuditsProperties
                                 'old_value' => is_scalar($oldVal) ? (string) $oldVal : json_encode($oldVal),
                                 'new_value' => is_scalar($newVal) ? (string) $newVal : json_encode($newVal),
                                 'user_id' => $userId,
-                                'source' => request()->header('X-Focal-Source', 'web'),
+                                'source' => request()->header('X-Odden-Source', 'web'),
                                 'created_at' => now(),
                             ]);
                         }
@@ -73,7 +73,7 @@ trait AuditsProperties
                     'old_value' => is_scalar($oldVal) ? (string) $oldVal : ($oldVal instanceof BackedEnum ? (string) $oldVal->value : json_encode($oldVal)),
                     'new_value' => is_scalar($newValue) ? (string) $newValue : ($newValue instanceof BackedEnum ? (string) $newValue->value : json_encode($newValue)),
                     'user_id' => $userId,
-                    'source' => request()->header('X-Focal-Source', 'web'),
+                    'source' => request()->header('X-Odden-Source', 'web'),
                     'created_at' => now(),
                 ]);
             }

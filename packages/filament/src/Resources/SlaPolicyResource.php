@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -22,10 +22,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\SlaPolicyResource\Pages\CreateSlaPolicy;
-use Focal\Filament\Resources\SlaPolicyResource\Pages\EditSlaPolicy;
-use Focal\Filament\Resources\SlaPolicyResource\Pages\ListSlaPolicies;
-use Focal\Service\Models\SlaPolicy;
+use Odden\Filament\Resources\SlaPolicyResource\Pages\CreateSlaPolicy;
+use Odden\Filament\Resources\SlaPolicyResource\Pages\EditSlaPolicy;
+use Odden\Filament\Resources\SlaPolicyResource\Pages\ListSlaPolicies;
+use Odden\Service\Models\SlaPolicy;
 use UnitEnum;
 
 class SlaPolicyResource extends Resource

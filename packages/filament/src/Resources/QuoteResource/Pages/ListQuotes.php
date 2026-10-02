@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\QuoteResource\Pages;
+namespace Odden\Filament\Resources\QuoteResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\QuoteResource;
+use Odden\Filament\Resources\QuoteResource;
 
 class ListQuotes extends ListRecords
 {

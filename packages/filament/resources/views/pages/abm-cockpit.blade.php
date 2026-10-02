@@ -274,11 +274,11 @@
                     <x-filament::icon icon="heroicon-m-arrow-path" class="w-4 h-4" />
                     <span>Recalculate All Intent</span>
                 </button>
-                <a href="{{ \Focal\Filament\Resources\CompanyResource::getUrl('index') }}" class="abm-btn abm-btn-secondary">
+                <a href="{{ \Odden\Filament\Resources\CompanyResource::getUrl('index') }}" class="abm-btn abm-btn-secondary">
                     <x-filament::icon icon="heroicon-m-building-office" class="w-4 h-4 text-sky-500" />
                     <span>All Accounts</span>
                 </a>
-                <a href="{{ \Focal\Filament\Pages\MarketingCockpit::getUrl() }}" class="abm-btn abm-btn-secondary">
+                <a href="{{ \Odden\Filament\Pages\MarketingCockpit::getUrl() }}" class="abm-btn abm-btn-secondary">
                     <x-filament::icon icon="heroicon-m-megaphone" class="w-4 h-4 text-indigo-500" />
                     <span>Marketing Cockpit</span>
                 </a>
@@ -399,7 +399,7 @@
                     <x-filament::icon icon="heroicon-o-building-office-2" class="w-12 h-12 mx-auto text-slate-400 mb-2" />
                     <p class="text-sm font-semibold">No target accounts found for this view.</p>
                     <p class="text-xs text-slate-500 mt-1">Assign accounts to Tier 1 or Tier 2 in the Companies directory to start tracking intent.</p>
-                    <a href="{{ \Focal\Filament\Resources\CompanyResource::getUrl('index') }}" class="abm-btn abm-btn-secondary mt-3">
+                    <a href="{{ \Odden\Filament\Resources\CompanyResource::getUrl('index') }}" class="abm-btn abm-btn-secondary mt-3">
                         Browse Companies
                     </a>
                 </div>
@@ -421,7 +421,7 @@
                             <tr>
                                 <td>
                                     <div style="font-weight: 700; color: #0284c7;">
-                                        <a href="{{ \Focal\Filament\Resources\CompanyResource::getUrl('edit', ['record' => $account->id]) }}" class="hover:underline">
+                                        <a href="{{ \Odden\Filament\Resources\CompanyResource::getUrl('edit', ['record' => $account->id]) }}" class="hover:underline">
                                             {{ $account->name }}
                                         </a>
                                     </div>

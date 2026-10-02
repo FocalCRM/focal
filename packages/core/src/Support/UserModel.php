@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support;
+namespace Odden\Core\Support;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 
 /**
- * Resolves the host application's user model so Focal packages never
+ * Resolves the host application's user model so Odden packages never
  * reference a concrete App\ class.
  *
- * Resolution order: config('focal-core.user_model'), then the default
+ * Resolution order: config('odden-core.user_model'), then the default
  * auth provider's model (config('auth.providers.users.model')).
  */
 final class UserModel
@@ -22,11 +22,11 @@ final class UserModel
      */
     public static function className(): string
     {
-        $class = config('focal-core.user_model') ?? config('auth.providers.users.model');
+        $class = config('odden-core.user_model') ?? config('auth.providers.users.model');
 
         if (! is_string($class) || ! is_subclass_of($class, Model::class)) {
             throw new RuntimeException(
-                'Focal could not resolve an Eloquent user model. Set "focal-core.user_model" or "auth.providers.users.model".'
+                'Odden could not resolve an Eloquent user model. Set "odden-core.user_model" or "auth.providers.users.model".'
             );
         }
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Enums\AssociationCardinality;
-use Focal\Core\Traits\BelongsToTeam;
+use Odden\Core\Enums\AssociationCardinality;
+use Odden\Core\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -48,7 +48,7 @@ class AssociationType extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.association_types', 'focal_association_types');
+        return config('odden-core.tables.association_types', 'odden_association_types');
     }
 
     /**

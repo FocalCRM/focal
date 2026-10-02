@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Contracts;
+namespace Odden\Core\Contracts;
 
 interface EnrichmentDriver
 {

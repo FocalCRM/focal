@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\TicketResource\Pages;
+namespace Odden\Filament\Resources\TicketResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Resources\TicketResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\Ticket;
+use Odden\Filament\Resources\TicketResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\Ticket;
 use Illuminate\Database\Eloquent\Collection;
 
 class KanbanTickets extends Page
@@ -22,14 +22,14 @@ class KanbanTickets extends Page
 
     protected static ?string $navigationLabel = 'Tickets Board';
 
-    protected string $view = 'focal-filament::pages.ticket-kanban';
+    protected string $view = 'odden-filament::pages.ticket-kanban';
 
     /**
      * @param  array<string, mixed>  $parameters
      */
     public static function canAccess(array $parameters = []): bool
     {
-        return FocalAuthorization::canViewAny([TicketResource::class]);
+        return OddenAuthorization::canViewAny([TicketResource::class]);
     }
 
     /**
@@ -41,7 +41,7 @@ class KanbanTickets extends Page
         $result = [];
 
         foreach ($statuses as $status) {
-            $tickets = FocalAuthorization::query(TicketResource::class, Ticket::class)
+            $tickets = OddenAuthorization::query(TicketResource::class, Ticket::class)
                 ->where('status', $status->value)
                 ->with(['contact', 'company', 'owner', 'slaPolicy'])
                 ->orderBy('created_at', 'desc')
@@ -58,7 +58,7 @@ class KanbanTickets extends Page
 
     public function moveTicket(int $ticketId, string $statusValue): void
     {
-        $ticket = FocalAuthorization::findAndAuthorize(TicketResource::class, Ticket::class, $ticketId, 'update');
+        $ticket = OddenAuthorization::findAndAuthorize(TicketResource::class, Ticket::class, $ticketId, 'update');
 
         $status = TicketStatus::tryFrom($statusValue);
         if ($status === null) {

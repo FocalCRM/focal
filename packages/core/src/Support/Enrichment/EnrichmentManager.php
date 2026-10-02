@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support\Enrichment;
+namespace Odden\Core\Support\Enrichment;
 
-use Focal\Core\Contracts\EnrichmentDriver;
+use Odden\Core\Contracts\EnrichmentDriver;
 use InvalidArgumentException;
 
 class EnrichmentManager
@@ -53,6 +53,6 @@ class EnrichmentManager
      */
     public function getDefaultDriver(): string
     {
-        return (string) config('focal-core.enrichment.driver', 'heuristic');
+        return (string) config('odden-core.enrichment.driver', 'heuristic');
     }
 }

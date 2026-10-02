@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CrmListResource\Pages;
+namespace Odden\Filament\Resources\CrmListResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\CrmListResource;
+use Odden\Filament\Resources\CrmListResource;
 
 class ListCrmLists extends ListRecords
 {

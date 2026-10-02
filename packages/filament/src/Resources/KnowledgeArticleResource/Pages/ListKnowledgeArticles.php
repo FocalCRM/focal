@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\KnowledgeArticleResource\Pages;
+namespace Odden\Filament\Resources\KnowledgeArticleResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\KnowledgeArticleResource;
+use Odden\Filament\Resources\KnowledgeArticleResource;
 
 class ListKnowledgeArticles extends ListRecords
 {

@@ -9,10 +9,10 @@ Paths below use the default route prefixes. See [public routes](../configuration
 
 ## Events
 
-`Focal\Marketing\Models\MarketingEvent`:
+`Odden\Marketing\Models\MarketingEvent`:
 
 ```php
-use Focal\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEvent;
 
 $event = MarketingEvent::create([
     'title' => 'Pipeline Masterclass',
@@ -42,13 +42,13 @@ Helpers: `attendanceRate(): float` (attendees / registrations × 100, one decima
 
 The registration endpoint doesn't check `status`, `is_published`, or `capacity`. If you need to close registration, check `isFull()` or the status in your own front end, or wrap the endpoint.
 
-Registrations are `Focal\Marketing\Models\MarketingEventRegistration` rows: `event_id`, `contact_id` (unique together), `status` (`registered`, `attended`, `no_show`, `cancelled` by convention), `registered_at`, `attended_at`, and `utm_source`, `utm_medium`, `utm_campaign`.
+Registrations are `Odden\Marketing\Models\MarketingEventRegistration` rows: `event_id`, `contact_id` (unique together), `status` (`registered`, `attended`, `no_show`, `cancelled` by convention), `registered_at`, `attended_at`, and `utm_source`, `utm_medium`, `utm_campaign`.
 
 ### Registration endpoint
 
 | Method | URI | Route name | Auth |
 | --- | --- | --- | --- |
-| `POST` | `/api/marketing/events/{slug}/register` | `focal.marketing.events.register` | Public. CSRF exempt, rate limited by `focal-public`. |
+| `POST` | `/api/marketing/events/{slug}/register` | `odden.marketing.events.register` | Public. CSRF exempt, rate limited by `odden-public`. |
 
 ```bash
 curl -X POST https://your-app.test/api/marketing/events/pipeline-masterclass/register \
@@ -80,10 +80,10 @@ curl -X POST https://your-app.test/api/marketing/events/pipeline-masterclass/reg
 
 The contact is matched by the email exactly as sent (it isn't lowercased) and created if missing, with `first_name` defaulting to `Attendee`. A placeholder `Attendee` name is replaced when a later registration includes a first name. An unknown slug returns `404`.
 
-`Focal\Marketing\Actions\RegisterContactForEventAction` then creates or updates the registration. You can call it directly:
+`Odden\Marketing\Actions\RegisterContactForEventAction` then creates or updates the registration. You can call it directly:
 
 ```php
-use Focal\Marketing\Actions\RegisterContactForEventAction;
+use Odden\Marketing\Actions\RegisterContactForEventAction;
 
 $registration = app(RegisterContactForEventAction::class)->execute(
     event: $event,
@@ -98,13 +98,13 @@ On the first registration of a contact for an event it increments `registrations
 
 | Method | URI | Route name | Auth |
 | --- | --- | --- | --- |
-| `POST` | `/api/marketing/events/{slug}/attendance-webhook` | `focal.marketing.events.attendance-webhook` | `FOCAL_MARKETING_API_TOKEN`, rate limited by `focal-api`. CSRF exempt. |
+| `POST` | `/api/marketing/events/{slug}/attendance-webhook` | `odden.marketing.events.attendance-webhook` | `ODDEN_MARKETING_API_TOKEN`, rate limited by `odden-api`. CSRF exempt. |
 
 Send the token as described in [API tokens](../configuration.md#api-tokens).
 
 ```bash
 curl -X POST https://your-app.test/api/marketing/events/pipeline-masterclass/attendance-webhook \
-  -H "Authorization: Bearer $FOCAL_MARKETING_API_TOKEN" \
+  -H "Authorization: Bearer $ODDEN_MARKETING_API_TOKEN" \
   -H "Accept: application/json" -H "Content-Type: application/json" \
   -d '{"email": "ana@example.com", "status": "attended"}'
 ```
@@ -124,7 +124,7 @@ curl -X POST https://your-app.test/api/marketing/events/pipeline-masterclass/att
 | `422` | `{"error": "Email required"}` |
 | `404` | `{"error": "Contact not found"}` or `{"error": "Registration not found"}` (also a plain 404 for an unknown slug) |
 
-`Focal\Marketing\Actions\UpdateAttendanceStatusAction::execute(MarketingEventRegistration $registration, string $status)` does the work and can be called directly. It recounts the event's `attendees_count` from registrations with status `attended`. When a registration becomes `attended` for the first time it also:
+`Odden\Marketing\Actions\UpdateAttendanceStatusAction::execute(MarketingEventRegistration $registration, string $status)` does the work and can be called directly. It recounts the event's `attendees_count` from registrations with status `attended`. When a registration becomes `attended` for the first time it also:
 
 - sets `attended_at`;
 - logs an `Attended Event: {title}` task;
@@ -133,10 +133,10 @@ curl -X POST https://your-app.test/api/marketing/events/pipeline-masterclass/att
 
 ## Gated assets
 
-`Focal\Marketing\Models\MarketingAsset` represents a downloadable file or link:
+`Odden\Marketing\Models\MarketingAsset` represents a downloadable file or link:
 
 ```php
-use Focal\Marketing\Models\MarketingAsset;
+use Odden\Marketing\Models\MarketingAsset;
 
 $asset = MarketingAsset::create([
     'name' => 'State of RevOps 2026',
@@ -164,7 +164,7 @@ Relations: `downloads` (`MarketingAssetDownload` rows) and `downloadingContacts`
 
 | Method | URI | Route name | Auth |
 | --- | --- | --- | --- |
-| `GET` | `/marketing/assets/{slug}/download` | `focal.marketing.assets.download` | Public |
+| `GET` | `/marketing/assets/{slug}/download` | `odden.marketing.assets.download` | Public |
 
 `getDownloadUrl(?Contact $contact = null): string` builds the link. With a contact, it adds `contact_id` and a `signature`, an HMAC-SHA256 of the asset id and contact id keyed with `app.key`:
 
@@ -179,7 +179,7 @@ The route never asks for a form: the "gate" is whatever you put in front of the 
 
 ### Download tracking
 
-Every request to the download route runs `Focal\Marketing\Actions\TrackAssetDownloadAction`, which:
+Every request to the download route runs `Odden\Marketing\Actions\TrackAssetDownloadAction`, which:
 
 - stores a `MarketingAssetDownload` (`contact_id`, `ip_address`, `user_agent`, a random `download_token`, `downloaded_at`);
 - increments `downloads_count`, and `unique_leads_count` on a contact's first download.
@@ -193,7 +193,7 @@ For an identified contact it also:
 To record a download from your own code:
 
 ```php
-use Focal\Marketing\Actions\TrackAssetDownloadAction;
+use Odden\Marketing\Actions\TrackAssetDownloadAction;
 
 $download = app(TrackAssetDownloadAction::class)->execute(asset: $asset, contact: $contact);
 ```

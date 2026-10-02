@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
 
 it('can manage static list members', function (): void {
     $list = CrmList::create([

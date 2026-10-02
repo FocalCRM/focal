@@ -91,8 +91,8 @@
                         <div class="flex flex-col gap-1 flex-grow overflow-y-auto max-h-32">
                             @foreach ($dayCampaigns as $c)
                                 <a
-                                    href="{{ \Focal\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $c->id]) }}"
-                                    class="block p-1.5 rounded text-xs border border-slate-200 dark:border-slate-700 hover:shadow-xs transition {{ $c->status === \Focal\Marketing\Enums\CampaignStatus::Sent ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 text-emerald-900 dark:text-emerald-200' : ($c->status === \Focal\Marketing\Enums\CampaignStatus::Scheduled ? 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 text-sky-900 dark:text-sky-200' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200') }}"
+                                    href="{{ \Odden\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $c->id]) }}"
+                                    class="block p-1.5 rounded text-xs border border-slate-200 dark:border-slate-700 hover:shadow-xs transition {{ $c->status === \Odden\Marketing\Enums\CampaignStatus::Sent ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 text-emerald-900 dark:text-emerald-200' : ($c->status === \Odden\Marketing\Enums\CampaignStatus::Scheduled ? 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 text-sky-900 dark:text-sky-200' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200') }}"
                                 >
                                     <div class="font-bold truncate text-[11px]">{{ $c->name }}</div>
                                     <div class="text-[10px] opacity-75 flex items-center justify-between mt-0.5">

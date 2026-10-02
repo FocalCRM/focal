@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\ContactResource\Pages;
+namespace Odden\Filament\Resources\ContactResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\ContactResource;
+use Odden\Filament\Resources\ContactResource;
 
 class ListContacts extends ListRecords
 {

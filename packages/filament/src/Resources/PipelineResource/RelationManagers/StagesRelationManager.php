@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\PipelineResource\RelationManagers;
+namespace Odden\Filament\Resources\PipelineResource\RelationManagers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -16,7 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Sales\Enums\StageAutomationActionType;
+use Odden\Sales\Enums\StageAutomationActionType;
 
 class StagesRelationManager extends RelationManager
 {

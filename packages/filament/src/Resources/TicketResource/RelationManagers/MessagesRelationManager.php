@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\TicketResource\RelationManagers;
+namespace Odden\Filament\Resources\TicketResource\RelationManagers;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
@@ -12,14 +12,14 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\TicketResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Service\Actions\ReplyTicketAction;
-use Focal\Service\Enums\MessageSenderType;
-use Focal\Service\Models\CannedResponse;
-use Focal\Service\Models\Ticket;
-use Focal\Service\Models\TicketMessage;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\TicketResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Service\Actions\ReplyTicketAction;
+use Odden\Service\Enums\MessageSenderType;
+use Odden\Service\Models\CannedResponse;
+use Odden\Service\Models\Ticket;
+use Odden\Service\Models\TicketMessage;
 use Illuminate\Database\Eloquent\Builder;
 
 class MessagesRelationManager extends RelationManager
@@ -74,7 +74,7 @@ class MessagesRelationManager extends RelationManager
             ->headerActions([
                 Action::make('addMessage')
                     ->label('Add Reply / Note')
-                    ->authorize(fn (): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), TicketResource::class))
+                    ->authorize(fn (): bool => OddenAuthorization::allows('update', $this->getOwnerRecord(), TicketResource::class))
                     ->icon('heroicon-m-chat-bubble-left-ellipsis')
                     ->color('primary')
                     ->form([
@@ -132,7 +132,7 @@ class MessagesRelationManager extends RelationManager
      */
     protected function cannedResponsesQuery(): Builder
     {
-        $userId = FocalAuthorization::userId();
+        $userId = OddenAuthorization::userId();
 
         return CannedResponse::query()
             ->where(function (Builder $query) use ($userId): void {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SalesQuotaResource\Pages;
+namespace Odden\Filament\Resources\SalesQuotaResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\SalesQuotaResource;
+use Odden\Filament\Resources\SalesQuotaResource;
 
 class ListSalesQuotas extends ListRecords
 {

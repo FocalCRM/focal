@@ -1,8 +1,8 @@
-# Focal Filament (`focalcrm/filament`)
+# Odden Filament (`getodden/crm-filament`)
 
-> This is a read-only split of the [focalcrm/focal](https://github.com/focalcrm/focal) monorepo. Please open issues and pull requests there.
+> This is a read-only split of the [getodden/crm](https://github.com/getodden/crm) monorepo. Please open issues and pull requests there.
 
-The unified administrative dashboard and RevOps cockpit for the Focal platform, built on Filament v4. Integrates Core CRM, Sales, Service, Marketing, and Mail Builder into a modular, plug-and-play admin interface with auto-discovering resources, executive cockpits, and dynamic EAV form rendering.
+The unified administrative dashboard and RevOps cockpit for the Odden platform, built on Filament v4. Integrates Core CRM, Sales, Service, Marketing, and Mail Builder into a modular, plug-and-play admin interface with auto-discovering resources, executive cockpits, and dynamic EAV form rendering.
 
 ---
 
@@ -10,7 +10,7 @@ The unified administrative dashboard and RevOps cockpit for the Focal platform, 
 
 ```
 +-------------------------------------------------------------------------+
-|                              FOCAL FILAMENT                             |
+|                              ODDEN FILAMENT                             |
 |                                                                         |
 |  +--------------------+   +--------------------+   +-----------------+  |
 |  | Executive Overview |   | Sales Cockpit &    |   | Service Cockpit |  |
@@ -19,7 +19,7 @@ The unified administrative dashboard and RevOps cockpit for the Focal platform, 
 |             \                       |                       /           |
 |              v                      v                      v            |
 |       +---------------------------------------------------------+       |
-|       |               FocalPlugin (Auto-Discovery)              |       |
+|       |               OddenPlugin (Auto-Discovery)              |       |
 |       |  Detects installed packages (Core, Sales, Service, etc) |       |
 |       +---------------------------------------------------------+       |
 |             |                       |                       |           |
@@ -33,7 +33,7 @@ The unified administrative dashboard and RevOps cockpit for the Focal platform, 
 
 ### Core Features
 
-- **Single-Plugin Registration (`FocalPlugin`):** Register the entire RevOps suite in your Filament panel with one line. Detects which Focal packages are installed and registers matching resources, pages, and widgets dynamically.
+- **Single-Plugin Registration (`OddenPlugin`):** Register the entire RevOps suite in your Filament panel with one line. Detects which Odden packages are installed and registers matching resources, pages, and widgets dynamically.
 - **Dedicated Operational Cockpits:**
   - `ExecutiveOverview`: C-level KPI dashboard displaying pipeline value, win rates, SLA compliance, and marketing ROI.
   - `SalesCockpit`: Rep and manager hub with Kanban deal pipelines, quota tracking, and cadence tasks.
@@ -51,13 +51,13 @@ The unified administrative dashboard and RevOps cockpit for the Focal platform, 
 ## Installation
 
 ```bash
-composer require focalcrm/filament
+composer require getodden/crm-filament
 ```
 
-Register `FocalPlugin` in your Filament Panel Provider (e.g., `app/Providers/Filament/AdminPanelProvider.php`):
+Register `OddenPlugin` in your Filament Panel Provider (e.g., `app/Providers/Filament/AdminPanelProvider.php`):
 
 ```php
-use Focal\Filament\FocalPlugin;
+use Odden\Filament\OddenPlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -66,7 +66,7 @@ public function panel(Panel $panel): Panel
         ->id('admin')
         ->path('admin')
         ->plugins([
-            FocalPlugin::make(),
+            OddenPlugin::make(),
         ]);
 }
 ```
@@ -75,10 +75,10 @@ public function panel(Panel $panel): Panel
 
 ## Granular Module Control
 
-By default, `FocalPlugin` detects installed packages automatically. You can also explicitly toggle modules:
+By default, `OddenPlugin` detects installed packages automatically. You can also explicitly toggle modules:
 
 ```php
-FocalPlugin::make()
+OddenPlugin::make()
     ->enableCore(true)
     ->enableSales(true)
     ->enableService(false)    // Disable service resources and cockpit

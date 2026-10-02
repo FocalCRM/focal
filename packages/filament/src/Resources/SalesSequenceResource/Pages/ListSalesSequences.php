@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SalesSequenceResource\Pages;
+namespace Odden\Filament\Resources\SalesSequenceResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Resources\SalesSequenceResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Sales\Actions\ProcessCadencesAction;
-use Focal\Sales\Models\SalesSequence;
+use Odden\Filament\Resources\SalesSequenceResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Sales\Actions\ProcessCadencesAction;
+use Odden\Sales\Models\SalesSequence;
 
 class ListSalesSequences extends ListRecords
 {
@@ -26,10 +26,10 @@ class ListSalesSequences extends ListRecords
                 ->icon(Heroicon::Play)
                 ->color('info')
                 // Processes due steps across every active sequence, so it needs `update` on all of them.
-                ->authorize(fn (): bool => FocalAuthorization::query(SalesSequenceResource::class, SalesSequence::class)
+                ->authorize(fn (): bool => OddenAuthorization::query(SalesSequenceResource::class, SalesSequence::class)
                     ->where('is_active', true)
                     ->get()
-                    ->every(fn (SalesSequence $sequence): bool => FocalAuthorization::allows('update', $sequence, SalesSequenceResource::class)))
+                    ->every(fn (SalesSequence $sequence): bool => OddenAuthorization::allows('update', $sequence, SalesSequenceResource::class)))
                 ->action(function (): void {
                     $stats = app(ProcessCadencesAction::class)->execute();
 

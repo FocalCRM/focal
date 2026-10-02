@@ -7,7 +7,7 @@ This page covers three tools for working the ticket queue: routing rules that pi
 
 ## Routing rules
 
-A `Focal\Service\Models\TicketRoutingRule` matches tickets by criteria and assigns them to a pool of users in turn.
+An `Odden\Service\Models\TicketRoutingRule` matches tickets by criteria and assigns them to a pool of users in turn.
 
 | Attribute | Default | Notes |
 | :--- | :--- | :--- |
@@ -30,7 +30,7 @@ Supported criteria keys:
 Other keys are ignored.
 
 ```php
-use Focal\Service\Models\TicketRoutingRule;
+use Odden\Service\Models\TicketRoutingRule;
 
 TicketRoutingRule::create([
     'name' => 'Urgent email',
@@ -58,7 +58,7 @@ TicketRoutingRule::create([
 `CreateTicketAction` calls `RouteTicketAction` for every ticket created without an owner, which includes tickets from the [support portal](customer-portal.md), the [email webhook](inbound-email.md), and the [chat widget](chat-widget.md). Use `'source' => 'chat'` to send chat tickets to a dedicated pool. You can route any ticket yourself:
 
 ```php
-use Focal\Service\Actions\RouteTicketAction;
+use Odden\Service\Actions\RouteTicketAction;
 
 $result = app(RouteTicketAction::class)->execute($ticket);
 
@@ -78,7 +78,7 @@ It returns `null` when no rule matches. Routing doesn't consider workload or whe
 
 ## Canned responses
 
-`Focal\Service\Models\CannedResponse` stores reusable replies:
+`Odden\Service\Models\CannedResponse` stores reusable replies:
 
 | Attribute | Default | Notes |
 | :--- | :--- | :--- |
@@ -92,8 +92,8 @@ It returns `null` when no rule matches. Routing doesn't consider workload or whe
 The package stores canned responses but doesn't render or filter them: there is no variable substitution, and `is_shared` is not enforced. Load the response in your agent UI and post its content with `ReplyTicketAction`:
 
 ```php
-use Focal\Service\Actions\ReplyTicketAction;
-use Focal\Service\Models\CannedResponse;
+use Odden\Service\Actions\ReplyTicketAction;
+use Odden\Service\Models\CannedResponse;
 
 CannedResponse::create([
     'title' => 'Password reset steps',
@@ -117,7 +117,7 @@ app(ReplyTicketAction::class)->execute(
 When a customer opens the same issue twice, merge the duplicate into the ticket you want to keep:
 
 ```php
-use Focal\Service\Actions\MergeTicketsAction;
+use Odden\Service\Actions\MergeTicketsAction;
 
 $primary = app(MergeTicketsAction::class)->execute(
     primaryTicket: $primaryTicket,
@@ -142,7 +142,7 @@ The secondary ticket keeps its number and portal token, and stays closed.
 
 ### Replies to merged tickets
 
-Customer replies that reference a merged ticket by email (its portal link, or the Message-ID of an email sent about it) are posted on the primary ticket instead, as the merge note says. If the primary was itself merged later, they follow the chain to the last ticket (`$ticket->mergeTarget()`). A reply reopens the primary if it is resolved or closed, unless `focal-service.reopen_on_customer_reply` is `false`. Who may reply is still decided by the secondary ticket: an email reply must come from the secondary ticket's contact. See [Email to ticket](inbound-email.md#threading-replies) and [Statuses](tickets.md#statuses).
+Customer replies that reference a merged ticket by email (its portal link, or the Message-ID of an email sent about it) are posted on the primary ticket instead, as the merge note says. If the primary was itself merged later, they follow the chain to the last ticket (`$ticket->mergeTarget()`). A reply reopens the primary if it is resolved or closed, unless `odden-service.reopen_on_customer_reply` is `false`. Who may reply is still decided by the secondary ticket: an email reply must come from the secondary ticket's contact. See [Email to ticket](inbound-email.md#threading-replies) and [Statuses](tickets.md#statuses).
 
 The portal and the chat widget are stricter, because they hand a ticket's token straight to whoever filled in the form and never verify the email address they typed. Anyone can open a portal ticket or a chat in another customer's name, and the ticket is attached to that customer's contact, so once an agent merges it into the customer's real ticket, its token must not lead there. `$ticket->portalTokenFollowsMerge()` decides: it is `true` only for tickets whose token reached the customer by email alone (source `Email`, `Phone`, or `Api`) and `false` for `WebPortal` and `Chat` tickets.
 

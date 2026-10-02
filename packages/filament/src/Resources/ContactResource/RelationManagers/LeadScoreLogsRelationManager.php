@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\ContactResource\RelationManagers;
+namespace Odden\Filament\Resources\ContactResource\RelationManagers;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
@@ -12,11 +12,11 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Resources\ContactResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\LeadScoreLog;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Resources\ContactResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\LeadScoreLog;
 
 class LeadScoreLogsRelationManager extends RelationManager
 {
@@ -86,7 +86,7 @@ class LeadScoreLogsRelationManager extends RelationManager
             ->headerActions([
                 Action::make('manualScoreAdjustment')
                     ->label('Adjust Score')
-                    ->authorize(fn (): bool => FocalAuthorization::allows('update', $this->getOwnerRecord(), ContactResource::class))
+                    ->authorize(fn (): bool => OddenAuthorization::allows('update', $this->getOwnerRecord(), ContactResource::class))
                     ->icon(Heroicon::Sparkles)
                     ->color('primary')
                     ->modalHeading('Manual Lead Score Adjustment')

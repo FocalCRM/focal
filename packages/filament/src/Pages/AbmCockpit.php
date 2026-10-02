@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Models\Company;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\CompanyResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
+use Odden\Core\Models\Company;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\CompanyResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\CalculateCompanyIntentScoreAction;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
@@ -30,7 +30,7 @@ class AbmCockpit extends Page
 
     protected static ?string $title = 'ABM & Target Account Intent Cockpit';
 
-    protected string $view = 'focal-filament::pages.abm-cockpit';
+    protected string $view = 'odden-filament::pages.abm-cockpit';
 
     public string $activeTier = 'all';
 
@@ -122,7 +122,7 @@ class AbmCockpit extends Page
     public function recalculateAll(CalculateCompanyIntentScoreAction $action): void
     {
         /** @var Collection<int, Company> $accounts */
-        $accounts = FocalAuthorization::query(CompanyResource::class, Company::class)
+        $accounts = OddenAuthorization::query(CompanyResource::class, Company::class)
             ->where(function ($query): void {
                 $query->whereNotNull('account_tier')
                     ->orWhere('intent_surge', true);
@@ -131,7 +131,7 @@ class AbmCockpit extends Page
 
         // All-or-nothing: the bulk recalculation needs `update` on every account it touches.
         foreach ($accounts as $account) {
-            FocalAuthorization::authorize('update', $account, CompanyResource::class);
+            OddenAuthorization::authorize('update', $account, CompanyResource::class);
         }
 
         foreach ($accounts as $account) {
@@ -147,7 +147,7 @@ class AbmCockpit extends Page
 
     public function recalculateCompany(int $companyId, CalculateCompanyIntentScoreAction $action): void
     {
-        $company = FocalAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $companyId, 'update');
+        $company = OddenAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $companyId, 'update');
 
         $updated = $action->execute($company);
 

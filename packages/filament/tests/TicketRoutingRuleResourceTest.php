@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Service\Models\TicketRoutingRule;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Service\Models\TicketRoutingRule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TicketRoutingRuleResourceTest extends TestCase

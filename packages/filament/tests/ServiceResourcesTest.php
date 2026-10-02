@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Filament\Resources\TicketResource\Pages\KanbanTickets;
-use Focal\Filament\Resources\TicketResource\Pages\ListTickets;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Service\Database\Seeders\ServiceDatabaseSeeder;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Enums\TicketSource;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\CannedResponse;
-use Focal\Service\Models\KnowledgeArticle;
-use Focal\Service\Models\SlaPolicy;
-use Focal\Service\Models\Ticket;
+use Odden\Filament\Resources\TicketResource\Pages\KanbanTickets;
+use Odden\Filament\Resources\TicketResource\Pages\ListTickets;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Service\Database\Seeders\ServiceDatabaseSeeder;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Enums\TicketSource;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\CannedResponse;
+use Odden\Service\Models\KnowledgeArticle;
+use Odden\Service\Models\SlaPolicy;
+use Odden\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -133,12 +133,12 @@ class ServiceResourcesTest extends TestCase
     {
         $this->seed(ServiceDatabaseSeeder::class);
 
-        $this->assertDatabaseHas('focal_service_sla_policies', ['name' => 'Standard Customer Support SLA']);
-        $this->assertDatabaseHas('focal_service_sla_policies', ['name' => 'Enterprise 24/7 Mission-Critical SLA']);
-        $this->assertDatabaseHas('focal_service_articles', ['slug' => 'configuring-saml-sso']);
-        $this->assertDatabaseHas('focal_service_canned_responses', ['shortcut' => '!moreinfo']);
-        $this->assertDatabaseHas('focal_service_tickets', ['ticket_number' => 'TICK-2026-0001']);
-        $this->assertDatabaseHas('focal_service_tickets', ['ticket_number' => 'TICK-2026-0004', 'csat_rating' => 5]);
+        $this->assertDatabaseHas('odden_service_sla_policies', ['name' => 'Standard Customer Support SLA']);
+        $this->assertDatabaseHas('odden_service_sla_policies', ['name' => 'Enterprise 24/7 Mission-Critical SLA']);
+        $this->assertDatabaseHas('odden_service_articles', ['slug' => 'configuring-saml-sso']);
+        $this->assertDatabaseHas('odden_service_canned_responses', ['shortcut' => '!moreinfo']);
+        $this->assertDatabaseHas('odden_service_tickets', ['ticket_number' => 'TICK-2026-0001']);
+        $this->assertDatabaseHas('odden_service_tickets', ['ticket_number' => 'TICK-2026-0004', 'csat_rating' => 5]);
 
         // Verify conversation messages seeded on Ticket 2
         $ticket2 = Ticket::where('ticket_number', 'TICK-2026-0002')->first();

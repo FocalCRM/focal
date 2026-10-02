@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Exceptions;
+namespace Odden\Core\Exceptions;
 
 use RuntimeException;
 

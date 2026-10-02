@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support;
+namespace Odden\Core\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
- * Looks up a relation that another Focal package may add to a Core model.
+ * Looks up a relation that another Odden package may add to a Core model.
  *
  * Sales and Service add `deals` and `tickets` with resolveRelationUsing(), which
  * method_exists() can't see. Model::isRelation() checks both declared methods and

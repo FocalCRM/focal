@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LandingPageResource\Pages;
+namespace Odden\Filament\Resources\LandingPageResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\LandingPageResource;
+use Odden\Filament\Resources\LandingPageResource;
 
 class EditLandingPage extends EditRecord
 {

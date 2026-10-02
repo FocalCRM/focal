@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "97bfb89b81573cf597ea85b381423278",
+    "content-hash": "603164cbf555fa22583458811070865b",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1008,83 +1008,6 @@
             "time": "2026-06-14T20:44:06+00:00"
         },
         {
-            "name": "dophp/laravel-mail-builder",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doPhp/laravel-mail-builder.git",
-                "reference": "b9eb0aebcf84ddc95cb4e08c7e05590a3bf23d53"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doPhp/laravel-mail-builder/zipball/b9eb0aebcf84ddc95cb4e08c7e05590a3bf23d53",
-                "reference": "b9eb0aebcf84ddc95cb4e08c7e05590a3bf23d53",
-                "shasum": ""
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-libxml": "*",
-                "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
-                "laravel/framework": "^12.0 || ^13.0",
-                "php": "^8.3",
-                "tijsverkoyen/css-to-inline-styles": "^2.2.5"
-            },
-            "require-dev": {
-                "filament/forms": "^5.0",
-                "larastan/larastan": "^3.0",
-                "laravel/pint": "^1.32",
-                "orchestra/testbench": "^10.0 || ^11.0",
-                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
-                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
-            },
-            "suggest": {
-                "ext-zip": "Required to export template packages as ZIP archives",
-                "filament/forms": "Required to use the visual drag-and-drop EmailSlotBuilder component (^5.0)"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "DoPHP\\MailBuilder\\MailBuilderServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-main": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "DoPHP\\MailBuilder\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "doPHP",
-                    "homepage": "https://dophp.dev"
-                }
-            ],
-            "description": "Responsive, slot-based email builder and compiler for Laravel: modular blocks, MJML/HTML import, merge tags, AMP, plain-text fallback, and pre-send audits.",
-            "homepage": "https://dophp.dev",
-            "keywords": [
-                "amp-email",
-                "email",
-                "email-builder",
-                "filament",
-                "laravel",
-                "mjml",
-                "newsletter"
-            ],
-            "support": {
-                "issues": "https://github.com/doPHP/laravel-mail-builder/issues",
-                "source": "https://github.com/doPHP/laravel-mail-builder"
-            },
-            "time": "2026-10-01T22:02:18+00:00"
-        },
-        {
             "name": "dragonmantank/cron-expression",
             "version": "v3.6.0",
             "source": {
@@ -1709,390 +1632,6 @@
             "time": "2026-09-20T18:53:34+00:00"
         },
         {
-            "name": "focalcrm/core",
-            "version": "0.2.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "packages/core",
-                "reference": "aafcb9cffa36b3b98b648c17ee3ade926113552e"
-            },
-            "require": {
-                "laravel/framework": "^12.0 || ^13.0",
-                "php": "^8.3"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^10.0 || ^11.0",
-                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
-                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Focal\\Core\\CoreServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-main": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Focal\\Core\\": "src/",
-                    "Focal\\Core\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Focal\\Core\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "CaskStack, LLC",
-                    "homepage": "https://focalcrm.io"
-                }
-            ],
-            "description": "Headless CRM Core Engine for Focal (Contacts, Companies, Custom Properties, Associations, Timeline)",
-            "homepage": "https://focalcrm.io",
-            "keywords": [
-                "companies",
-                "contacts",
-                "crm",
-                "custom-properties",
-                "focalcrm",
-                "headless",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/focalcrm/focal/issues",
-                "source": "https://github.com/focalcrm/focal"
-            },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
-            "name": "focalcrm/filament",
-            "version": "0.2.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "packages/filament",
-                "reference": "f0a510e56b9b0651677fc6095adbdb6e05578ffd"
-            },
-            "require": {
-                "filament/filament": "^5.9",
-                "focalcrm/core": "self.version",
-                "laravel/framework": "^12.0 || ^13.0",
-                "php": "^8.3"
-            },
-            "require-dev": {
-                "focalcrm/marketing": "self.version",
-                "focalcrm/sales": "self.version",
-                "focalcrm/service": "self.version",
-                "orchestra/testbench": "^10.0 || ^11.0",
-                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
-                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
-            },
-            "suggest": {
-                "focalcrm/marketing": "Adds Campaigns, Workflows, Forms, and the Marketing Cockpit",
-                "focalcrm/sales": "Adds Deals, Pipelines, Quotes, Sequences, and the Sales Cockpit",
-                "focalcrm/service": "Adds Tickets, SLAs, Knowledge Articles, and the Service Cockpit"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Focal\\Filament\\FilamentServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-main": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Focal\\Filament\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Focal\\Filament\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "CaskStack, LLC",
-                    "homepage": "https://focalcrm.io"
-                }
-            ],
-            "description": "Unified Filament CRM Panel & UI Plugin for Focal",
-            "homepage": "https://focalcrm.io",
-            "keywords": [
-                "admin-panel",
-                "crm",
-                "filament",
-                "filament-plugin",
-                "focalcrm",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/focalcrm/focal/issues",
-                "source": "https://github.com/focalcrm/focal"
-            },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
-            "name": "focalcrm/marketing",
-            "version": "0.2.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "packages/marketing",
-                "reference": "9b8c5d0f4b8f2e13a32a90a7c4960e4abb973976"
-            },
-            "require": {
-                "dophp/laravel-mail-builder": "^1.0",
-                "focalcrm/core": "self.version",
-                "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
-                "laravel/framework": "^12.0 || ^13.0",
-                "php": "^8.3"
-            },
-            "require-dev": {
-                "filament/forms": "^5.0",
-                "focalcrm/sales": "self.version",
-                "orchestra/testbench": "^10.0 || ^11.0",
-                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
-                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
-            },
-            "suggest": {
-                "focalcrm/sales": "Enables closed-loop revenue attribution, sales cycle velocity, and automated deal creation"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Focal\\Marketing\\MarketingServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-main": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Focal\\Marketing\\": "src/",
-                    "Focal\\Marketing\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Focal\\Marketing\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "CaskStack, LLC",
-                    "homepage": "https://focalcrm.io"
-                }
-            ],
-            "description": "Email Marketing, Lead Capture Forms, Drip Campaigns, and Analytics for Focal CRM",
-            "homepage": "https://focalcrm.io",
-            "keywords": [
-                "crm",
-                "email-marketing",
-                "focalcrm",
-                "forms",
-                "laravel",
-                "lead-scoring",
-                "marketing-automation"
-            ],
-            "support": {
-                "issues": "https://github.com/focalcrm/focal/issues",
-                "source": "https://github.com/focalcrm/focal"
-            },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
-            "name": "focalcrm/sales",
-            "version": "0.2.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "packages/sales",
-                "reference": "ee8999ca0b1de523fda83183439030178549495d"
-            },
-            "require": {
-                "focalcrm/core": "self.version",
-                "laravel/framework": "^12.0 || ^13.0",
-                "php": "^8.3"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^10.0 || ^11.0",
-                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
-                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Focal\\Sales\\SalesServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-main": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Focal\\Sales\\": "src/",
-                    "Focal\\Sales\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Focal\\Sales\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "CaskStack, LLC",
-                    "homepage": "https://focalcrm.io"
-                }
-            ],
-            "description": "Sales, Deals, and Pipeline Management for Focal CRM",
-            "homepage": "https://focalcrm.io",
-            "keywords": [
-                "crm",
-                "deals",
-                "focalcrm",
-                "forecasting",
-                "laravel",
-                "pipeline",
-                "quotes",
-                "sales"
-            ],
-            "support": {
-                "issues": "https://github.com/focalcrm/focal/issues",
-                "source": "https://github.com/focalcrm/focal"
-            },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
-            "name": "focalcrm/service",
-            "version": "0.2.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "packages/service",
-                "reference": "e1b4625de60f35a62cc8ce72acc0345617e6d7d8"
-            },
-            "require": {
-                "focalcrm/core": "self.version",
-                "laravel/framework": "^12.0 || ^13.0",
-                "php": "^8.3"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^10.0 || ^11.0",
-                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
-                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Focal\\Service\\ServiceHubServiceProvider"
-                    ]
-                },
-                "branch-alias": {
-                    "dev-main": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Focal\\Service\\": "src/",
-                    "Focal\\Service\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Focal\\Service\\Tests\\": "tests/"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "CaskStack, LLC",
-                    "homepage": "https://focalcrm.io"
-                }
-            ],
-            "description": "Customer Service, Help Desk, Tickets, SLAs, and Knowledge Base for Focal CRM",
-            "homepage": "https://focalcrm.io",
-            "keywords": [
-                "crm",
-                "focalcrm",
-                "helpdesk",
-                "knowledge-base",
-                "laravel",
-                "sla",
-                "tickets"
-            ],
-            "support": {
-                "issues": "https://github.com/focalcrm/focal/issues",
-                "source": "https://github.com/focalcrm/focal"
-            },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
-        },
-        {
             "name": "fruitcake/php-cors",
             "version": "v1.4.0",
             "source": {
@@ -2162,6 +1701,467 @@
                 }
             ],
             "time": "2025-12-03T09:33:47+00:00"
+        },
+        {
+            "name": "getodden/crm-core",
+            "version": "0.2.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "packages/core",
+                "reference": "bd7b63c565e714e966a77ae3c645a60a11d7850d"
+            },
+            "require": {
+                "laravel/framework": "^12.0 || ^13.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Odden\\Core\\CoreServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "0.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Odden\\Core\\": "src/",
+                    "Odden\\Core\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Odden\\Core\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://odden.io"
+                }
+            ],
+            "description": "Headless CRM Core Engine for Odden (Contacts, Companies, Custom Properties, Associations, Timeline)",
+            "homepage": "https://odden.io",
+            "keywords": [
+                "companies",
+                "contacts",
+                "crm",
+                "custom-properties",
+                "getodden",
+                "headless",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/getodden/crm/issues",
+                "source": "https://github.com/getodden/crm"
+            },
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "getodden/crm-filament",
+            "version": "0.2.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "packages/filament",
+                "reference": "4c8758e52d4bc0abf415aafbcfa4cca1665775c1"
+            },
+            "require": {
+                "filament/filament": "^5.9",
+                "getodden/crm-core": "self.version",
+                "laravel/framework": "^12.0 || ^13.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "getodden/crm-marketing": "self.version",
+                "getodden/crm-sales": "self.version",
+                "getodden/crm-service": "self.version",
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
+            },
+            "suggest": {
+                "getodden/crm-marketing": "Adds Campaigns, Workflows, Forms, and the Marketing Cockpit",
+                "getodden/crm-sales": "Adds Deals, Pipelines, Quotes, Sequences, and the Sales Cockpit",
+                "getodden/crm-service": "Adds Tickets, SLAs, Knowledge Articles, and the Service Cockpit"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Odden\\Filament\\FilamentServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "0.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Odden\\Filament\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Odden\\Filament\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://odden.io"
+                }
+            ],
+            "description": "Unified Filament CRM Panel & UI Plugin for Odden",
+            "homepage": "https://odden.io",
+            "keywords": [
+                "admin-panel",
+                "crm",
+                "filament",
+                "filament-plugin",
+                "getodden",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/getodden/crm/issues",
+                "source": "https://github.com/getodden/crm"
+            },
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "getodden/crm-marketing",
+            "version": "0.2.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "packages/marketing",
+                "reference": "1545d643d966f3a450377726782baf795b4532d5"
+            },
+            "require": {
+                "getodden/crm-core": "self.version",
+                "getodden/mail": "^2.0",
+                "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
+                "laravel/framework": "^12.0 || ^13.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "filament/forms": "^5.0",
+                "getodden/crm-sales": "self.version",
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
+            },
+            "suggest": {
+                "getodden/crm-sales": "Enables closed-loop revenue attribution, sales cycle velocity, and automated deal creation"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Odden\\Marketing\\MarketingServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "0.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Odden\\Marketing\\": "src/",
+                    "Odden\\Marketing\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Odden\\Marketing\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://odden.io"
+                }
+            ],
+            "description": "Email Marketing, Lead Capture Forms, Drip Campaigns, and Analytics for Odden CRM",
+            "homepage": "https://odden.io",
+            "keywords": [
+                "crm",
+                "email-marketing",
+                "forms",
+                "getodden",
+                "laravel",
+                "lead-scoring",
+                "marketing-automation"
+            ],
+            "support": {
+                "issues": "https://github.com/getodden/crm/issues",
+                "source": "https://github.com/getodden/crm"
+            },
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "getodden/crm-sales",
+            "version": "0.2.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "packages/sales",
+                "reference": "5c3e8f40475327cf861f102a38dcef9ed0f76329"
+            },
+            "require": {
+                "getodden/crm-core": "self.version",
+                "laravel/framework": "^12.0 || ^13.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Odden\\Sales\\SalesServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "0.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Odden\\Sales\\": "src/",
+                    "Odden\\Sales\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Odden\\Sales\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://odden.io"
+                }
+            ],
+            "description": "Sales, Deals, and Pipeline Management for Odden CRM",
+            "homepage": "https://odden.io",
+            "keywords": [
+                "crm",
+                "deals",
+                "forecasting",
+                "getodden",
+                "laravel",
+                "pipeline",
+                "quotes",
+                "sales"
+            ],
+            "support": {
+                "issues": "https://github.com/getodden/crm/issues",
+                "source": "https://github.com/getodden/crm"
+            },
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "getodden/crm-service",
+            "version": "0.2.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "packages/service",
+                "reference": "265686348da39f96cc433259044946b44f255685"
+            },
+            "require": {
+                "getodden/crm-core": "self.version",
+                "laravel/framework": "^12.0 || ^13.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Odden\\Service\\ServiceHubServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "0.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Odden\\Service\\": "src/",
+                    "Odden\\Service\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Odden\\Service\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://odden.io"
+                }
+            ],
+            "description": "Customer Service, Help Desk, Tickets, SLAs, and Knowledge Base for Odden CRM",
+            "homepage": "https://odden.io",
+            "keywords": [
+                "crm",
+                "getodden",
+                "helpdesk",
+                "knowledge-base",
+                "laravel",
+                "sla",
+                "tickets"
+            ],
+            "support": {
+                "issues": "https://github.com/getodden/crm/issues",
+                "source": "https://github.com/getodden/crm"
+            },
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
+            "name": "getodden/mail",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/getodden/mail.git",
+                "reference": "132cc7ab44075abe3afebb8bcf8665a9eb43253f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/getodden/mail/zipball/132cc7ab44075abe3afebb8bcf8665a9eb43253f",
+                "reference": "132cc7ab44075abe3afebb8bcf8665a9eb43253f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
+                "laravel/framework": "^12.0 || ^13.0",
+                "php": "^8.3",
+                "tijsverkoyen/css-to-inline-styles": "^2.2.5"
+            },
+            "require-dev": {
+                "filament/forms": "^5.0",
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.32",
+                "orchestra/testbench": "^10.0 || ^11.0",
+                "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
+                "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
+            },
+            "suggest": {
+                "ext-zip": "Required to export template packages as ZIP archives",
+                "filament/forms": "Required to use the visual drag-and-drop EmailSlotBuilder component (^5.0)"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Odden\\MailBuilder\\MailBuilderServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Odden\\MailBuilder\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CaskStack, LLC",
+                    "homepage": "https://odden.io"
+                }
+            ],
+            "description": "Responsive, slot-based email builder and compiler for Laravel: modular blocks, MJML/HTML import, merge tags, AMP, plain-text fallback, and pre-send audits.",
+            "homepage": "https://odden.io",
+            "keywords": [
+                "amp-email",
+                "email",
+                "email-builder",
+                "filament",
+                "laravel",
+                "mjml",
+                "newsletter"
+            ],
+            "support": {
+                "issues": "https://github.com/getodden/mail/issues",
+                "source": "https://github.com/getodden/mail"
+            },
+            "time": "2026-10-02T21:44:50+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -12962,11 +12962,11 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "focalcrm/core": 20,
-        "focalcrm/filament": 20,
-        "focalcrm/marketing": 20,
-        "focalcrm/sales": 20,
-        "focalcrm/service": 20
+        "getodden/crm-core": 20,
+        "getodden/crm-filament": 20,
+        "getodden/crm-marketing": 20,
+        "getodden/crm-sales": 20,
+        "getodden/crm-service": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

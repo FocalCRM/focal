@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Enums\AssociationCardinality;
-use Focal\Core\Models\AssociationType;
+use Odden\Core\Enums\AssociationCardinality;
+use Odden\Core\Models\AssociationType;
 
 class CreateAssociationTypeAction
 {

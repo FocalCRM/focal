@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\AutoAssociateContactCompanyAction;
-use Focal\Core\Actions\CreateContactAction;
-use Focal\Core\Actions\ExtractCorporateDomainAction;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Support\FreemailDomains;
+use Odden\Core\Actions\AutoAssociateContactCompanyAction;
+use Odden\Core\Actions\CreateContactAction;
+use Odden\Core\Actions\ExtractCorporateDomainAction;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\FreemailDomains;
 
 it('identifies standard consumer freemail domains', function () {
     expect(FreemailDomains::isFreemail('gmail.com'))->toBeTrue()

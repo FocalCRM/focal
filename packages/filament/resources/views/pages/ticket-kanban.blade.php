@@ -135,7 +135,7 @@
                                     </span>
                                 </div>
 
-                                <a href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" 
+                                <a href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" 
                                    class="text-xs font-bold text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 line-clamp-2 mb-2 transition">
                                     {{ $ticket->subject }}
                                 </a>

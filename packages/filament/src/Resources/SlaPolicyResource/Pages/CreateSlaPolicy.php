@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SlaPolicyResource\Pages;
+namespace Odden\Filament\Resources\SlaPolicyResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\SlaPolicyResource;
+use Odden\Filament\Resources\SlaPolicyResource;
 
 class CreateSlaPolicy extends CreateRecord
 {

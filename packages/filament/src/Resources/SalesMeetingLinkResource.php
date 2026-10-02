@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Closure;
@@ -22,12 +22,12 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\CreateSalesMeetingLink;
-use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\EditSalesMeetingLink;
-use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\ListSalesMeetingLinks;
-use Focal\Sales\Models\SalesMeetingLink;
-use Focal\Sales\Services\MeetingAvailability;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\SalesMeetingLinkResource\Pages\CreateSalesMeetingLink;
+use Odden\Filament\Resources\SalesMeetingLinkResource\Pages\EditSalesMeetingLink;
+use Odden\Filament\Resources\SalesMeetingLinkResource\Pages\ListSalesMeetingLinks;
+use Odden\Sales\Models\SalesMeetingLink;
+use Odden\Sales\Services\MeetingAvailability;
 use UnitEnum;
 
 class SalesMeetingLinkResource extends Resource
@@ -91,7 +91,7 @@ class SalesMeetingLinkResource extends Resource
                     ->columns(2),
 
                 Section::make('Availability')
-                    ->description('Slots are offered inside these weekly working hours, in the timezone below. Leave every day empty to use the default hours from focal-sales.meetings.default_working_hours (Monday to Friday, 09:00-17:00 unless changed).')
+                    ->description('Slots are offered inside these weekly working hours, in the timezone below. Leave every day empty to use the default hours from odden-sales.meetings.default_working_hours (Monday to Friday, 09:00-17:00 unless changed).')
                     ->schema([
                         Select::make('timezone')
                             ->label('Timezone')
@@ -175,9 +175,9 @@ class SalesMeetingLinkResource extends Resource
                     ->sortable(),
                 TextColumn::make('slug')
                     ->label('Public URL')
-                    ->formatStateUsing(fn ($state): string => route('focal.meetings.show', $state, false))
+                    ->formatStateUsing(fn ($state): string => route('odden.meetings.show', $state, false))
                     ->color('primary')
-                    ->url(fn (SalesMeetingLink $record): string => route('focal.meetings.show', ['slug' => $record->slug]), shouldOpenInNewTab: true),
+                    ->url(fn (SalesMeetingLink $record): string => route('odden.meetings.show', ['slug' => $record->slug]), shouldOpenInNewTab: true),
                 TextColumn::make('duration_minutes')
                     ->label('Duration')
                     ->formatStateUsing(fn ($state): string => $state.' min')

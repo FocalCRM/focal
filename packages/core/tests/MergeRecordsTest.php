@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\FindDuplicateCompaniesAction;
-use Focal\Core\Actions\FindDuplicateContactsAction;
-use Focal\Core\Actions\MergeCompaniesAction;
-use Focal\Core\Actions\MergeContactsAction;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\FindDuplicateCompaniesAction;
+use Odden\Core\Actions\FindDuplicateContactsAction;
+use Odden\Core\Actions\MergeCompaniesAction;
+use Odden\Core\Actions\MergeContactsAction;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 
 test('finds duplicate contacts by email and merges them preserving activities and associations', function () {
     $primary = Contact::factory()->create([

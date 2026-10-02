@@ -24,7 +24,7 @@
                     <input
                         type="text"
                         wire:model.live.debounce.300ms="selector"
-                        placeholder="e.g. focal, k1, s1"
+                        placeholder="e.g. odden, k1, s1"
                         class="w-full text-sm rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                     />
                 </div>

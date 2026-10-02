@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Resources\CampaignResource\Pages\ListCampaigns;
-use Focal\Filament\Resources\CompanyResource\Pages\ListCompanies;
-use Focal\Filament\Resources\ContactResource\Pages\ListContacts;
-use Focal\Filament\Resources\DealResource\Pages\ViewDeal;
-use Focal\Filament\Resources\SalesSequenceResource\Pages\ListSalesSequences;
-use Focal\Filament\Resources\TicketResource\Pages\ListTickets;
-use Focal\Filament\Support\FocalPackages;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\SalesSequence;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Resources\CampaignResource\Pages\ListCampaigns;
+use Odden\Filament\Resources\CompanyResource\Pages\ListCompanies;
+use Odden\Filament\Resources\ContactResource\Pages\ListContacts;
+use Odden\Filament\Resources\DealResource\Pages\ViewDeal;
+use Odden\Filament\Resources\SalesSequenceResource\Pages\ListSalesSequences;
+use Odden\Filament\Resources\TicketResource\Pages\ListTickets;
+use Odden\Filament\Support\OddenPackages;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\SalesSequence;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -72,7 +72,7 @@ class ResourceActionAuthorizationTest extends TestCase
 
     public function test_sales_contact_actions_are_hidden_when_sales_is_not_installed(): void
     {
-        FocalPackages::fake(['sales' => false]);
+        OddenPackages::fake(['sales' => false]);
         $contact = Contact::factory()->create();
 
         Livewire::actingAs(User::factory()->create())
@@ -112,8 +112,8 @@ class ResourceActionAuthorizationTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Launch',
             'subject' => 'Live now',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Draft,
         ]);
 
@@ -159,8 +159,8 @@ class ResourceActionAuthorizationTest extends TestCase
         return Campaign::create([
             'name' => $name,
             'subject' => 'Live now',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'list_id' => $list->id,
             'status' => CampaignStatus::Draft,
         ]);

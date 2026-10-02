@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support;
+namespace Odden\Core\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -54,9 +54,9 @@ final class RecordMerger
      */
     public function moveCoreRecords(Model $primary, Model $secondary): void
     {
-        $this->moveMorphOwner(config('focal-core.tables.activities', 'focal_activities'), 'subject', $primary, $secondary);
-        $this->moveMorphOwner(config('focal-core.tables.property_history', 'focal_property_history'), 'auditable', $primary, $secondary);
-        $this->moveMorphOwner(config('focal-core.tables.lifecycle_stage_transitions', 'focal_lifecycle_stage_transitions'), 'record', $primary, $secondary);
+        $this->moveMorphOwner(config('odden-core.tables.activities', 'odden_activities'), 'subject', $primary, $secondary);
+        $this->moveMorphOwner(config('odden-core.tables.property_history', 'odden_property_history'), 'auditable', $primary, $secondary);
+        $this->moveMorphOwner(config('odden-core.tables.lifecycle_stage_transitions', 'odden_lifecycle_stage_transitions'), 'record', $primary, $secondary);
         $this->moveListMemberships($primary, $secondary);
         $this->moveAssociations($primary, $secondary);
     }
@@ -71,7 +71,7 @@ final class RecordMerger
 
     private function moveListMemberships(Model $primary, Model $secondary): void
     {
-        $table = config('focal-core.tables.list_memberships', 'focal_list_memberships');
+        $table = config('odden-core.tables.list_memberships', 'odden_list_memberships');
 
         $primaryListIds = DB::table($table)
             ->where('member_type', $primary->getMorphClass())
@@ -90,7 +90,7 @@ final class RecordMerger
 
     private function moveAssociations(Model $primary, Model $secondary): void
     {
-        $table = config('focal-core.tables.associations', 'focal_associations');
+        $table = config('odden-core.tables.associations', 'odden_associations');
         $primaryType = $primary->getMorphClass();
         $primaryId = $primary->getKey();
 

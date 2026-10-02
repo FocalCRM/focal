@@ -3,20 +3,20 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Enums\PropertyType;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Core\Models\PropertyDefinition;
-use Focal\Marketing\Database\Seeders\MarketingDatabaseSeeder;
-use Focal\Sales\Database\Seeders\SalesDatabaseSeeder;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\DealStageHistory;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
-use Focal\Service\Database\Seeders\ServiceDatabaseSeeder;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Enums\PropertyType;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Core\Models\PropertyDefinition;
+use Odden\Marketing\Database\Seeders\MarketingDatabaseSeeder;
+use Odden\Sales\Database\Seeders\SalesDatabaseSeeder;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\DealStageHistory;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
+use Odden\Service\Database\Seeders\ServiceDatabaseSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -30,9 +30,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $admin = User::firstOrCreate(
-            ['email' => 'admin@focal.test'],
+            ['email' => 'admin@odden.test'],
             [
-                'name' => 'Focal Admin',
+                'name' => 'Odden Admin',
                 'password' => bcrypt('password'),
             ]
         );

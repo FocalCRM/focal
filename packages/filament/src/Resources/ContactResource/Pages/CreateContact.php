@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\ContactResource\Pages;
+namespace Odden\Filament\Resources\ContactResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\ContactResource;
+use Odden\Filament\Resources\ContactResource;
 
 class CreateContact extends CreateRecord
 {

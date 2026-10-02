@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Resources\ContactResource\Pages\ViewContact;
-use Focal\Filament\Resources\RelationManagers\ActivitiesRelationManager;
-use Focal\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
-use Focal\Filament\Tests\Fixtures\User;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Resources\ContactResource\Pages\ViewContact;
+use Odden\Filament\Resources\RelationManagers\ActivitiesRelationManager;
+use Odden\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
+use Odden\Filament\Tests\Fixtures\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 

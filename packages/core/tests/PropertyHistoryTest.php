@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
 
 it('tracks changes to standard properties in audit history', function (): void {
     $contact = Contact::factory()->create([

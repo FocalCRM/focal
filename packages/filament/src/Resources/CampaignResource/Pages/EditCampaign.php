@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CampaignResource\Pages;
+namespace Odden\Filament\Resources\CampaignResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -11,13 +11,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Resources\CampaignResource;
-use Focal\Filament\Resources\ContactResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\SendCampaignProofAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Models\Campaign;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Resources\CampaignResource;
+use Odden\Filament\Resources\ContactResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\SendCampaignProofAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Models\Campaign;
 
 class EditCampaign extends EditRecord
 {
@@ -28,7 +28,7 @@ class EditCampaign extends EditRecord
         return [
             Action::make('sendTestEmail')
                 ->label('Send Test')
-                ->authorize(FocalAuthorization::forRecord('update', CampaignResource::class))
+                ->authorize(OddenAuthorization::forRecord('update', CampaignResource::class))
                 ->icon(Heroicon::PaperAirplane)
                 ->color('info')
                 ->modalHeading('Send Proof / Test Email')
@@ -38,11 +38,11 @@ class EditCampaign extends EditRecord
                         ->label('Reviewer Email Address(es)')
                         ->placeholder('reviewer@example.com, marketing-team@example.com')
                         ->helperText('Comma-separated list of email addresses to receive the test broadcast.')
-                        ->default(fn (): string => auth()->user()->email ?? 'test@focal.test')
+                        ->default(fn (): string => auth()->user()->email ?? 'test@odden.test')
                         ->required(),
                     Select::make('sample_contact_id')
                         ->label('Simulate Merge Tags As Contact (Optional)')
-                        ->options(fn (): array => FocalAuthorization::query(ContactResource::class, Contact::class)->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
+                        ->options(fn (): array => OddenAuthorization::query(ContactResource::class, Contact::class)->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
                             $contact = Contact::find($id);
 
                             return "{$name} {$contact?->last_name} ({$contact?->email})";
@@ -54,7 +54,7 @@ class EditCampaign extends EditRecord
                     /** @var Campaign $campaign */
                     $campaign = $this->getRecord();
                     /** @var Contact|null $sampleContact */
-                    $sampleContact = ! empty($data['sample_contact_id']) ? FocalAuthorization::query(ContactResource::class, Contact::class)->find($data['sample_contact_id']) : null;
+                    $sampleContact = ! empty($data['sample_contact_id']) ? OddenAuthorization::query(ContactResource::class, Contact::class)->find($data['sample_contact_id']) : null;
                     $result = app(SendCampaignProofAction::class)->execute($campaign, (string) $data['recipient_emails'], $sampleContact);
 
                     if ($result['success']) {
@@ -73,7 +73,7 @@ class EditCampaign extends EditRecord
                 }),
             Action::make('duplicate')
                 ->label('Duplicate')
-                ->authorize(fn (): bool => FocalAuthorization::allows('create', Campaign::class, CampaignResource::class))
+                ->authorize(fn (): bool => OddenAuthorization::allows('create', Campaign::class, CampaignResource::class))
                 ->icon(Heroicon::DocumentDuplicate)
                 ->color('gray')
                 ->requiresConfirmation()

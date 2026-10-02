@@ -2,33 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Models\Activity;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\AbmCockpit;
-use Focal\Filament\Pages\DataQuality;
-use Focal\Filament\Pages\MarketingCockpit;
-use Focal\Filament\Pages\SalesCockpit;
-use Focal\Filament\Pages\ServiceCockpit;
-use Focal\Filament\Resources\DealResource\Pages\KanbanDeals;
-use Focal\Filament\Resources\TicketResource\Pages\KanbanTickets;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\SalesSequence;
-use Focal\Sales\Models\SalesSequenceEnrollment;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\CannedResponse;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Models\Activity;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\AbmCockpit;
+use Odden\Filament\Pages\DataQuality;
+use Odden\Filament\Pages\MarketingCockpit;
+use Odden\Filament\Pages\SalesCockpit;
+use Odden\Filament\Pages\ServiceCockpit;
+use Odden\Filament\Resources\DealResource\Pages\KanbanDeals;
+use Odden\Filament\Resources\TicketResource\Pages\KanbanTickets;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\SalesSequence;
+use Odden\Sales\Models\SalesSequenceEnrollment;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\CannedResponse;
+use Odden\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -231,8 +231,8 @@ class LivewireAuthorizationTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Launch',
             'subject' => 'Live now',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Draft,
         ]);
 

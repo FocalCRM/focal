@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Database\Factories;
+namespace Odden\Core\Database\Factories;
 
-use Focal\Core\Models\Company;
+use Odden\Core\Models\Company;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

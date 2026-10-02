@@ -7,7 +7,7 @@ The knowledge base is a set of `KnowledgeArticle` records shown in a public help
 
 ## Articles
 
-`Focal\Service\Models\KnowledgeArticle` has:
+`Odden\Service\Models\KnowledgeArticle` has:
 
 | Attribute | Default | Notes |
 | :--- | :--- | :--- |
@@ -20,7 +20,7 @@ The knowledge base is a set of `KnowledgeArticle` records shown in a public help
 | `user_id` | `null` | The author, through the `author()` relationship. |
 
 ```php
-use Focal\Service\Models\KnowledgeArticle;
+use Odden\Service\Models\KnowledgeArticle;
 
 KnowledgeArticle::create([
     'title' => 'Exporting contacts to CSV',
@@ -38,9 +38,9 @@ The help center routes are in the `web` route group, with no prefix by default:
 
 | Method | URI | Route name | Rate limit |
 | :--- | :--- | :--- | :--- |
-| GET | `/help` | `focal.help.index` | |
-| GET | `/help/{slug}` | `focal.help.show` | |
-| POST | `/help/{slug}/vote` | `focal.help.vote` | `focal-public` |
+| GET | `/help` | `odden.help.index` | |
+| GET | `/help/{slug}` | `odden.help.show` | |
+| POST | `/help/{slug}/vote` | `odden.help.vote` | `odden-public` |
 
 `GET /help` lists published articles, 12 per page, most viewed first. `?q=` filters by a substring of the title or body, and `?category=` by exact category.
 
@@ -48,14 +48,14 @@ The help center routes are in the `web` route group, with no prefix by default:
 
 `POST /help/{slug}/vote` takes `type`. `helpful` increments `helpful_count`; any other value increments `not_helpful_count`. It redirects back with a `feedback_submitted` flash message. Votes are not limited per visitor beyond the rate limit, and the route uses the web group's CSRF protection.
 
-The views are `focal-service::help.index` and `focal-service::help.show`. Override them the same way as the [portal views](customer-portal.md#customizing-the-pages).
+The views are `odden-service::help.index` and `odden-service::help.show`. Override them the same way as the [portal views](customer-portal.md#customizing-the-pages).
 
 ## Suggesting articles
 
 `DeflectTicketAction` finds published articles that match a customer's text:
 
 ```php
-use Focal\Service\Actions\DeflectTicketAction;
+use Odden\Service\Actions\DeflectTicketAction;
 
 $suggestions = app(DeflectTicketAction::class)->execute('How do I export my contacts?', limit: 3);
 
@@ -79,7 +79,7 @@ The bundled support form calls this endpoint as the customer types. You can use 
 | | |
 | :--- | :--- |
 | Method and URI | `GET /api/service/knowledge/suggest` |
-| Route name | `focal.service.knowledge.suggest` |
+| Route name | `odden.service.knowledge.suggest` |
 | Parameters | `q` (or `query`), `limit` (default 5, clamped to 1–10) |
 | Rate limit | None |
 
@@ -106,7 +106,7 @@ curl "https://crm.example.com/api/service/knowledge/suggest?q=export+contacts&li
 }
 ```
 
-`title`, `category`, and `excerpt` are returned as stored, without HTML escaping, so insert them into a page as text (`textContent`, or `{{ }}` in Blade), never as HTML. `url` is generated with `route('focal.help.show', $slug)`, which URL-encodes the slug. The bundled support form builds each suggestion with DOM nodes and `textContent`, and only links `url` when it is an `http` or `https` URL.
+`title`, `category`, and `excerpt` are returned as stored, without HTML escaping, so insert them into a page as text (`textContent`, or `{{ }}` in Blade), never as HTML. `url` is generated with `route('odden.help.show', $slug)`, which URL-encodes the slug. The bundled support form builds each suggestion with DOM nodes and `textContent`, and only links `url` when it is an `http` or `https` URL.
 
 ## Recording deflections
 
@@ -115,9 +115,9 @@ When a customer says a suggested article solved their problem, record it so you 
 | | |
 | :--- | :--- |
 | Method and URI | `POST /api/service/knowledge/deflect` |
-| Route name | `focal.service.knowledge.deflect` |
+| Route name | `odden.service.knowledge.deflect` |
 | Body | `article_id` (required, integer) |
-| Rate limit | `focal-public` |
+| Rate limit | `odden-public` |
 | CSRF | Exempt |
 
 ```bash

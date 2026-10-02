@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\QuoteResource\Pages;
+namespace Odden\Filament\Resources\QuoteResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\QuoteResource;
+use Odden\Filament\Resources\QuoteResource;
 
 class EditQuote extends EditRecord
 {

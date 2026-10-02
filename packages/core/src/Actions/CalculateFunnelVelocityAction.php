@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\LifecycleStageTransition;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\LifecycleStageTransition;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 

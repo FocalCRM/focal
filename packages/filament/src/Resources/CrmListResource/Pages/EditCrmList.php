@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CrmListResource\Pages;
+namespace Odden\Filament\Resources\CrmListResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Resources\CrmListResource;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Resources\CrmListResource;
 
 class EditCrmList extends EditRecord
 {

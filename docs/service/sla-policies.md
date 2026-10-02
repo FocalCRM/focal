@@ -7,7 +7,7 @@ An SLA policy sets two targets for each ticket priority: how long until the firs
 
 ## The SlaPolicy model
 
-`Focal\Service\Models\SlaPolicy` has these attributes. Targets are in minutes; the defaults are the database column defaults.
+`Odden\Service\Models\SlaPolicy` has these attributes. Targets are in minutes; the defaults are the database column defaults.
 
 | Attribute | Default | Notes |
 | :--- | :--- | :--- |
@@ -27,7 +27,7 @@ An SLA policy sets two targets for each ticket priority: how long until the firs
 `SlaPolicy::defaultPreset()` returns an attribute array for a default policy with the targets above, so you can create one in a seeder or migration:
 
 ```php
-use Focal\Service\Models\SlaPolicy;
+use Odden\Service\Models\SlaPolicy;
 
 SlaPolicy::create(SlaPolicy::defaultPreset());
 ```
@@ -60,8 +60,8 @@ With it, the clock only runs during business hours in the policy's timezone. Tim
 
 ```php
 use Carbon\Carbon;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Models\SlaPolicy;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Models\SlaPolicy;
 
 $policy = SlaPolicy::create([
     'name' => 'Business hours (New York)',
@@ -119,7 +119,7 @@ Escalating the priority does not change the ticket's SLA deadlines.
 The action returns the counts, and the command prints them:
 
 ```php
-use Focal\Service\Actions\CheckSlaBreachesAction;
+use Odden\Service\Actions\CheckSlaBreachesAction;
 
 $counts = app(CheckSlaBreachesAction::class)->execute();
 // ['response_breaches' => 2, 'resolution_breaches' => 0]

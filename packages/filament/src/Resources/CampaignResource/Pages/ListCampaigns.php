@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CampaignResource\Pages;
+namespace Odden\Filament\Resources\CampaignResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\CampaignResource;
+use Odden\Filament\Resources\CampaignResource;
 
 class ListCampaigns extends ListRecords
 {

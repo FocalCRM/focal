@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\CampaignResource;
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\AttributionModel;
-use Focal\Marketing\Models\Campaign;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\CampaignResource;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Models\Campaign;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
@@ -39,7 +39,7 @@ class MarketingAttribution extends Page
 
     protected static ?string $title = 'Marketing Multi-Touch Attribution & Campaign ROI';
 
-    protected string $view = 'focal-filament::pages.marketing-attribution';
+    protected string $view = 'odden-filament::pages.marketing-attribution';
 
     public string $selectedModel = 'first_touch';
 

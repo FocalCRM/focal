@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Enums;
+namespace Odden\Core\Enums;
 
 enum ActivityStatus: string
 {

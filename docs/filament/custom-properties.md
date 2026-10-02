@@ -3,7 +3,7 @@ title: Custom properties in forms
 description: How property definitions become form fields on the contact, company and deal resources, and how to reuse the field builder in your own resources.
 ---
 
-Focal stores [custom properties](../core/custom-properties.md) in each record's `properties` JSON column and describes them with `Focal\Core\Models\PropertyDefinition` records. The Filament plugin reads those definitions and adds matching fields to forms, so a new property shows up without code changes.
+Odden stores [custom properties](../core/custom-properties.md) in each record's `properties` JSON column and describes them with `Odden\Core\Models\PropertyDefinition` records. The Filament plugin reads those definitions and adds matching fields to forms, so a new property shows up without code changes.
 
 ## Where the fields appear
 
@@ -28,7 +28,7 @@ Manage definitions under **Settings › Custom Properties** (`PropertyDefinition
 | Entity Type | `entity_type` | The panel offers only `contact` and `company`. |
 | Internal Key | `name` | Must match `^[a-z0-9_]+$`. This becomes the key in the `properties` column. |
 | Display Label | `label` | The field label. |
-| Data Type | `type` | A `Focal\Core\Enums\PropertyType` case. |
+| Data Type | `type` | An `Odden\Core\Enums\PropertyType` case. |
 | Property Group | `group_name` | Defaults to `general`. |
 | Help Text / Description | `description` | Shown as helper text under the field. |
 | Dropdown Options | `options` | Value to label pairs. Only shown for Select and Multi-Select. |
@@ -38,8 +38,8 @@ Manage definitions under **Settings › Custom Properties** (`PropertyDefinition
 To add properties to deals, create definitions with `entity_type` set to `deal` in code, for example in a seeder or migration, because the panel's entity type select has no Deal option:
 
 ```php
-use Focal\Core\Enums\PropertyType;
-use Focal\Core\Models\PropertyDefinition;
+use Odden\Core\Enums\PropertyType;
+use Odden\Core\Models\PropertyDefinition;
 
 PropertyDefinition::create([
     'entity_type' => 'deal',
@@ -52,7 +52,7 @@ PropertyDefinition::create([
 
 ## Field types
 
-`Focal\Filament\Support\CustomPropertyFieldBuilder` maps each `PropertyType` to a Filament field named `properties.{name}`:
+`Odden\Filament\Support\CustomPropertyFieldBuilder` maps each `PropertyType` to a Filament field named `properties.{name}`:
 
 | `PropertyType` | Filament field |
 | --- | --- |
@@ -69,16 +69,16 @@ Fields are ordered by the definition's `sort_order`. Each field uses the definit
 
 When the form is saved, the values are written to the record's `properties` column through Filament's dot-notation state. For example, a contact created with an `annual_budget` property of `50000` gets `$contact->getProperty('annual_budget') === 50000`.
 
-The builder checks that the properties table exists before it queries definitions (the table name comes from the `focal-core.tables.properties` config key and defaults to `focal_properties`). If it doesn't exist, no section is added, so forms still render before you've run migrations.
+The builder checks that the properties table exists before it queries definitions (the table name comes from the `odden-core.tables.properties` config key and defaults to `odden_properties`). If it doesn't exist, no section is added, so forms still render before you've run migrations.
 
 ## Using the builder in your own resources
 
-`CustomPropertyFieldBuilder::makeSection(string $entityType): array` returns either an empty array or an array holding a single **Custom Properties** section. Spread it into any form schema whose model uses the `Focal\Core\Traits\HasCustomProperties` trait:
+`CustomPropertyFieldBuilder::makeSection(string $entityType): array` returns either an empty array or an array holding a single **Custom Properties** section. Spread it into any form schema whose model uses the `Odden\Core\Traits\HasCustomProperties` trait:
 
 ```php
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Focal\Filament\Support\CustomPropertyFieldBuilder;
+use Odden\Filament\Support\CustomPropertyFieldBuilder;
 
 public static function form(Schema $schema): Schema
 {

@@ -1,45 +1,45 @@
 {
-    "name": "focalcrm/filament",
-    "description": "Unified Filament CRM Panel & UI Plugin for Focal",
+    "name": "getodden/crm-filament",
+    "description": "Unified Filament CRM Panel & UI Plugin for Odden",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "laravel",
         "crm",
-        "focalcrm",
+        "getodden",
         "filament",
         "filament-plugin",
         "admin-panel"
     ],
-    "homepage": "https://focalcrm.io",
+    "homepage": "https://odden.io",
     "support": {
-        "issues": "https://github.com/focalcrm/focal/issues",
-        "source": "https://github.com/focalcrm/focal"
+        "issues": "https://github.com/getodden/crm/issues",
+        "source": "https://github.com/getodden/crm"
     },
     "authors": [
         {
             "name": "CaskStack, LLC",
-            "homepage": "https://focalcrm.io"
+            "homepage": "https://odden.io"
         }
     ],
     "require": {
         "php": "^8.3",
         "filament/filament": "^5.9",
-        "focalcrm/core": "self.version",
+        "getodden/crm-core": "self.version",
         "laravel/framework": "^12.0 || ^13.0"
     },
     "require-dev": {
-        "focalcrm/marketing": "self.version",
-        "focalcrm/sales": "self.version",
-        "focalcrm/service": "self.version",
+        "getodden/crm-marketing": "self.version",
+        "getodden/crm-sales": "self.version",
+        "getodden/crm-service": "self.version",
         "orchestra/testbench": "^10.0 || ^11.0",
         "pestphp/pest": "^3.8 || ^4.0 || ^5.0",
         "pestphp/pest-plugin-laravel": "^3.0 || ^4.0 || ^5.0"
     },
     "suggest": {
-        "focalcrm/sales": "Adds Deals, Pipelines, Quotes, Sequences, and the Sales Cockpit",
-        "focalcrm/service": "Adds Tickets, SLAs, Knowledge Articles, and the Service Cockpit",
-        "focalcrm/marketing": "Adds Campaigns, Workflows, Forms, and the Marketing Cockpit"
+        "getodden/crm-sales": "Adds Deals, Pipelines, Quotes, Sequences, and the Sales Cockpit",
+        "getodden/crm-service": "Adds Tickets, SLAs, Knowledge Articles, and the Service Cockpit",
+        "getodden/crm-marketing": "Adds Campaigns, Workflows, Forms, and the Marketing Cockpit"
     },
     "repositories": [
         {
@@ -73,12 +73,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Focal\\Filament\\": "src/"
+            "Odden\\Filament\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Focal\\Filament\\Tests\\": "tests/"
+            "Odden\\Filament\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -87,7 +87,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Focal\\Filament\\FilamentServiceProvider"
+                "Odden\\Filament\\FilamentServiceProvider"
             ]
         },
         "branch-alias": {

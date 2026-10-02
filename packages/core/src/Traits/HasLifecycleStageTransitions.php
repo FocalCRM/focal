@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Traits;
+namespace Odden\Core\Traits;
 
-use Focal\Core\Models\LifecycleStageTransition;
+use Odden\Core\Models\LifecycleStageTransition;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasLifecycleStageTransitions

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CompanyResource\Pages;
+namespace Odden\Filament\Resources\CompanyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\CompanyResource;
+use Odden\Filament\Resources\CompanyResource;
 
 class ListCompanies extends ListRecords
 {

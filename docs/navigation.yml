@@ -1,4 +1,4 @@
-# Sidebar sections and page order for focalcrm.io/docs.
+# Sidebar sections and page order for odden.io/docs.
 # Each page is a path below docs/ without the .md extension. Pages not listed here aren't published.
 - title: Getting started
   pages:
@@ -72,4 +72,4 @@
 - title: Related packages
   pages:
     - title: Mail builder
-      url: https://github.com/doPHP/laravel-mail-builder
+      url: https://github.com/getodden/mail

@@ -1,11 +1,11 @@
 ---
 title: Events
-description: The events Focal Core dispatches, what triggers each one, and how to listen for them.
+description: The events Odden Core dispatches, what triggers each one, and how to listen for them.
 ---
 
 Core dispatches plain Laravel events from its action classes. They are dispatched synchronously after the write, inside the same request. The merge events are dispatched inside the merge's database transaction, so an exception in a listener rolls the merge back. None of them implement `ShouldBroadcast` or `ShouldQueue`. Make your listener queued if it does slow work, except for merge listeners that move data, which must run inside the transaction.
 
-All events are in `Focal\Core\Events`.
+All events are in `Odden\Core\Events`.
 
 | Event | Public properties | Dispatched by |
 | --- | --- | --- |
@@ -37,8 +37,8 @@ Register listeners as you would for any Laravel event. With event discovery, typ
 ```php
 namespace App\Listeners;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Events\LifecycleStageChanged;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Events\LifecycleStageChanged;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NotifySalesOfNewSql implements ShouldQueue
@@ -57,7 +57,7 @@ class NotifySalesOfNewSql implements ShouldQueue
 Or register a closure in a service provider:
 
 ```php
-use Focal\Core\Events\ContactCreated;
+use Odden\Core\Events\ContactCreated;
 use Illuminate\Support\Facades\Event;
 
 Event::listen(function (ContactCreated $event): void {

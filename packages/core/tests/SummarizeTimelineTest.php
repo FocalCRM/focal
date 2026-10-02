@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\SummarizeTimelineAction;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\SummarizeTimelineAction;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 
 test('generates executive briefing summary for contact timeline', function () {
     /** @var Contact $contact */

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -21,23 +21,23 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\TicketResource\Pages\CreateTicket;
-use Focal\Filament\Resources\TicketResource\Pages\EditTicket;
-use Focal\Filament\Resources\TicketResource\Pages\KanbanTickets;
-use Focal\Filament\Resources\TicketResource\Pages\ListTickets;
-use Focal\Filament\Resources\TicketResource\RelationManagers\MessagesRelationManager;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Service\Actions\MergeTicketsAction;
-use Focal\Service\Actions\ResolveTicketAction;
-use Focal\Service\Actions\RouteTicketAction;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Enums\TicketSource;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\SlaPolicy;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\TicketResource\Pages\CreateTicket;
+use Odden\Filament\Resources\TicketResource\Pages\EditTicket;
+use Odden\Filament\Resources\TicketResource\Pages\KanbanTickets;
+use Odden\Filament\Resources\TicketResource\Pages\ListTickets;
+use Odden\Filament\Resources\TicketResource\RelationManagers\MessagesRelationManager;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Service\Actions\MergeTicketsAction;
+use Odden\Service\Actions\ResolveTicketAction;
+use Odden\Service\Actions\RouteTicketAction;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Enums\TicketSource;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\SlaPolicy;
+use Odden\Service\Models\Ticket;
 use UnitEnum;
 
 class TicketResource extends Resource
@@ -195,7 +195,7 @@ class TicketResource extends Resource
                     ->icon('heroicon-m-check-circle')
                     ->color('success')
                     ->visible(fn (Ticket $record): bool => ! $record->status->isClosed())
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->form([
                         Textarea::make('resolution_note')
                             ->label('Resolution Summary Note')
@@ -210,12 +210,12 @@ class TicketResource extends Resource
                     ->icon('heroicon-m-arrows-pointing-in')
                     ->color('gray')
                     ->visible(fn (Ticket $record): bool => ! $record->status->isClosed() && $record->merged_into_ticket_id === null)
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->form([
                         Select::make('primary_ticket_id')
                             ->label('Primary Ticket (Destination)')
                             ->helperText('Select the destination ticket to merge this ticket into.')
-                            ->options(fn (Ticket $record): array => FocalAuthorization::query(self::class, Ticket::class)
+                            ->options(fn (Ticket $record): array => OddenAuthorization::query(self::class, Ticket::class)
                                 ->whereKeyNot($record->getKey())
                                 ->whereNull('merged_into_ticket_id')
                                 ->where('status', '!=', TicketStatus::Closed->value)
@@ -236,10 +236,10 @@ class TicketResource extends Resource
                     ->modalDescription('This action will transfer all conversation messages to the primary ticket and close this ticket.')
                     ->action(function (Ticket $record, array $data): void {
                         // The destination ticket receives this ticket's messages, so it needs `update` as well.
-                        $primaryTicket = FocalAuthorization::findAndAuthorize(self::class, Ticket::class, (int) $data['primary_ticket_id'], 'update');
+                        $primaryTicket = OddenAuthorization::findAndAuthorize(self::class, Ticket::class, (int) $data['primary_ticket_id'], 'update');
                         abort_if($primaryTicket->is($record), 422);
                         $reason = ! empty($data['merge_reason']) ? (string) $data['merge_reason'] : null;
-                        $userId = (int) FocalAuthorization::userId();
+                        $userId = (int) OddenAuthorization::userId();
                         app(MergeTicketsAction::class)->execute($primaryTicket, $record, $reason, $userId);
                     }),
                 Action::make('portalLink')
@@ -253,7 +253,7 @@ class TicketResource extends Resource
                     ->icon('heroicon-m-arrows-right-left')
                     ->color('gray')
                     ->requiresConfirmation()
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->modalHeading('Auto-Route Ticket Agent')
                     ->modalDescription('Run active ticket routing rules to assign this ticket to an available agent based on channel, priority, and keywords.')
                     ->action(function (Ticket $record): void {

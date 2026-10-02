@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
-use DoPHP\MailBuilder\MailBuilderServiceProvider;
+use Odden\MailBuilder\MailBuilderServiceProvider;
 use Filament\Actions\ActionsServiceProvider;
 use Filament\FilamentServiceProvider;
 use Filament\Forms\FormsServiceProvider;
@@ -17,14 +17,14 @@ use Filament\Schemas\SchemasServiceProvider;
 use Filament\Support\SupportServiceProvider;
 use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\WidgetsServiceProvider;
-use Focal\Core\CoreServiceProvider;
-use Focal\Filament\Support\FocalPackages;
-use Focal\Filament\Tests\Fixtures\AdminPanelProvider;
-use Focal\Filament\Tests\Fixtures\ConfigurablePolicy;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Marketing\MarketingServiceProvider;
-use Focal\Sales\SalesServiceProvider;
-use Focal\Service\ServiceHubServiceProvider;
+use Odden\Core\CoreServiceProvider;
+use Odden\Filament\Support\OddenPackages;
+use Odden\Filament\Tests\Fixtures\AdminPanelProvider;
+use Odden\Filament\Tests\Fixtures\ConfigurablePolicy;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Marketing\MarketingServiceProvider;
+use Odden\Sales\SalesServiceProvider;
+use Odden\Service\ServiceHubServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Kirschbaum\PowerJoins\PowerJoinsServiceProvider;
 use Livewire\LivewireServiceProvider;
@@ -39,7 +39,7 @@ abstract class TestCase extends Orchestra
     protected function tearDown(): void
     {
         ConfigurablePolicy::$denied = [];
-        FocalPackages::reset();
+        OddenPackages::reset();
 
         parent::tearDown();
     }
@@ -60,7 +60,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * Boots the full Focal stack and Filament, with a fixture admin panel.
+     * Boots the full Odden stack and Filament, with a fixture admin panel.
      *
      * @return list<class-string>
      */
@@ -87,7 +87,7 @@ abstract class TestCase extends Orchestra
             ServiceHubServiceProvider::class,
             MailBuilderServiceProvider::class,
             MarketingServiceProvider::class,
-            \Focal\Filament\FilamentServiceProvider::class,
+            \Odden\Filament\FilamentServiceProvider::class,
             AdminPanelProvider::class,
         ];
     }

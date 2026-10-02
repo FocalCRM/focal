@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\MarketingSubscriptionResource\Pages;
+namespace Odden\Filament\Resources\MarketingSubscriptionResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\MarketingSubscriptionResource;
+use Odden\Filament\Resources\MarketingSubscriptionResource;
 
 class CreateMarketingSubscription extends CreateRecord
 {

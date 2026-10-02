@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\NpsSurveyResource\Pages;
+namespace Odden\Filament\Resources\NpsSurveyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\NpsSurveyResource;
+use Odden\Filament\Resources\NpsSurveyResource;
 
 class ListNpsSurveys extends ListRecords
 {

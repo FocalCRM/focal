@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CompanyResource\Pages;
+namespace Odden\Filament\Resources\CompanyResource\Pages;
 
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
-use Focal\Filament\Resources\CompanyResource;
+use Odden\Filament\Resources\CompanyResource;
 
 class ViewCompany extends ViewRecord
 {

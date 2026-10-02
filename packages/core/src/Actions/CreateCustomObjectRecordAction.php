@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Events\CustomObjectRecordCreated;
-use Focal\Core\Models\CustomObjectDefinition;
-use Focal\Core\Models\CustomObjectRecord;
+use Odden\Core\Events\CustomObjectRecordCreated;
+use Odden\Core\Models\CustomObjectDefinition;
+use Odden\Core\Models\CustomObjectRecord;
 use InvalidArgumentException;
 
 class CreateCustomObjectRecordAction

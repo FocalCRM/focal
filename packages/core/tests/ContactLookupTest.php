@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Models\Contact;
-use Focal\Core\Support\ContactLookup;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\ContactLookup;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
 

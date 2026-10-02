@@ -1,42 +1,42 @@
 ---
 title: Core
-description: What the focalcrm/core package provides, the models it ships, and how the other Focal modules build on it.
+description: What the getodden/crm-core package provides, the models it ships, and how the other Odden modules build on it.
 ---
 
-`focalcrm/core` is the foundation every other Focal package depends on. It owns the CRM records (contacts, companies, and custom objects), and the services that work across all of them: custom properties with change history, associations between any two records, the activity timeline, lifecycle stages, lists, and duplicate merging. It has no UI and registers no routes of its own. It only needs `laravel/framework` 12 or 13 and PHP 8.3+.
+`getodden/crm-core` is the foundation every other Odden package depends on. It owns the CRM records (contacts, companies, and custom objects), and the services that work across all of them: custom properties with change history, associations between any two records, the activity timeline, lifecycle stages, lists, and duplicate merging. It has no UI and registers no routes of its own. It only needs `laravel/framework` 12 or 13 and PHP 8.3+.
 
-See [Installation](../installation.md) for installing Focal into your app. Core's service provider, `Focal\Core\CoreServiceProvider`, is auto-discovered. It:
+See [Installation](../installation.md) for installing Odden into your app. Core's service provider, `Odden\Core\CoreServiceProvider`, is auto-discovered. It:
 
-- merges `config/focal-core.php` under the `focal-core` key,
+- merges `config/odden-core.php` under the `odden-core` key,
 - loads the package migrations (you don't need to publish them),
 - registers `LifecycleStateMachine` and `EnrichmentManager` as singletons,
-- defines the `focal-public` and `focal-api` rate limiters.
+- defines the `odden-public` and `odden-api` rate limiters.
 
 You can publish the config file or the migrations if you want to edit them:
 
 ```bash
-php artisan vendor:publish --tag=focal-core-config
-php artisan vendor:publish --tag=focal-core-migrations
+php artisan vendor:publish --tag=odden-core-config
+php artisan vendor:publish --tag=odden-core-migrations
 ```
 
 ## Models
 
-All models live in `Focal\Core\Models`. Table names come from `focal-core.tables.*` (see [Users, routes, and configuration](integration.md#configuration-reference)).
+All models live in `Odden\Core\Models`. Table names come from `odden-core.tables.*` (see [Users, routes, and configuration](integration.md#configuration-reference)).
 
 | Model | Default table | What it stores |
 | --- | --- | --- |
-| `Contact` | `focal_contacts` | People: name, email, phone, job title, lifecycle stage, lead status, lead score, owner, team. Soft-deletes. |
-| `Company` | `focal_companies` | Organizations: name, domain, industry, lifecycle stage, health score, account tier and intent fields. Soft-deletes. |
-| `PropertyDefinition` | `focal_properties` | The registry of custom properties per entity type. |
-| `PropertyHistory` | `focal_property_history` | One row per changed attribute or custom property. |
-| `Association` | `focal_associations` | A directed link between any two records. |
-| `AssociationType` | `focal_association_types` | Named association types with labels and cardinality. |
-| `Activity` | `focal_activities` | Timeline entries: notes, calls, emails, meetings, tasks. |
-| `CrmList`, `ListMembership` | `focal_lists`, `focal_list_memberships` | Static and active (criteria-based) lists. |
-| `LifecycleStageTransition` | `focal_lifecycle_stage_transitions` | History of lifecycle stage changes with time spent in each stage. |
-| `CustomObjectDefinition`, `CustomObjectRecord` | `focal_custom_object_definitions`, `focal_custom_object_records` | Your own record types. |
+| `Contact` | `odden_contacts` | People: name, email, phone, job title, lifecycle stage, lead status, lead score, owner, team. Soft-deletes. |
+| `Company` | `odden_companies` | Organizations: name, domain, industry, lifecycle stage, health score, account tier and intent fields. Soft-deletes. |
+| `PropertyDefinition` | `odden_properties` | The registry of custom properties per entity type. |
+| `PropertyHistory` | `odden_property_history` | One row per changed attribute or custom property. |
+| `Association` | `odden_associations` | A directed link between any two records. |
+| `AssociationType` | `odden_association_types` | Named association types with labels and cardinality. |
+| `Activity` | `odden_activities` | Timeline entries: notes, calls, emails, meetings, tasks. |
+| `CrmList`, `ListMembership` | `odden_lists`, `odden_list_memberships` | Static and active (criteria-based) lists. |
+| `LifecycleStageTransition` | `odden_lifecycle_stage_transitions` | History of lifecycle stage changes with time spent in each stage. |
+| `CustomObjectDefinition`, `CustomObjectRecord` | `odden_custom_object_definitions`, `odden_custom_object_records` | Your own record types. |
 
-Behavior is shared through traits in `Focal\Core\Traits`, which you can also add to your own models:
+Behavior is shared through traits in `Odden\Core\Traits`, which you can also add to your own models:
 
 | Trait | Adds | Used by |
 | --- | --- | --- |
@@ -51,10 +51,10 @@ Core has no team model. `team_id` is a plain nullable integer column, and `forTe
 
 ## Actions
 
-Writes that have side effects go through action classes in `Focal\Core\Actions`. Resolve them from the container and call `execute()`:
+Writes that have side effects go through action classes in `Odden\Core\Actions`. Resolve them from the container and call `execute()`:
 
 ```php
-use Focal\Core\Actions\CreateContactAction;
+use Odden\Core\Actions\CreateContactAction;
 
 $contact = app(CreateContactAction::class)->execute([
     'first_name' => 'Jane',
@@ -69,9 +69,9 @@ Events are only dispatched by actions. Creating a model with `Contact::create()`
 The Sales, Marketing, and Service packages don't extend Core's models. They:
 
 - reference `Contact`, `Company`, `Activity`, and the enums directly, and add their own relations at boot with `resolveRelationUsing()`. For example, Sales adds `deals` to `Contact` and `Company`, and Service adds `tickets`.
-- resolve the host app's user model through `Focal\Core\Support\UserModel` for owners, assignees, and authors.
-- build their route groups with `RouteGroup::attributes()`, protect webhooks with the `RequireApiToken` middleware, and throttle public endpoints with the `focal-public` and `focal-api` limiters. See [Users, routes, and configuration](integration.md).
-- add their own columns to `focal_contacts`. For example, Marketing adds `marketing_topics`, `sms_consent`, and `is_unengaged`. These are already fillable and cast on `Contact`, but the columns only exist once that package's migrations have run.
+- resolve the host app's user model through `Odden\Core\Support\UserModel` for owners, assignees, and authors.
+- build their route groups with `RouteGroup::attributes()`, protect webhooks with the `RequireApiToken` middleware, and throttle public endpoints with the `odden-public` and `odden-api` limiters. See [Users, routes, and configuration](integration.md).
+- add their own columns to `odden_contacts`. For example, Marketing adds `marketing_topics`, `sms_consent`, and `is_unengaged`. These are already fillable and cast on `Contact`, but the columns only exist once that package's migrations have run.
 
 Some Core actions use what other modules add without depending on them. The [customer health score](contacts-and-companies.md#customer-health-scores) reads the `deals` and `tickets` relations when Sales and Service have registered them, and on a merge each module moves its own data by listening for [`ContactsMerged` and `CompaniesMerged`](duplicates-and-merging.md#what-each-module-moves).
 

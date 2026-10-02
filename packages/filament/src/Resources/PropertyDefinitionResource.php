@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -22,11 +22,11 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Focal\Core\Enums\PropertyType;
-use Focal\Core\Models\PropertyDefinition;
-use Focal\Filament\Resources\PropertyDefinitionResource\Pages\CreatePropertyDefinition;
-use Focal\Filament\Resources\PropertyDefinitionResource\Pages\EditPropertyDefinition;
-use Focal\Filament\Resources\PropertyDefinitionResource\Pages\ListPropertyDefinitions;
+use Odden\Core\Enums\PropertyType;
+use Odden\Core\Models\PropertyDefinition;
+use Odden\Filament\Resources\PropertyDefinitionResource\Pages\CreatePropertyDefinition;
+use Odden\Filament\Resources\PropertyDefinitionResource\Pages\EditPropertyDefinition;
+use Odden\Filament\Resources\PropertyDefinitionResource\Pages\ListPropertyDefinitions;
 use UnitEnum;
 
 class PropertyDefinitionResource extends Resource

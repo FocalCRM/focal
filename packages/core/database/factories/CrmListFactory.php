@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Database\Factories;
+namespace Odden\Core\Database\Factories;
 
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

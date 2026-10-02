@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests;
+namespace Odden\Core\Tests;
 
-use Focal\Core\Enums\PropertyType;
-use Focal\Core\Models\PropertyDefinition;
+use Odden\Core\Enums\PropertyType;
+use Odden\Core\Models\PropertyDefinition;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PropertyDefinitionTest extends TestCase
@@ -24,7 +24,7 @@ class PropertyDefinitionTest extends TestCase
             'is_searchable' => true,
         ]);
 
-        $this->assertDatabaseHas('focal_properties', [
+        $this->assertDatabaseHas('odden_properties', [
             'entity_type' => 'contact',
             'name' => 'lead_score',
             'type' => PropertyType::Number->value,

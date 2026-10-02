@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -21,10 +21,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\LandingPageResource\Pages\CreateLandingPage;
-use Focal\Filament\Resources\LandingPageResource\Pages\EditLandingPage;
-use Focal\Filament\Resources\LandingPageResource\Pages\ListLandingPages;
-use Focal\Marketing\Models\LandingPage;
+use Odden\Filament\Resources\LandingPageResource\Pages\CreateLandingPage;
+use Odden\Filament\Resources\LandingPageResource\Pages\EditLandingPage;
+use Odden\Filament\Resources\LandingPageResource\Pages\ListLandingPages;
+use Odden\Marketing\Models\LandingPage;
 use UnitEnum;
 
 class LandingPageResource extends Resource
@@ -89,7 +89,7 @@ class LandingPageResource extends Resource
                     ->schema([
                         TextInput::make('meta_title')
                             ->label('Meta Title')
-                            ->placeholder('Page Title | Focal CRM'),
+                            ->placeholder('Page Title | Odden CRM'),
                         TextInput::make('og_image_url')
                             ->label('OpenGraph Social Share Image URL')
                             ->placeholder('https://yourdomain.com/og-image.png')
@@ -115,7 +115,7 @@ class LandingPageResource extends Resource
                     ->sortable(),
                 TextColumn::make('slug')
                     ->label('Public URL')
-                    ->formatStateUsing(fn (LandingPage $record): string => route('focal.marketing.landing-pages.show', $record->slug, false))
+                    ->formatStateUsing(fn (LandingPage $record): string => route('odden.marketing.landing-pages.show', $record->slug, false))
                     ->color('info')
                     ->url(fn (LandingPage $record): string => $record->getPublicUrl(), shouldOpenInNewTab: true),
                 TextColumn::make('views_count')

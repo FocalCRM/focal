@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\MergeCompaniesAction;
-use Focal\Core\Actions\MergeContactsAction;
-use Focal\Core\Actions\TransitionLifecycleStageAction;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Events\CompaniesMerged;
-use Focal\Core\Events\ContactsMerged;
-use Focal\Core\Models\Association;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Core\Models\ListMembership;
-use Focal\Core\Models\PropertyHistory;
-use Focal\Core\Tests\Fixtures\CrossHubRelations;
-use Focal\Core\Tests\Fixtures\Deal;
-use Focal\Core\Tests\Fixtures\Ticket;
+use Odden\Core\Actions\MergeCompaniesAction;
+use Odden\Core\Actions\MergeContactsAction;
+use Odden\Core\Actions\TransitionLifecycleStageAction;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Events\CompaniesMerged;
+use Odden\Core\Events\ContactsMerged;
+use Odden\Core\Models\Association;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Core\Models\ListMembership;
+use Odden\Core\Models\PropertyHistory;
+use Odden\Core\Tests\Fixtures\CrossHubRelations;
+use Odden\Core\Tests\Fixtures\Deal;
+use Odden\Core\Tests\Fixtures\Ticket;
 use Illuminate\Support\Facades\Event;
 
 function mergeContacts(Contact $primary, Contact $secondary): Contact

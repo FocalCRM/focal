@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SalesEmailTemplateResource\Pages;
+namespace Odden\Filament\Resources\SalesEmailTemplateResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\SalesEmailTemplateResource;
+use Odden\Filament\Resources\SalesEmailTemplateResource;
 
 class ListSalesEmailTemplates extends ListRecords
 {

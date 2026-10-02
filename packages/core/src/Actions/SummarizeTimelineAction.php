@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Models\Activity;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Support\OptionalRelation;
+use Odden\Core\Models\Activity;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\OptionalRelation;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -116,7 +116,7 @@ class SummarizeTimelineAction
         }
 
         return [
-            'title' => "Focal Breeze Briefing: {$name}",
+            'title' => "Odden Breeze Briefing: {$name}",
             'sentiment' => $sentiment,
             'executive_summary' => trim($summary),
             'key_milestones' => $keyMilestones,

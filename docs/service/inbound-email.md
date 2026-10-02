@@ -10,24 +10,24 @@ The inbound email webhook turns emails sent to your support address into tickets
 | | |
 | :--- | :--- |
 | Method and URI | `POST /api/service/inbound-email` |
-| Route name | `focal.service.inbound-email` |
+| Route name | `odden.service.inbound-email` |
 | Authentication | Service API token (required) |
-| Rate limit | `focal-api` (600 requests per minute per IP by default) |
+| Rate limit | `odden-api` (600 requests per minute per IP by default) |
 | CSRF | Exempt |
 
-The `/api/service` prefix comes from `focal-service.routes.api.prefix`. See [Configuration reference](configuration.md#routes).
+The `/api/service` prefix comes from `odden-service.routes.api.prefix`. See [Configuration reference](configuration.md#routes).
 
 ## API token
 
 The endpoint is protected by the service API token:
 
 ```env
-FOCAL_SERVICE_API_TOKEN=a-long-random-string
+ODDEN_SERVICE_API_TOKEN=a-long-random-string
 ```
 
-Generate a value with `php -r 'echo bin2hex(random_bytes(32));'`. It is read from `focal-service.api.token`.
+Generate a value with `php -r 'echo bin2hex(random_bytes(32));'`. It is read from `odden-service.api.token`.
 
-Until a token is set, the endpoint returns `403` and creates nothing. A missing or wrong token returns `401`. Send the token as `Authorization: Bearer <token>`, an `X-Focal-Token` header, or a `?token=` query parameter for providers that only let you enter a URL. See [API tokens](../configuration.md#api-tokens) for details shared by all Focal modules.
+Until a token is set, the endpoint returns `403` and creates nothing. A missing or wrong token returns `401`. Send the token as `Authorization: Bearer <token>`, an `X-Odden-Token` header, or a `?token=` query parameter for providers that only let you enter a URL. See [API tokens](../configuration.md#api-tokens) for details shared by all Odden modules.
 
 ## Request
 
@@ -60,7 +60,7 @@ Check these names against what your provider sends. Some providers use other fie
 
 ```bash
 curl -X POST https://crm.example.com/api/service/inbound-email \
-  -H "Authorization: Bearer $FOCAL_SERVICE_API_TOKEN" \
+  -H "Authorization: Bearer $ODDEN_SERVICE_API_TOKEN" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{"from": "Dana Scully <dana@example.com>", "subject": "Cannot log in", "text": "The sign-in page says my account is locked."}'
@@ -111,14 +111,14 @@ A ticket number such as `TICK-2026-7WBPJ` is short and guessable, and the `From`
 
 1. The email carries the ticket's `portal_token`, the random 40-character secret behind its [customer portal](customer-portal.md) link, in one of the places described below.
 2. The sender is the ticket's contact: the sender's email address equals the contact's email address, compared case-insensitively after trimming whitespace. A ticket with no contact never matches.
-3. If `focal-service.inbound_email.require_authenticated_sender` is `true`, the request says the sender passed authentication. See [Requiring sender authentication](#requiring-sender-authentication).
+3. If `odden-service.inbound_email.require_authenticated_sender` is `true`, the request says the sender passed authentication. See [Requiring sender authentication](#requiring-sender-authentication).
 
 Ticket numbers in the subject, body, or headers are ignored for threading. The `[#TICK-2026-7WBPJ]` in notification subjects is there for people to read.
 
 When a ticket is found, the body is added as a `Customer` message from that ticket's contact through [`ReplyTicketAction`](tickets.md#replying-and-internal-notes):
 
 - If the ticket was [merged](routing.md#merging-tickets) into another, the message is posted on the primary ticket, following the merge chain to its end. The token and sender checks above are always made against the ticket the email referenced, not the primary, so a merge never lets the primary's contact use the merged ticket's token, or the reverse. The response's `ticket_number` is the ticket the message landed on.
-- A customer message moves `New` and `WaitingOnCustomer` tickets to `Open`, and reopens a `Resolved` or `Closed` ticket (status `Open`, `resolved_at` and `closed_at` cleared) while `focal-service.reopen_on_customer_reply` is `true`, the default. With it `false`, the message is added and the status is left alone. The merged ticket itself stays closed; it's the primary that reopens.
+- A customer message moves `New` and `WaitingOnCustomer` tickets to `Open`, and reopens a `Resolved` or `Closed` ticket (status `Open`, `resolved_at` and `closed_at` cleared) while `odden-service.reopen_on_customer_reply` is `true`, the default. With it `false`, the message is added and the status is left alone. The merged ticket itself stays closed; it's the primary that reopens.
 
 ### Where the token is found
 
@@ -139,7 +139,7 @@ Each token is looked up in turn, and the first ticket whose contact is the sende
 
 `{host}` is the host of `app.url` (`localhost` if it has none). Mail clients copy this ID into the `In-Reply-To` and `References` headers of a reply, so a customer who replies to any of these emails is threaded even if they delete the quoted text and the subject. The token is already in the portal link in each of these emails, so the header exposes nothing new. `SlaBreachAlertNotification`, which goes to the ticket owner, doesn't set one.
 
-The ID is set through `MailMessage::withSymfonyMessage()` by the `Focal\Service\Notifications\Concerns\SetsTicketMessageId` trait. Some sending services replace the `Message-ID` with their own (Amazon SES does, for example). Replies to those emails can't be threaded by header, but still are by the portal link when the customer's client quotes the original email.
+The ID is set through `MailMessage::withSymfonyMessage()` by the `Odden\Service\Notifications\Concerns\SetsTicketMessageId` trait. Some sending services replace the `Message-ID` with their own (Amazon SES does, for example). Replies to those emails can't be threaded by header, but still are by the portal link when the customer's client quotes the original email.
 
 Emails sent before this scheme was added have no ticket Message-ID, so replies to them are threaded only by a portal link in the quoted text.
 
@@ -152,10 +152,10 @@ Only the ticket's contact can add to a ticket by email. If a customer CCs a coll
 The sender check compares the `From` address your provider reports, which a forger can set. Holding the portal token is what makes a forged reply hard, but you can also require your provider's verdict on the sender:
 
 ```env
-FOCAL_SERVICE_INBOUND_REQUIRE_AUTH=true
+ODDEN_SERVICE_INBOUND_REQUIRE_AUTH=true
 ```
 
-This sets `focal-service.inbound_email.require_authenticated_sender` (default `false`). While it's `true`, an email is only threaded when the request has either:
+This sets `odden-service.inbound_email.require_authenticated_sender` (default `false`). While it's `true`, an email is only threaded when the request has either:
 
 - `sender_authenticated` set to `true`, `1`, `"true"`, `"yes"`, `"on"`, or `"pass"`, or
 - `dmarc` set to `"pass"`.
@@ -166,7 +166,7 @@ DMARC is used because it is the check that ties the `From` domain to SPF or DKIM
 
 ```bash
 curl -X POST https://crm.example.com/api/service/inbound-email \
-  -H "Authorization: Bearer $FOCAL_SERVICE_API_TOKEN" \
+  -H "Authorization: Bearer $ODDEN_SERVICE_API_TOKEN" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{"from": "dana@example.com", "subject": "Re: Cannot log in", "text": "Still locked out.", "in_reply_to": "<ticket.3Ekp9wqpTbwiMh55MGZdv1aOUu3QOWG9kulLvRJf.9f86d081884c7d65@crm.example.com>", "dmarc": "pass"}'

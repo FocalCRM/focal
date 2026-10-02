@@ -10,7 +10,7 @@ Core has two finder actions that group records with identical values, and two me
 `FindDuplicateContactsAction::execute(): array` scans all contacts (soft-deleted ones excluded) and returns groups:
 
 ```php
-use Focal\Core\Actions\FindDuplicateContactsAction;
+use Odden\Core\Actions\FindDuplicateContactsAction;
 
 $groups = app(FindDuplicateContactsAction::class)->execute();
 
@@ -40,7 +40,7 @@ It doesn't match on names, and it takes no arguments, so you can't scope it to o
 ## Merging contacts
 
 ```php
-use Focal\Core\Actions\MergeContactsAction;
+use Odden\Core\Actions\MergeContactsAction;
 
 $survivor = app(MergeContactsAction::class)->execute($primary, $secondary);
 ```
@@ -80,8 +80,8 @@ Data that your own app or package stores against the contact by its ID is only m
 To merge every group the finder returns, keeping the oldest record of each group:
 
 ```php
-use Focal\Core\Actions\FindDuplicateContactsAction;
-use Focal\Core\Actions\MergeContactsAction;
+use Odden\Core\Actions\FindDuplicateContactsAction;
+use Odden\Core\Actions\MergeContactsAction;
 
 foreach (app(FindDuplicateContactsAction::class)->execute() as $group) {
     $survivor = $group['contacts']->shift();
@@ -104,7 +104,7 @@ foreach (app(FindDuplicateContactsAction::class)->execute() as $group) {
 - It then runs [`CalculateCustomerHealthScoreAction`](contacts-and-companies.md#customer-health-scores) on the primary, which overwrites the averaged health score. This runs after `CompaniesMerged` listeners, so the score includes any records they moved. If the company moves into `AtRisk`, this also creates a churn-risk task.
 
 ```php
-use Focal\Core\Actions\MergeCompaniesAction;
+use Odden\Core\Actions\MergeCompaniesAction;
 
 $company = app(MergeCompaniesAction::class)->execute($acme, $acmeInc);
 ```
@@ -129,10 +129,10 @@ Where both records have a row that can only exist once, the modules keep one:
 
 ## Moving your own data on merge
 
-Core only moves data it owns, and the Focal modules move theirs. If your package or app stores rows against a contact or company by ID, listen for `Focal\Core\Events\ContactsMerged` or `Focal\Core\Events\CompaniesMerged` and move them from `$event->secondary` to `$event->primary`:
+Core only moves data it owns, and the Odden modules move theirs. If your package or app stores rows against a contact or company by ID, listen for `Odden\Core\Events\ContactsMerged` or `Odden\Core\Events\CompaniesMerged` and move them from `$event->secondary` to `$event->primary`:
 
 ```php
-use Focal\Core\Events\ContactsMerged;
+use Odden\Core\Events\ContactsMerged;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 

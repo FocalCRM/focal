@@ -1,6 +1,6 @@
 name: split
 
-# Publishes each package to its read-only repository (focalcrm/core, focalcrm/sales, ...),
+# Publishes each package to its read-only repository (getodden/crm-core, getodden/crm-sales, ...),
 # which Packagist reads. Pushes to main update each split's main branch; version tags are
 # mirrored to every split so a single tag releases all packages.
 
@@ -52,7 +52,7 @@ jobs:
           ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
           export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/split_key -o IdentitiesOnly=yes"
 
-          remote="git@github.com:focalcrm/${PACKAGE}.git"
+          remote="git@github.com:getodden/crm-${PACKAGE}.git"
           sha=$(git subtree split --prefix="packages/${PACKAGE}" HEAD)
           echo "packages/${PACKAGE} at ${GITHUB_SHA::7} -> split ${sha::7}"
 

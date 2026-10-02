@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support;
+namespace Odden\Core\Support;
 
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 
 /**
  * Finds and creates contacts by email address, ignoring case and surrounding whitespace.

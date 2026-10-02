@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LeadRoutingRuleResource\Pages;
+namespace Odden\Filament\Resources\LeadRoutingRuleResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\LeadRoutingRuleResource;
+use Odden\Filament\Resources\LeadRoutingRuleResource;
 
 class CreateLeadRoutingRule extends CreateRecord
 {

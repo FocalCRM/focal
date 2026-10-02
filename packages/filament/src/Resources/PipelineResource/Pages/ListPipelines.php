@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\PipelineResource\Pages;
+namespace Odden\Filament\Resources\PipelineResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\PipelineResource;
+use Odden\Filament\Resources\PipelineResource;
 
 class ListPipelines extends ListRecords
 {

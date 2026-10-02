@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CannedResponseResource\Pages;
+namespace Odden\Filament\Resources\CannedResponseResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\CannedResponseResource;
+use Odden\Filament\Resources\CannedResponseResource;
 
 class CreateCannedResponse extends CreateRecord
 {

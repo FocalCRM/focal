@@ -1,26 +1,26 @@
 {
-    "name": "focalcrm/core",
-    "description": "Headless CRM Core Engine for Focal (Contacts, Companies, Custom Properties, Associations, Timeline)",
+    "name": "getodden/crm-core",
+    "description": "Headless CRM Core Engine for Odden (Contacts, Companies, Custom Properties, Associations, Timeline)",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "laravel",
         "crm",
-        "focalcrm",
+        "getodden",
         "contacts",
         "companies",
         "custom-properties",
         "headless"
     ],
-    "homepage": "https://focalcrm.io",
+    "homepage": "https://odden.io",
     "support": {
-        "issues": "https://github.com/focalcrm/focal/issues",
-        "source": "https://github.com/focalcrm/focal"
+        "issues": "https://github.com/getodden/crm/issues",
+        "source": "https://github.com/getodden/crm"
     },
     "authors": [
         {
             "name": "CaskStack, LLC",
-            "homepage": "https://focalcrm.io"
+            "homepage": "https://odden.io"
         }
     ],
     "require": {
@@ -34,13 +34,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Focal\\Core\\": "src/",
-            "Focal\\Core\\Database\\Factories\\": "database/factories/"
+            "Odden\\Core\\": "src/",
+            "Odden\\Core\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Focal\\Core\\Tests\\": "tests/"
+            "Odden\\Core\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -49,7 +49,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Focal\\Core\\CoreServiceProvider"
+                "Odden\\Core\\CoreServiceProvider"
             ]
         },
         "branch-alias": {

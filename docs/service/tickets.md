@@ -7,7 +7,7 @@ A ticket is a support request from a customer. Its conversation is a list of `Ti
 
 ## The ticket model
 
-`Focal\Service\Models\Ticket` stores:
+`Odden\Service\Models\Ticket` stores:
 
 | Attribute | Type | Notes |
 | :--- | :--- | :--- |
@@ -39,9 +39,9 @@ $company->tickets;
 
 ### Ticket numbers and portal tokens
 
-When a ticket is created without a `ticket_number`, one is generated as `{prefix}-{year}-{5 random uppercase letters or digits}`, for example `TICK-2026-7WBPJ`. The prefix comes from `focal-service.defaults.prefix` (default `TICK`). A random 40-character `portal_token` is generated the same way.
+When a ticket is created without a `ticket_number`, one is generated as `{prefix}-{year}-{5 random uppercase letters or digits}`, for example `TICK-2026-7WBPJ`. The prefix comes from `odden-service.defaults.prefix` (default `TICK`). A random 40-character `portal_token` is generated the same way.
 
-`getPortalUrl()` returns the customer's ticket page (`route('focal.support.show', $token)`), and `getCsatUrl()` returns the satisfaction survey (`route('focal.support.rate', $token)`). See [Support portal and CSAT](customer-portal.md).
+`getPortalUrl()` returns the customer's ticket page (`route('odden.support.show', $token)`), and `getCsatUrl()` returns the satisfaction survey (`route('odden.support.rate', $token)`). See [Support portal and CSAT](customer-portal.md).
 
 ### SLA deadlines on create
 
@@ -61,7 +61,7 @@ When a ticket is created without an `sla_policy_id`, the policy with `is_default
 These transitions happen inside `Ticket::addMessage()`, which every action and public endpoint uses to post messages:
 
 - A public `Agent` message on a ticket with no `first_responded_at` sets `first_responded_at` to now, sets `is_sla_response_breached` to whether the response was late, and moves the status to `WaitingOnCustomer` unless the ticket is resolved or closed. Later agent replies don't change the status.
-- A public `Customer` message moves `New` and `WaitingOnCustomer` tickets to `Open`. On a `Resolved` or `Closed` ticket it reopens the ticket (status `Open`, `resolved_at` and `closed_at` cleared) when `focal-service.reopen_on_customer_reply` is `true`, the default (`FOCAL_SERVICE_REOPEN_ON_CUSTOMER_REPLY`). Set it to `false` to keep resolved and closed tickets as they are; the message is still added. A ticket that was [merged](routing.md#merging-tickets) into another is never reopened. Customer replies through `ReplyTicketAction` go to its primary instead, see [Replying](#replying-and-internal-notes).
+- A public `Customer` message moves `New` and `WaitingOnCustomer` tickets to `Open`. On a `Resolved` or `Closed` ticket it reopens the ticket (status `Open`, `resolved_at` and `closed_at` cleared) when `odden-service.reopen_on_customer_reply` is `true`, the default (`ODDEN_SERVICE_REOPEN_ON_CUSTOMER_REPLY`). Set it to `false` to keep resolved and closed tickets as they are; the message is still added. A ticket that was [merged](routing.md#merging-tickets) into another is never reopened. Customer replies through `ReplyTicketAction` go to its primary instead, see [Replying](#replying-and-internal-notes).
 - Internal notes and `System` messages never change the status.
 
 These status updates are saved quietly (without model events).
@@ -71,10 +71,10 @@ These status updates are saved quietly (without model events).
 Use `CreateTicketAction` for tickets from your own code, such as phone calls logged by an agent or an integration:
 
 ```php
-use Focal\Core\Models\Contact;
-use Focal\Service\Actions\CreateTicketAction;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Enums\TicketSource;
+use Odden\Core\Models\Contact;
+use Odden\Service\Actions\CreateTicketAction;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Enums\TicketSource;
 
 $contact = Contact::where('email', 'dana@example.com')->firstOrFail();
 
@@ -121,7 +121,7 @@ The action does more than insert a row:
 `ReplyTicketAction` posts a message to the thread:
 
 ```php
-use Focal\Service\Actions\ReplyTicketAction;
+use Odden\Service\Actions\ReplyTicketAction;
 
 $reply = app(ReplyTicketAction::class);
 
@@ -185,7 +185,7 @@ Message bodies are plain text. The bundled portal pages escape them and convert 
 ## Resolving, closing, and reopening
 
 ```php
-use Focal\Service\Actions\ResolveTicketAction;
+use Odden\Service\Actions\ResolveTicketAction;
 
 app(ResolveTicketAction::class)->execute(
     $ticket,
@@ -211,7 +211,7 @@ The model methods on their own send no email:
 
 ## Notifications
 
-The package sends these notifications on the `mail` channel. All four implement `ShouldQueue`, so they are pushed to the queue and sent by a queue worker, and a slow mail provider doesn't slow down the request or command that triggered them. They use the connection and queue in `focal-service.notifications.connection` and `focal-service.notifications.queue` (`FOCAL_SERVICE_NOTIFICATIONS_CONNECTION`, `FOCAL_SERVICE_NOTIFICATIONS_QUEUE`); both default to `null`, which means your default queue connection and its default queue. Run a worker that listens on that queue, for example `php artisan queue:work --queue=support-mail,default`. With the `sync` connection they are sent immediately, as before. Customer notifications go to the Core `Contact`, which uses Laravel's `Notifiable` trait and its `email` attribute.
+The package sends these notifications on the `mail` channel. All four implement `ShouldQueue`, so they are pushed to the queue and sent by a queue worker, and a slow mail provider doesn't slow down the request or command that triggered them. They use the connection and queue in `odden-service.notifications.connection` and `odden-service.notifications.queue` (`ODDEN_SERVICE_NOTIFICATIONS_CONNECTION`, `ODDEN_SERVICE_NOTIFICATIONS_QUEUE`); both default to `null`, which means your default queue connection and its default queue. Run a worker that listens on that queue, for example `php artisan queue:work --queue=support-mail,default`. With the `sync` connection they are sent immediately, as before. Customer notifications go to the Core `Contact`, which uses Laravel's `Notifiable` trait and its `email` attribute.
 
 The ticket (and message) is serialized by ID and reloaded when the job runs, so the email reflects the ticket at sending time. The `Message-ID` is generated when the email is built in the worker, so threading works the same whether the notification is queued or sent synchronously.
 
@@ -224,9 +224,9 @@ The ticket (and message) is serialized by ID and reloaded when the job runs, so 
 
 Customer email subjects start with `[#{ticket_number}]` for the customer's reference. The three customer emails also set a `Message-ID` that contains the ticket's portal token, `<ticket.{portal_token}.{unique}@{host}>`, which the [email webhook](inbound-email.md#threading-replies) uses, along with the portal link, to thread replies from the ticket's contact back into the ticket. The ticket number alone doesn't thread a reply.
 
-Tickets created by the [chat widget](chat-widget.md) go through `CreateTicketAction` but only send the confirmation email when `focal-service.chat.confirmation_email` is `true` (it is `false` by default).
+Tickets created by the [chat widget](chat-widget.md) go through `CreateTicketAction` but only send the confirmation email when `odden-service.chat.confirmation_email` is `true` (it is `false` by default).
 
-Ticket subjects, contact names, and agent names in these emails are escaped for Markdown (`Focal\Service\Support\MailMarkdown::escape()`), and HTML is escaped by the mail template, so a subject like `[Reset](https://evil.example)` is shown as typed rather than as a link. Use `MailMarkdown::escape()` for customer-supplied values in your own `MailMessage` lines too.
+Ticket subjects, contact names, and agent names in these emails are escaped for Markdown (`Odden\Service\Support\MailMarkdown::escape()`), and HTML is escaped by the mail template, so a subject like `[Reset](https://evil.example)` is shown as typed rather than as a link. Use `MailMarkdown::escape()` for customer-supplied values in your own `MailMessage` lines too.
 
 ## Automatic closing
 

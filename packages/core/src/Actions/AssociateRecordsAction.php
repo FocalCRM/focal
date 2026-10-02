@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Enums\AssociationCardinality;
-use Focal\Core\Events\RecordsAssociated;
-use Focal\Core\Exceptions\CardinalityViolationException;
-use Focal\Core\Models\Association;
-use Focal\Core\Models\AssociationType;
+use Odden\Core\Enums\AssociationCardinality;
+use Odden\Core\Events\RecordsAssociated;
+use Odden\Core\Exceptions\CardinalityViolationException;
+use Odden\Core\Models\Association;
+use Odden\Core\Models\AssociationType;
 use Illuminate\Database\Eloquent\Model;
 
 class AssociateRecordsAction

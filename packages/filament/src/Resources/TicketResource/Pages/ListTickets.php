@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\TicketResource\Pages;
+namespace Odden\Filament\Resources\TicketResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Resources\TicketResource;
+use Odden\Filament\Resources\TicketResource;
 
 class ListTickets extends ListRecords
 {

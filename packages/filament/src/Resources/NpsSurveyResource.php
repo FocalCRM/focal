@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -19,10 +19,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\NpsSurveyResource\Pages\CreateNpsSurvey;
-use Focal\Filament\Resources\NpsSurveyResource\Pages\EditNpsSurvey;
-use Focal\Filament\Resources\NpsSurveyResource\Pages\ListNpsSurveys;
-use Focal\Marketing\Models\NpsSurvey;
+use Odden\Filament\Resources\NpsSurveyResource\Pages\CreateNpsSurvey;
+use Odden\Filament\Resources\NpsSurveyResource\Pages\EditNpsSurvey;
+use Odden\Filament\Resources\NpsSurveyResource\Pages\ListNpsSurveys;
+use Odden\Marketing\Models\NpsSurvey;
 use UnitEnum;
 
 class NpsSurveyResource extends Resource

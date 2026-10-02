@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support\Enrichment;
+namespace Odden\Core\Support\Enrichment;
 
-use Focal\Core\Actions\ExtractCorporateDomainAction;
-use Focal\Core\Contracts\EnrichmentDriver;
+use Odden\Core\Actions\ExtractCorporateDomainAction;
+use Odden\Core\Contracts\EnrichmentDriver;
 
 class HeuristicEnrichmentDriver implements EnrichmentDriver
 {

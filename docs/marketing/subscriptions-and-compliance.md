@@ -3,7 +3,7 @@ title: Subscriptions and compliance
 description: How unsubscribe links, the preference center, subscription topics, and double opt-in work, and how campaigns respect them.
 ---
 
-Focal tracks consent per email address, in three layers:
+Odden tracks consent per email address, in three layers:
 
 - a global subscription status
 - per-topic preferences that people manage in a hosted preference center
@@ -13,10 +13,10 @@ Campaign dispatch checks the first two before it creates a recipient, and checks
 
 ## Global subscription status
 
-`Focal\Marketing\Models\MarketingSubscription` holds one row per email address (unique), with a `status` (`SubscriptionStatus::Subscribed`, `Unsubscribed`, or `Bounced`), `unsubscribed_at`, and an optional `contact_id`. A contact's row is available as `$contact->marketingSubscription`.
+`Odden\Marketing\Models\MarketingSubscription` holds one row per email address (unique), with a `status` (`SubscriptionStatus::Subscribed`, `Unsubscribed`, or `Bounced`), `unsubscribed_at`, and an optional `contact_id`. A contact's row is available as `$contact->marketingSubscription`.
 
 ```php
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingSubscription;
 
 MarketingSubscription::unsubscribe('pat@example.com', $contact->id);
 
@@ -35,8 +35,8 @@ Addresses are lowercased and trimmed everywhere. An address with no row counts a
 There's no helper to subscribe someone again. To do it, set the row's status yourself, and remove the address from the suppression list if it's there:
 
 ```php
-use Focal\Marketing\Enums\SubscriptionStatus;
-use Focal\Marketing\Models\EmailSuppression;
+use Odden\Marketing\Enums\SubscriptionStatus;
+use Odden\Marketing\Models\EmailSuppression;
 
 MarketingSubscription::query()
     ->where('email', 'pat@example.com')
@@ -50,7 +50,7 @@ EmailSuppression::remove('pat@example.com');
 Every campaign recipient gets its own unsubscribe link. Put `{{unsubscribe_url}}` in your template (the mail builder `footer` slot already does); campaigns replace it with:
 
 ```php
-$recipient->getUnsubscribeUrl(); // route('focal.marketing.unsubscribe.show', $recipient->unsubscribe_token)
+$recipient->getUnsubscribeUrl(); // route('odden.marketing.unsubscribe.show', $recipient->unsubscribe_token)
 ```
 
 - `GET /marketing/unsubscribe/{token}` shows a confirmation page with a button. An unknown token returns `404`.
@@ -72,12 +72,12 @@ List-Unsubscribe-Post: List-Unsubscribe=One-Click
 ```
 
 ```php
-$recipient->getOneClickUnsubscribeUrl(); // route('focal.marketing.unsubscribe.process', $recipient->unsubscribe_token)
+$recipient->getOneClickUnsubscribeUrl(); // route('odden.marketing.unsubscribe.process', $recipient->unsubscribe_token)
 ```
 
 It's the same URL as the unsubscribe link. A mail client that opens it gets the confirmation page; a mailbox provider's one-click `POST` (body `List-Unsubscribe=One-Click`) unsubscribes straight away and gets `200`. Repeating the `POST` is harmless.
 
-The `POST` route is exempt from CSRF verification, because providers send it without a session or CSRF token. The 40-character unsubscribe token in the URL is the credential, and an unknown token returns `404`. Because one provider sends many of these requests from a few addresses, the route uses the `focal-api` rate limit (`FOCAL_API_RATE_LIMIT`, 600 a minute per IP) rather than `focal-public`.
+The `POST` route is exempt from CSRF verification, because providers send it without a session or CSRF token. The 40-character unsubscribe token in the URL is the credential, and an unknown token returns `404`. Because one provider sends many of these requests from a few addresses, the route uses the `odden-api` rate limit (`ODDEN_API_RATE_LIMIT`, 600 a minute per IP) rather than `odden-public`.
 
 [Workflow emails](workflows.md#step-types) carry `List-Unsubscribe` with the contact's [preference center](#preference-center) URL and no `List-Unsubscribe-Post`, since the preference center has no one-click endpoint.
 
@@ -109,7 +109,7 @@ When saving topics, the controller writes a `MarketingContactTopic` row for ever
 
 ### Customizing the pages
 
-The pages are Blade views in the `focal-marketing` namespace. The package doesn't publish them, but Laravel loads your copy first if you create it under `resources/views/vendor/focal-marketing/`:
+The pages are Blade views in the `odden-marketing` namespace. The package doesn't publish them, but Laravel loads your copy first if you create it under `resources/views/vendor/odden-marketing/`:
 
 | View | Page |
 | :--- | :--- |
@@ -118,7 +118,7 @@ The pages are Blade views in the `focal-marketing` namespace. The package doesn'
 | `preferences.blade.php` | Preference center (receives `$contact`, `$topics`, `$currentTopics`, `$token`, `$isSuppressed`) |
 | `confirmed.blade.php` | Double opt-in confirmation (receives `$contact`) |
 
-Keep the form actions pointed at the `focal.marketing.unsubscribe.process` and `focal.marketing.preferences.update` routes, and include `@csrf` (the unsubscribe route ignores it, but the preference route checks it).
+Keep the form actions pointed at the `odden.marketing.unsubscribe.process` and `odden.marketing.preferences.update` routes, and include `@csrf` (the unsubscribe route ignores it, but the preference route checks it).
 
 ## Subscription topics
 
@@ -129,7 +129,7 @@ Topics let people opt out of one kind of email, such as webinar invitations, wit
 `MarketingSubscriptionTopic` has a `name`, a unique `slug`, a `description`, `is_default` (default `true`), and a `sort_order`. Each address's choice is stored in `MarketingContactTopic` (`email`, `topic_id`, `is_subscribed`, `unsubscribed_at`, `contact_id`).
 
 ```php
-use Focal\Marketing\Models\MarketingSubscriptionTopic;
+use Odden\Marketing\Models\MarketingSubscriptionTopic;
 
 $webinars = MarketingSubscriptionTopic::create([
     'name' => 'Webinars',
@@ -166,14 +166,14 @@ The preference center writes both mechanisms, so they agree for contacts who hav
 
 ## Double opt-in
 
-Double opt-in asks a new subscriber to confirm their address by clicking a link. Focal provides the confirmation endpoint; sending the email is up to you.
+Double opt-in asks a new subscriber to confirm their address by clicking a link. Odden provides the confirmation endpoint; sending the email is up to you.
 
 ```php
 use Illuminate\Support\Facades\Mail;
 
 $contact->getPreferenceCenterUrl(); // ensures the contact has a marketing_verification_token
 
-$confirmUrl = route('focal.marketing.confirm', $contact->marketing_verification_token);
+$confirmUrl = route('odden.marketing.confirm', $contact->marketing_verification_token);
 
 Mail::raw("Confirm your subscription: {$confirmUrl}", function ($message) use ($contact): void {
     $message->to($contact->email)->subject('Please confirm your email');
@@ -188,8 +188,8 @@ Things to know:
 - Campaign dispatch doesn't check `marketing_email_verified_at`. To mail only confirmed contacts, pass them in yourself:
 
 ```php
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\DispatchCampaignAction;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\DispatchCampaignAction;
 
 $confirmed = $list->contacts()->whereNotNull('marketing_email_verified_at')->get();
 

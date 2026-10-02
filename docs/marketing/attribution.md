@@ -5,11 +5,11 @@ description: Attribute pipeline and revenue to campaigns, calculate closed-loop 
 
 Three actions report on how marketing turns into revenue. `GetCampaignAttributionAction` reports on a single campaign, `CalculateClosedLoopMetricsAction` reports on all marketing activity, and `AnalyzeConversionFunnelAction` counts how many people reach each step of a funnel you define. All of them run their queries when called; nothing is stored or scheduled.
 
-Revenue figures come from deals in `focalcrm/sales`. Without that package installed, the revenue and deal values are zero. A deal counts as influenced by marketing when it's [associated](../core/associations.md) with a contact that marketing reached.
+Revenue figures come from deals in `getodden/crm-sales`. Without that package installed, the revenue and deal values are zero. A deal counts as influenced by marketing when it's [associated](../core/associations.md) with a contact that marketing reached.
 
 ## Attribution models
 
-`Focal\Marketing\Enums\AttributionModel` selects how much of the influenced revenue is credited to marketing:
+`Odden\Marketing\Enums\AttributionModel` selects how much of the influenced revenue is credited to marketing:
 
 | Case | Value |
 | --- | --- |
@@ -27,8 +27,8 @@ The models don't distribute credit across individual touchpoints. Each model is 
 ## Campaign attribution
 
 ```php
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\AttributionModel;
 
 $report = app(GetCampaignAttributionAction::class)->execute($campaign, AttributionModel::UShaped);
 
@@ -78,8 +78,8 @@ Budget fields such as `budget`, `actual_spend`, and `target_revenue` are set on 
 ## Closed-loop metrics
 
 ```php
-use Focal\Marketing\Actions\CalculateClosedLoopMetricsAction;
-use Focal\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Actions\CalculateClosedLoopMetricsAction;
+use Odden\Marketing\Enums\AttributionModel;
 
 $metrics = app(CalculateClosedLoopMetricsAction::class)->execute(AttributionModel::Linear);
 ```
@@ -110,10 +110,10 @@ The weights here are 1.0 for `FirstTouch`, `LastTouch`, and no model, then 0.8 (
 
 ## Conversion funnels
 
-`Focal\Marketing\Actions\AnalyzeConversionFunnelAction` counts each step of a funnel within a date range:
+`Odden\Marketing\Actions\AnalyzeConversionFunnelAction` counts each step of a funnel within a date range:
 
 ```php
-use Focal\Marketing\Actions\AnalyzeConversionFunnelAction;
+use Odden\Marketing\Actions\AnalyzeConversionFunnelAction;
 
 $funnel = app(AnalyzeConversionFunnelAction::class)->execute(
     steps: [
@@ -138,8 +138,8 @@ foreach ($funnel['steps'] as $step) {
 | `behavioral_event` | Distinct contacts with a [custom event](inbound-webhooks.md#custom-behavioral-events) | `event_name` |
 | `campaign_click` | Distinct recipient emails that clicked | `campaign_id` |
 | `contact_created` | Contacts created | none |
-| `deal_created` | Deals created (0 without `focalcrm/sales`) | none |
-| `deal_won` | Deals won, by `closed_at` (0 without `focalcrm/sales`) | none |
+| `deal_created` | Deals created (0 without `getodden/crm-sales`) | none |
+| `deal_won` | Deals won, by `closed_at` (0 without `getodden/crm-sales`) | none |
 
 Each step is counted independently over the whole date range; the action doesn't follow individual people from one step to the next. An unknown type counts 0.
 

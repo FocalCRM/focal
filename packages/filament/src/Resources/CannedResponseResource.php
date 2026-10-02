@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -19,10 +19,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\CannedResponseResource\Pages\CreateCannedResponse;
-use Focal\Filament\Resources\CannedResponseResource\Pages\EditCannedResponse;
-use Focal\Filament\Resources\CannedResponseResource\Pages\ListCannedResponses;
-use Focal\Service\Models\CannedResponse;
+use Odden\Filament\Resources\CannedResponseResource\Pages\CreateCannedResponse;
+use Odden\Filament\Resources\CannedResponseResource\Pages\EditCannedResponse;
+use Odden\Filament\Resources\CannedResponseResource\Pages\ListCannedResponses;
+use Odden\Service\Models\CannedResponse;
 use UnitEnum;
 
 class CannedResponseResource extends Resource

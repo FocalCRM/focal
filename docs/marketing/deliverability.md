@@ -7,10 +7,10 @@ Mailbox providers judge your sender reputation by bounces, complaints, and engag
 
 ## The suppression list
 
-`Focal\Marketing\Models\EmailSuppression` is a do-not-send list keyed by email address. [Campaign dispatch](campaigns.md#who-is-skipped) skips every address on it, through `MarketingSubscription::isSuppressed()`.
+`Odden\Marketing\Models\EmailSuppression` is a do-not-send list keyed by email address. [Campaign dispatch](campaigns.md#who-is-skipped) skips every address on it, through `MarketingSubscription::isSuppressed()`.
 
 ```php
-use Focal\Marketing\Models\EmailSuppression;
+use Odden\Marketing\Models\EmailSuppression;
 
 EmailSuppression::suppress('blocked@example.com', 'manual_blocklist', 'manual', ['note' => 'Requested by legal']);
 
@@ -36,16 +36,16 @@ https://example.com/api/marketing/webhooks/deliverability?token=YOUR_TOKEN
 
 | Endpoint | Route name | Provider |
 | :--- | :--- | :--- |
-| `POST /marketing/webhooks/esp/{provider}` (`web` group) | `focal.marketing.webhooks.esp` | From the URL |
-| `POST /api/marketing/webhooks/deliverability` (`api` group) | `focal.marketing.webhooks.deliverability` | From a `provider` field in the body, default `generic` |
+| `POST /marketing/webhooks/esp/{provider}` (`web` group) | `odden.marketing.webhooks.esp` | From the URL |
+| `POST /api/marketing/webhooks/deliverability` (`api` group) | `odden.marketing.webhooks.deliverability` | From a `provider` field in the body, default `generic` |
 
-Both are CSRF exempt and limited by `throttle:focal-api`. Neither verifies the provider's own signature; the API token is the only check.
+Both are CSRF exempt and limited by `throttle:odden-api`. Neither verifies the provider's own signature; the API token is the only check.
 
 The body can be a single event object or a JSON array of events:
 
 ```bash
 curl -X POST "https://example.com/marketing/webhooks/esp/sendgrid" \
-  -H "X-Focal-Token: $FOCAL_MARKETING_API_TOKEN" \
+  -H "X-Odden-Token: $ODDEN_MARKETING_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '[{"email": "bounce@example.com", "event": "bounce", "status": "5.1.1", "reason": "User unknown"}]'
 ```
@@ -62,11 +62,11 @@ A single object returns `{"status": "received", "event_id": 42, "event_type": "b
 
 | Provider | Email | Event type | Tracking token |
 | :--- | :--- | :--- | :--- |
-| `mailgun` | `event-data.recipient` | `event-data.event` | `event-data.user-variables.focal_token` |
-| `ses` | `mail.destination.0` | `eventType`, lowercased (default `bounce`) | `mail.headersTruncated.X-Focal-Token` |
-| `postmark` | `Recipient` or `Email` | `RecordType`, lowercased (default `bounce`) | `Metadata.focal_token` |
-| `sendgrid` | `email` | `event`: `bounce` and `dropped` become `bounce`, `spamreport` becomes `complaint`, `unsubscribe` becomes `unsubscribed` | `focal_token` |
-| `resend` | `data.to.0` | `type`: `email.bounced`, `email.complained`, and `email.delivered` become `bounce`, `complaint`, and `delivered` | `data.tags.focal_token` |
+| `mailgun` | `event-data.recipient` | `event-data.event` | `event-data.user-variables.odden_token` |
+| `ses` | `mail.destination.0` | `eventType`, lowercased (default `bounce`) | `mail.headersTruncated.X-Odden-Token` |
+| `postmark` | `Recipient` or `Email` | `RecordType`, lowercased (default `bounce`) | `Metadata.odden_token` |
+| `sendgrid` | `email` | `event`: `bounce` and `dropped` become `bounce`, `spamreport` becomes `complaint`, `unsubscribe` becomes `unsubscribed` | `odden_token` |
+| `resend` | `data.to.0` | `type`: `email.bounced`, `email.complained`, and `email.delivered` become `bounce`, `complaint`, and `delivered` | `data.tags.odden_token` |
 | `generic` | `email` or `recipient` | `event_type`, `type`, or `event` (default `bounce`) | `tracking_token` |
 
 The generic format also reads `error_code` (or `code`) and `error_message` (or `reason`):
@@ -105,7 +105,7 @@ Check how your provider names its events before relying on this. Only the names 
 
 An event is linked to a `CampaignRecipient` by its tracking token if the payload carries one. Otherwise, it's linked to the most recent recipient with the same email address.
 
-To match exactly, pass the recipient's `tracking_token` to your provider as metadata named `focal_token` when you send (Mailgun user variables, Postmark metadata, SendGrid custom args, Resend tags). Campaign messages carry the token in an `X-Focal-Tracking-Token` header, so you can copy it into your provider's metadata in a `MessageSending` listener or your provider's header-mapping settings. For SES, the configured path (`mail.headersTruncated`) is a boolean in SES events, so SES events always fall back to matching by address.
+To match exactly, pass the recipient's `tracking_token` to your provider as metadata named `odden_token` when you send (Mailgun user variables, Postmark metadata, SendGrid custom args, Resend tags). Campaign messages carry the token in an `X-Odden-Tracking-Token` header, so you can copy it into your provider's metadata in a `MessageSending` listener or your provider's header-mapping settings. For SES, the configured path (`mail.headersTruncated`) is a boolean in SES events, so SES events always fall back to matching by address.
 
 ### Amazon SES
 
@@ -118,7 +118,7 @@ Two actions score a campaign's content before you send it. Neither runs automati
 ### `LintCampaignDeliverabilityAction`
 
 ```php
-use Focal\Marketing\Actions\LintCampaignDeliverabilityAction;
+use Odden\Marketing\Actions\LintCampaignDeliverabilityAction;
 
 $report = app(LintCampaignDeliverabilityAction::class)->execute($campaign);
 
@@ -151,7 +151,7 @@ The Filament plugin's audit modal uses this one. It returns `score`, `rating` (`
 It checks for an unsubscribe link, unbalanced `{{`/`}}` merge tags, spam phrases in the subject or body, a long run of capitals or repeated punctuation in the subject, a consumer sender domain, and a body with fewer than 30 characters of text.
 
 ```php
-use Focal\Marketing\Actions\AuditCampaignDeliverabilityAction;
+use Odden\Marketing\Actions\AuditCampaignDeliverabilityAction;
 
 $audit = app(AuditCampaignDeliverabilityAction::class)->execute($campaign);
 ```
@@ -161,15 +161,15 @@ $audit = app(AuditCampaignDeliverabilityAction::class)->execute($campaign);
 `DomainHealthCheckService::diagnose()` looks up a domain's SPF, DKIM, DMARC, and MX records with `dns_get_record()`:
 
 ```php
-use Focal\Marketing\Services\DomainHealthCheckService;
+use Odden\Marketing\Services\DomainHealthCheckService;
 
-$health = app(DomainHealthCheckService::class)->diagnose('acme.com', 'focal');
+$health = app(DomainHealthCheckService::class)->diagnose('acme.com', 'odden');
 
 $health['overall_status']; // 'pass', 'warning', or 'fail'
 $health['dmarc']['policy']; // e.g. 'quarantine'
 ```
 
-The second argument is the DKIM selector (default `focal`), looked up at `{selector}._domainkey.{domain}`. Each of `spf`, `dkim`, `dmarc`, and `mx` has a `status`, a `label`, what was `found`, a `recommendation`, and a `note`.
+The second argument is the DKIM selector (default `odden`), looked up at `{selector}._domainkey.{domain}`. Each of `spf`, `dkim`, `dmarc`, and `mx` has a `status`, a `label`, what was `found`, a `recommendation`, and a `note`.
 
 - DMARC passes with `p=quarantine` or `p=reject`; `p=none` is a warning.
 - `overall_status` is `pass` when SPF, DMARC, and MX pass. It's `fail` if SPF or MX is missing, and `warning` otherwise. DKIM doesn't affect it.
@@ -180,7 +180,7 @@ The second argument is the DKIM selector (default `focal`), looked up at `{selec
 `DomainThrottler` plans sends so no mailbox provider gets too many messages a minute. It only calculates a plan; it doesn't delay or send anything.
 
 ```php
-use Focal\Marketing\Services\DomainThrottler;
+use Odden\Marketing\Services\DomainThrottler;
 
 $plan = DomainThrottler::calculateThrottledBatches(
     recipients: [['to' => 'a@gmail.com'], ['to' => 'b@yahoo.com']],
@@ -220,7 +220,7 @@ The command runs `ProcessSubscriberSunsetPolicyAction`, which considers contacts
 It prints a table with the number of candidates, dormant contacts, and suppressed contacts. You can also call the action yourself:
 
 ```php
-use Focal\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
+use Odden\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
 
 $result = app(ProcessSubscriberSunsetPolicyAction::class)->execute(
     inactivityDays: 90,

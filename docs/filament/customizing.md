@@ -1,9 +1,9 @@
 ---
 title: Customizing and extending
-description: Add your own resources next to Focal's, replace a Focal resource with a subclass, override the plugin's Blade views, and make sure the custom pages are styled.
+description: Add your own resources next to Odden's, replace an Odden resource with a subclass, override the plugin's Blade views, and make sure the custom pages are styled.
 ---
 
-`FocalPlugin` has no options for changing its resources (see [Configuration and navigation](configuration.md)). To customize the admin, you add your own Filament classes next to the plugin, or you register Focal's classes yourself and swap in subclasses where you need changes.
+`OddenPlugin` has no options for changing its resources (see [Configuration and navigation](configuration.md)). To customize the admin, you add your own Filament classes next to the plugin, or you register Odden's classes yourself and swap in subclasses where you need changes.
 
 ## Adding your own resources and pages
 
@@ -11,12 +11,12 @@ The plugin only adds to the panel, so your own resources, pages and widgets work
 
 ```php
 use Filament\Pages\Dashboard;
-use Focal\Filament\FocalPlugin;
+use Odden\Filament\OddenPlugin;
 
 return $panel
     // ...
     ->plugins([
-        FocalPlugin::make(),
+        OddenPlugin::make(),
     ])
     ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
     ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -25,15 +25,15 @@ return $panel
     ]);
 ```
 
-Your resources can use Focal models directly, for example a resource for `Focal\Core\Models\Activity`. Avoid slugs the plugin already uses (`contacts`, `companies`, `deals` and so on, listed in [URLs and route names](configuration.md#urls-and-route-names)). Filament derives a resource's slug from its class name, so `App\Filament\Resources\ContactResource` would also get `contacts` and clash with the plugin's routes.
+Your resources can use Odden models directly, for example a resource for `Odden\Core\Models\Activity`. Avoid slugs the plugin already uses (`contacts`, `companies`, `deals` and so on, listed in [URLs and route names](configuration.md#urls-and-route-names)). Filament derives a resource's slug from its class name, so `App\Filament\Resources\ContactResource` would also get `contacts` and clash with the plugin's routes.
 
-To put your items into Focal's navigation groups, use the same group labels: `CRM`, `Sales`, `Service`, `Marketing`, `Executive` or `Settings`.
+To put your items into Odden's navigation groups, use the same group labels: `CRM`, `Sales`, `Service`, `Marketing`, `Executive` or `Settings`.
 
 ## Replacing a resource
 
-A Filament panel can't unregister a resource that a plugin added. To change a Focal resource, don't use `FocalPlugin` on that panel. Register the Focal resources and pages you want yourself, and use your own subclass for the one you're changing.
+A Filament panel can't unregister a resource that a plugin added. To change an Odden resource, don't use `OddenPlugin` on that panel. Register the Odden resources and pages you want yourself, and use your own subclass for the one you're changing.
 
-Start with the resource subclass. Filament derives the slug from the class name, so naming it `ContactResource` keeps the `contacts` URLs and route names the other Focal resources link to. With a different class name, set `protected static ?string $slug = 'contacts';`.
+Start with the resource subclass. Filament derives the slug from the class name, so naming it `ContactResource` keeps the `contacts` URLs and route names the other Odden resources link to. With a different class name, set `protected static ?string $slug = 'contacts';`.
 
 ```php
 <?php
@@ -46,11 +46,11 @@ use App\Filament\Resources\ContactResource\Pages\ListContacts;
 use App\Filament\Resources\ContactResource\Pages\ViewContact;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\ContactResource as FocalContactResource;
+use Odden\Filament\Resources\ContactResource as OddenContactResource;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
-class ContactResource extends FocalContactResource
+class ContactResource extends OddenContactResource
 {
     protected static UnitEnum|string|null $navigationGroup = 'People';
 
@@ -79,7 +79,7 @@ class ContactResource extends FocalContactResource
 }
 ```
 
-Override `getPages()` and subclass the pages as well. Each Focal page class sets `protected static string $resource` to the Focal resource, and Filament pages call their own resource's `table()`, `form()` and `getEloquentQuery()`. If your resource only overrides navigation properties (`$navigationGroup`, `$navigationLabel`, `$navigationSort`, `$navigationIcon`), the original pages are enough. But a `table()`, `form()` or `getEloquentQuery()` override has no effect unless the pages point at your class:
+Override `getPages()` and subclass the pages as well. Each Odden page class sets `protected static string $resource` to the Odden resource, and Filament pages call their own resource's `table()`, `form()` and `getEloquentQuery()`. If your resource only overrides navigation properties (`$navigationGroup`, `$navigationLabel`, `$navigationSort`, `$navigationIcon`), the original pages are enough. But a `table()`, `form()` or `getEloquentQuery()` override has no effect unless the pages point at your class:
 
 ```php
 <?php
@@ -87,25 +87,25 @@ Override `getPages()` and subclass the pages as well. Each Focal page class sets
 namespace App\Filament\Resources\ContactResource\Pages;
 
 use App\Filament\Resources\ContactResource;
-use Focal\Filament\Resources\ContactResource\Pages\ListContacts as FocalListContacts;
+use Odden\Filament\Resources\ContactResource\Pages\ListContacts as OddenListContacts;
 
-class ListContacts extends FocalListContacts
+class ListContacts extends OddenListContacts
 {
     protected static string $resource = ContactResource::class;
 }
 ```
 
-Create `CreateContact`, `EditContact` and `ViewContact` the same way, each extending the matching class in `Focal\Filament\Resources\ContactResource\Pages`. With all four pages pointing at your resource, the `getEloquentQuery()` scope above applies to the table and to the view and edit URLs. A contact owned by someone else then returns a 404.
+Create `CreateContact`, `EditContact` and `ViewContact` the same way, each extending the matching class in `Odden\Filament\Resources\ContactResource\Pages`. With all four pages pointing at your resource, the `getEloquentQuery()` scope above applies to the table and to the view and edit URLs. A contact owned by someone else then returns a 404.
 
 Then register everything on the panel in place of the plugin. This example rebuilds the core part of the plugin:
 
 ```php
 use App\Filament\Resources\ContactResource;
-use Focal\Filament\Pages\DataQuality;
-use Focal\Filament\Pages\ExecutiveOverview;
-use Focal\Filament\Resources\CompanyResource;
-use Focal\Filament\Resources\CrmListResource;
-use Focal\Filament\Resources\PropertyDefinitionResource;
+use Odden\Filament\Pages\DataQuality;
+use Odden\Filament\Pages\ExecutiveOverview;
+use Odden\Filament\Resources\CompanyResource;
+use Odden\Filament\Resources\CrmListResource;
+use Odden\Filament\Resources\PropertyDefinitionResource;
 
 return $panel
     // ...
@@ -125,37 +125,37 @@ Add the sales, service and marketing classes the same way. [How modules are dete
 
 ## Overriding views
 
-The plugin's custom pages and modals render Blade views from the `focal-filament` namespace:
+The plugin's custom pages and modals render Blade views from the `odden-filament` namespace:
 
 | View | Used by |
 | --- | --- |
-| `focal-filament::pages.executive-overview` | `ExecutiveOverview` |
-| `focal-filament::pages.data-quality` | `DataQuality` |
-| `focal-filament::pages.sales-cockpit` | `SalesCockpit` |
-| `focal-filament::pages.deal-kanban` | `DealResource` board page |
-| `focal-filament::pages.service-cockpit` | `ServiceCockpit` |
-| `focal-filament::pages.service-analytics` | `ServiceAnalytics` |
-| `focal-filament::pages.ticket-kanban` | `TicketResource` board page |
-| `focal-filament::pages.marketing-cockpit` | `MarketingCockpit` |
-| `focal-filament::pages.abm-cockpit` | `AbmCockpit` |
-| `focal-filament::pages.marketing-attribution` | `MarketingAttribution` |
-| `focal-filament::pages.campaign-benchmarking` | `CampaignBenchmarking` |
-| `focal-filament::pages.marketing-calendar` | `MarketingCalendar` |
-| `focal-filament::pages.utm-link-builder` | `UtmLinkBuilder` |
-| `focal-filament::pages.sender-domain-health` | `SenderDomainHealth` |
-| `focal-filament::components.ai-briefing-modal` | **AI Briefing** action on contacts and companies |
+| `odden-filament::pages.executive-overview` | `ExecutiveOverview` |
+| `odden-filament::pages.data-quality` | `DataQuality` |
+| `odden-filament::pages.sales-cockpit` | `SalesCockpit` |
+| `odden-filament::pages.deal-kanban` | `DealResource` board page |
+| `odden-filament::pages.service-cockpit` | `ServiceCockpit` |
+| `odden-filament::pages.service-analytics` | `ServiceAnalytics` |
+| `odden-filament::pages.ticket-kanban` | `TicketResource` board page |
+| `odden-filament::pages.marketing-cockpit` | `MarketingCockpit` |
+| `odden-filament::pages.abm-cockpit` | `AbmCockpit` |
+| `odden-filament::pages.marketing-attribution` | `MarketingAttribution` |
+| `odden-filament::pages.campaign-benchmarking` | `CampaignBenchmarking` |
+| `odden-filament::pages.marketing-calendar` | `MarketingCalendar` |
+| `odden-filament::pages.utm-link-builder` | `UtmLinkBuilder` |
+| `odden-filament::pages.sender-domain-health` | `SenderDomainHealth` |
+| `odden-filament::components.ai-briefing-modal` | **AI Briefing** action on contacts and companies |
 
-The package doesn't register any publishable files, so `vendor:publish` has nothing to copy. Laravel still checks your app's `resources/views/vendor/focal-filament` directory first, so you can override a view by copying it there under the same relative path:
+The package doesn't register any publishable files, so `vendor:publish` has nothing to copy. Laravel still checks your app's `resources/views/vendor/odden-filament` directory first, so you can override a view by copying it there under the same relative path:
 
 ```bash
-mkdir -p resources/views/vendor/focal-filament/pages
-cp vendor/focalcrm/filament/resources/views/pages/sales-cockpit.blade.php \
-   resources/views/vendor/focal-filament/pages/sales-cockpit.blade.php
+mkdir -p resources/views/vendor/odden-filament/pages
+cp vendor/getodden/crm-filament/resources/views/pages/sales-cockpit.blade.php \
+   resources/views/vendor/odden-filament/pages/sales-cockpit.blade.php
 ```
 
 Laravel only picks up the override directory if it exists when the application boots. The views call public properties and methods on the page classes (for example `$this->guidedActions` or `wire:click="advanceEnrollment(...)"`), so check your copy whenever you upgrade the package.
 
-Some actions also render views from the module packages, such as `focal-marketing::template-preview` and `focal-sales::deals.health-score-modal`. Override those in `resources/views/vendor/focal-marketing` and `resources/views/vendor/focal-sales` in the same way.
+Some actions also render views from the module packages, such as `odden-marketing::template-preview` and `odden-sales::deals.health-score-modal`. Override those in `resources/views/vendor/odden-marketing` and `resources/views/vendor/odden-sales` in the same way.
 
 ## Styling the custom pages
 
@@ -170,7 +170,7 @@ php artisan make:filament-theme
 Then add this line to `theme.css`, next to the `@source` lines Filament generated:
 
 ```css
-@source '../../../../vendor/focalcrm/filament/resources/views/**/*';
+@source '../../../../vendor/getodden/crm-filament/resources/views/**/*';
 ```
 
 The path is relative to `theme.css`. Rebuild your assets afterwards.

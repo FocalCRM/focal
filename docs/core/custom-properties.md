@@ -7,7 +7,7 @@ Every contact, company, and custom object record has a `properties` JSON column 
 
 ## Property definitions
 
-`Focal\Core\Models\PropertyDefinition` (table `focal_properties`) is a registry of the properties you expect on an entity type. The Filament package uses it to build forms and tables.
+`Odden\Core\Models\PropertyDefinition` (table `odden_properties`) is a registry of the properties you expect on an entity type. The Filament package uses it to build forms and tables.
 
 | Column | Notes |
 | --- | --- |
@@ -22,9 +22,9 @@ Every contact, company, and custom object record has a `properties` JSON column 
 | `sort_order` | Unsigned integer, default `0`. |
 
 ```php
-use Focal\Core\Enums\PropertyType;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\PropertyDefinition;
+use Odden\Core\Enums\PropertyType;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\PropertyDefinition;
 
 PropertyDefinition::create([
     'entity_type' => (new Contact)->getMorphClass(),
@@ -42,7 +42,7 @@ The `forEntity(string $entityType)` scope filters by `entity_type` and orders by
 
 Core doesn't validate property values against definitions. `setProperty()` and `setProperties()` accept any key and value, and `is_required`, `type`, and `options` are not enforced. Validate input yourself, for example in a form request, before writing it.
 
-`Focal\Core\Enums\PropertyType` cases. Each has a `label()`.
+`Odden\Core\Enums\PropertyType` cases. Each has a `label()`.
 
 | Case | Value | `label()` |
 | --- | --- | --- |
@@ -81,7 +81,7 @@ You can also pass a `properties` array when creating a record. It replaces the w
 
 ## Change history
 
-The `AuditsProperties` trait listens to the Eloquent `updating` event. For each changed attribute it writes a `Focal\Core\Models\PropertyHistory` row (table `focal_property_history`):
+The `AuditsProperties` trait listens to the Eloquent `updating` event. For each changed attribute it writes an `Odden\Core\Models\PropertyHistory` row (table `odden_property_history`):
 
 | Column | Value |
 | --- | --- |
@@ -89,7 +89,7 @@ The `AuditsProperties` trait listens to the Eloquent `updating` event. For each 
 | `property_name` | The column name. For the `properties` column, one row per changed key, named after the key. |
 | `old_value`, `new_value` | Scalars cast to string, enums stored as their backing value, other values JSON-encoded. |
 | `user_id` | `auth()->id()` at the time of the change, or `null`. |
-| `source` | The request's `X-Focal-Source` header, defaulting to `web`. The default applies in queued jobs and console commands too. |
+| `source` | The request's `X-Odden-Source` header, defaulting to `web`. The default applies in queued jobs and console commands too. |
 | `created_at` | `now()`. |
 
 `updated_at`, `deleted_at`, and `remember_token` are never recorded. Creating a record writes no history.
@@ -117,15 +117,15 @@ History is only written for changes made through Eloquent model events. These ch
 - lifecycle stage changes made with `TransitionLifecycleStageAction`, which records them as [lifecycle transitions](lifecycle-stages.md) instead.
 - `Contact::markContacted()` and company [enrichment](contacts-and-companies.md#enrichment).
 
-To tag changes that come from an import or an integration, have the client send an `X-Focal-Source` header, such as `X-Focal-Source: import`, on the HTTP request that makes them. Changes made outside an HTTP request are always recorded as `web`.
+To tag changes that come from an import or an integration, have the client send an `X-Odden-Source` header, such as `X-Odden-Source: import`, on the HTTP request that makes them. Changes made outside an HTTP request are always recorded as `web`.
 
 ## Custom objects
 
 Custom objects let you add your own record types, such as licenses or projects, without writing migrations. A `CustomObjectDefinition` describes the type, and each `CustomObjectRecord` stores its data in `properties`. Records use the same traits as contacts and companies: custom properties, change history, associations, activities, soft deletes, and the `forTeam()` scope. They don't have lifecycle stages.
 
 ```php
-use Focal\Core\Actions\CreateCustomObjectDefinitionAction;
-use Focal\Core\Actions\CreateCustomObjectRecordAction;
+use Odden\Core\Actions\CreateCustomObjectDefinitionAction;
+use Odden\Core\Actions\CreateCustomObjectRecordAction;
 
 $definition = app(CreateCustomObjectDefinitionAction::class)->execute([
     'name' => 'Software License',

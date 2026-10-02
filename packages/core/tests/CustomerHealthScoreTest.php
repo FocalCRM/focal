@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\CalculateCustomerHealthScoreAction;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\CustomerHealthStatus;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\CalculateCustomerHealthScoreAction;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\CustomerHealthStatus;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 
 test('calculates healthy standing for actively engaged company', function () {
     /** @var Company $company */

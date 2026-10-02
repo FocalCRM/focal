@@ -7,23 +7,23 @@ The support portal lets customers submit tickets, follow the conversation, reply
 
 ## Routes
 
-These routes are in the `web` route group (`focal-service.routes.web`), with no prefix by default. See [Configuration reference](configuration.md#routes).
+These routes are in the `web` route group (`odden-service.routes.web`), with no prefix by default. See [Configuration reference](configuration.md#routes).
 
 | Method | URI | Route name | Rate limit |
 | :--- | :--- | :--- | :--- |
-| GET | `/support` | `focal.support.create` | |
-| POST | `/support` | `focal.support.store` | `focal-public` |
-| GET | `/support/tickets/{token}` | `focal.support.show` | |
-| POST | `/support/tickets/{token}/reply` | `focal.support.reply` | `focal-public` |
-| GET | `/support/rate/{token}` | `focal.support.rate` | |
-| POST | `/support/rate/{token}` | `focal.support.submitRating` | `focal-public` |
+| GET | `/support` | `odden.support.create` | |
+| POST | `/support` | `odden.support.store` | `odden-public` |
+| GET | `/support/tickets/{token}` | `odden.support.show` | |
+| POST | `/support/tickets/{token}/reply` | `odden.support.reply` | `odden-public` |
+| GET | `/support/rate/{token}` | `odden.support.rate` | |
+| POST | `/support/rate/{token}` | `odden.support.submitRating` | `odden-public` |
 
 The POST routes use the web group's normal CSRF protection; the bundled forms include `@csrf`. An unknown token returns `404`.
 
 Link to the form from your site with the route name, so a changed prefix or domain is picked up:
 
 ```blade
-<a href="{{ route('focal.support.create') }}">Contact support</a>
+<a href="{{ route('odden.support.create') }}">Contact support</a>
 ```
 
 ## Submitting a ticket
@@ -50,7 +50,7 @@ While the customer types a subject, the form calls the [knowledge suggestion end
 
 `GET /support/tickets/{token}` shows the ticket number, status, priority, contact name, owner name, creation date, channel, and every message that is not an internal note. `getPortalUrl()` on the ticket returns this URL, and every customer email links to it.
 
-`POST /support/tickets/{token}/reply` takes a required `body` and adds it as a `Customer` message from the ticket's contact through [`ReplyTicketAction`](tickets.md#replying-and-internal-notes), so the status changes as described in [Statuses](tickets.md#statuses): a reply reopens a `Resolved` or `Closed` ticket unless `focal-service.reopen_on_customer_reply` is `false`. It redirects back with the flash message "Your reply has been posted to the ticket." If the ticket was [merged](routing.md#merging-tickets) into another, what happens depends on where the ticket came from, see [Replies to merged tickets](routing.md#replies-to-merged-tickets): for a ticket created from an email, by phone, or through the API, the reply is posted on the primary ticket and the flash message says so instead. For a ticket created on the portal or in the chat widget, the reply is refused with a `body` validation error asking the customer to reply to the latest email from your team. The page itself always shows the token's own ticket, never the primary. The bundled page hides the reply form once the ticket is `Closed` (merged tickets are closed), but the endpoint still accepts replies, so customers can reopen a closed ticket by email or from your own view.
+`POST /support/tickets/{token}/reply` takes a required `body` and adds it as a `Customer` message from the ticket's contact through [`ReplyTicketAction`](tickets.md#replying-and-internal-notes), so the status changes as described in [Statuses](tickets.md#statuses): a reply reopens a `Resolved` or `Closed` ticket unless `odden-service.reopen_on_customer_reply` is `false`. It redirects back with the flash message "Your reply has been posted to the ticket." If the ticket was [merged](routing.md#merging-tickets) into another, what happens depends on where the ticket came from, see [Replies to merged tickets](routing.md#replies-to-merged-tickets): for a ticket created from an email, by phone, or through the API, the reply is posted on the primary ticket and the flash message says so instead. For a ticket created on the portal or in the chat widget, the reply is refused with a `body` validation error asking the customer to reply to the latest email from your team. The page itself always shows the token's own ticket, never the primary. The bundled page hides the reply form once the ticket is `Closed` (merged tickets are closed), but the endpoint still accepts replies, so customers can reopen a closed ticket by email or from your own view.
 
 ## CSAT surveys
 
@@ -74,8 +74,8 @@ You can also record a rating from your own code with `ResolveTicketAction`'s `$c
 
 ## Customizing the pages
 
-The pages are Blade views in the `focal-service` namespace: `focal-service::portal.create`, `focal-service::portal.show`, and `focal-service::portal.rate`. They are standalone HTML pages that load Tailwind CSS from `cdn.tailwindcss.com` and the Plus Jakarta Sans font from Google Fonts.
+The pages are Blade views in the `odden-service` namespace: `odden-service::portal.create`, `odden-service::portal.show`, and `odden-service::portal.rate`. They are standalone HTML pages that load Tailwind CSS from `cdn.tailwindcss.com` and the Plus Jakarta Sans font from Google Fonts.
 
-The package has no publish tag for its views. To change one, copy it from `vendor/focalcrm/service/resources/views` into `resources/views/vendor/focal-service` in your app, keeping the same relative path (for example `resources/views/vendor/focal-service/portal/show.blade.php`). Laravel uses your copy instead of the package's.
+The package has no publish tag for its views. To change one, copy it from `vendor/getodden/crm-service/resources/views` into `resources/views/vendor/odden-service` in your app, keeping the same relative path (for example `resources/views/vendor/odden-service/portal/show.blade.php`). Laravel uses your copy instead of the package's.
 
 To replace the routes and controllers entirely, see [Using your own routes](configuration.md#using-your-own-routes).

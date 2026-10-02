@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
-use DoPHP\MailBuilder\Filament\Components\EmailSlotBuilder;
-use DoPHP\MailBuilder\MailBuilder;
-use DoPHP\MailBuilder\Presets\PresetRegistry;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\MailBuilder\MailBuilder;
+use Odden\MailBuilder\Presets\PresetRegistry;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -28,15 +28,15 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\MarketingTemplateResource\Pages\CreateMarketingTemplate;
-use Focal\Filament\Resources\MarketingTemplateResource\Pages\EditMarketingTemplate;
-use Focal\Filament\Resources\MarketingTemplateResource\Pages\ListMarketingTemplates;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\EvaluateTemplateAbTestsAction;
-use Focal\Marketing\Actions\GenerateAiSubjectLinesAction;
-use Focal\Marketing\Models\MarketingSavedBlock;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Services\EmailBlockRenderer;
+use Odden\Filament\Resources\MarketingTemplateResource\Pages\CreateMarketingTemplate;
+use Odden\Filament\Resources\MarketingTemplateResource\Pages\EditMarketingTemplate;
+use Odden\Filament\Resources\MarketingTemplateResource\Pages\ListMarketingTemplates;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\EvaluateTemplateAbTestsAction;
+use Odden\Marketing\Actions\GenerateAiSubjectLinesAction;
+use Odden\Marketing\Models\MarketingSavedBlock;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Services\EmailBlockRenderer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
 use UnitEnum;
@@ -159,13 +159,13 @@ class MarketingTemplateResource extends Resource
                         Tab::make('Live Interactive Preview')
                             ->icon(Heroicon::Eye)
                             ->schema([
-                                SchemaView::make('focal-marketing::template-inline-preview'),
+                                SchemaView::make('odden-marketing::template-inline-preview'),
                             ]),
 
                         Tab::make('Pre-Flight Deliverability Audit')
                             ->icon(Heroicon::ShieldCheck)
                             ->schema([
-                                SchemaView::make('focal-marketing::template-preflight-audit'),
+                                SchemaView::make('odden-marketing::template-preflight-audit'),
                             ]),
 
                         Tab::make('Personalization & Merge Tags')
@@ -361,7 +361,7 @@ class MarketingTemplateResource extends Resource
                         Tab::make('Analytics & Revisions')
                             ->icon(Heroicon::ChartBar)
                             ->schema([
-                                SchemaView::make('focal-marketing::template-analytics-history'),
+                                SchemaView::make('odden-marketing::template-analytics-history'),
                             ]),
                     ])
                     ->columnSpanFull(),
@@ -402,12 +402,12 @@ class MarketingTemplateResource extends Resource
                     ->modalDescription(fn (MarketingTemplate $record): string => "Subject: {$record->subject}")
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
-                    ->modalContent(fn (MarketingTemplate $record): View => view('focal-marketing::template-preview', [
+                    ->modalContent(fn (MarketingTemplate $record): View => view('odden-marketing::template-preview', [
                         'renderedHtml' => self::renderSampleHtml($record),
                         'template' => $record,
                     ])),
                 Action::make('sendTest')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->label('Send Test')
                     ->icon(Heroicon::PaperAirplane)
                     ->color('success')
@@ -417,7 +417,7 @@ class MarketingTemplateResource extends Resource
                         TextInput::make('recipient_email')
                             ->label('Recipient Email')
                             ->email()
-                            ->default(fn (): string => auth()->user() !== null ? auth()->user()->email : 'admin@focal.test')
+                            ->default(fn (): string => auth()->user() !== null ? auth()->user()->email : 'admin@odden.test')
                             ->required(),
                     ])
                     ->action(function (MarketingTemplate $record, array $data): void {
@@ -440,7 +440,7 @@ class MarketingTemplateResource extends Resource
                             ->send();
                     }),
                 Action::make('applyModularPreset')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->label('Apply Layout Preset')
                     ->icon(Heroicon::Squares2x2)
                     ->color('gray')
@@ -499,7 +499,7 @@ class MarketingTemplateResource extends Resource
                     ->icon(Heroicon::Trophy)
                     ->color('warning')
                     ->visible(fn (MarketingTemplate $record): bool => $record->hasAbTest())
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->action(function (MarketingTemplate $record): void {
                         $action = app(EvaluateTemplateAbTestsAction::class);
                         $result = $action->execute($record);
@@ -518,7 +518,7 @@ class MarketingTemplateResource extends Resource
                     ->modalDescription('View recent versions and automated snapshot logs.')
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
-                    ->modalContent(fn (MarketingTemplate $record): View => view('focal-marketing::template-analytics-history', [
+                    ->modalContent(fn (MarketingTemplate $record): View => view('odden-marketing::template-analytics-history', [
                         'getRecord' => fn (): MarketingTemplate => $record,
                     ])),
                 Action::make('exportHtml')
@@ -608,7 +608,7 @@ class MarketingTemplateResource extends Resource
             : [
                 'contact' => ['first_name' => 'Alex', 'last_name' => 'Morgan', 'email' => 'alex.morgan@acme.com'],
                 'company' => ['name' => 'Acme Corporation'],
-                'unsubscribe_url' => route('focal.marketing.preferences.show', 'preview-sample'),
+                'unsubscribe_url' => route('odden.marketing.preferences.show', 'preview-sample'),
             ];
 
         if (! empty($template->slots) && class_exists(MailBuilder::class)) {

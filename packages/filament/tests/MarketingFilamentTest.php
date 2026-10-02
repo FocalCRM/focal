@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Pages\MarketingCockpit;
-use Focal\Filament\Pages\UtmLinkBuilder;
-use Focal\Filament\Resources\MarketingTemplateResource;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\SubscriptionStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Pages\MarketingCockpit;
+use Odden\Filament\Pages\UtmLinkBuilder;
+use Odden\Filament\Resources\MarketingTemplateResource;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\SubscriptionStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -46,8 +46,8 @@ class MarketingFilamentTest extends TestCase
         Campaign::create([
             'name' => 'Spring Product Launch',
             'subject' => 'Check out our new tools',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Draft,
         ]);
 
@@ -106,8 +106,8 @@ class MarketingFilamentTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Immediate Blast',
             'subject' => 'Live now',
-            'sender_name' => 'Focal Team',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden Team',
+            'sender_email' => 'news@odden.test',
             'list_id' => $list->id,
             'status' => CampaignStatus::Draft,
         ]);
@@ -131,8 +131,8 @@ class MarketingFilamentTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'No Audience',
             'subject' => 'Live now',
-            'sender_name' => 'Focal Team',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden Team',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Draft,
         ]);
 
@@ -153,8 +153,8 @@ class MarketingFilamentTest extends TestCase
         Campaign::create([
             'name' => 'Paid Search Q4',
             'subject' => 'Find more pipeline',
-            'sender_name' => 'Focal',
-            'sender_email' => 'ads@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'ads@odden.test',
             'status' => CampaignStatus::Sent,
             'budget' => 3000.00,
             'actual_cost' => 2500.00,
@@ -182,11 +182,11 @@ class MarketingFilamentTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(UtmLinkBuilder::class)
-            ->set('baseUrl', 'https://focal.test/landing')
+            ->set('baseUrl', 'https://odden.test/landing')
             ->set('customCampaign', 'summer-blast')
             ->set('utmSource', 'linkedin')
             ->set('utmMedium', 'cpc')
-            ->assertSee('https://focal.test/landing?utm_source=linkedin&utm_medium=cpc&utm_campaign=summer-blast');
+            ->assertSee('https://odden.test/landing?utm_source=linkedin&utm_medium=cpc&utm_campaign=summer-blast');
     }
 
     public function test_authenticated_user_can_manage_marketing_suppression_list(): void
@@ -227,8 +227,8 @@ class MarketingFilamentTest extends TestCase
         Campaign::create([
             'name' => 'Monthly Product Blast',
             'subject' => 'Live now',
-            'sender_name' => 'Focal Team',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden Team',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Scheduled,
             'scheduled_at' => now()->startOfMonth()->addDays(5),
         ]);
@@ -247,8 +247,8 @@ class MarketingFilamentTest extends TestCase
         $c1 = Campaign::create([
             'name' => 'Product Announce A',
             'subject' => 'Announce A',
-            'sender_name' => 'Focal',
-            'sender_email' => 'team@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'team@odden.test',
             'status' => CampaignStatus::Sent,
             'delivered_count' => 100,
             'unique_opens_count' => 35,

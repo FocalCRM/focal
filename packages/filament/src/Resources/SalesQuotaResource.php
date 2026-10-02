@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -18,13 +18,13 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\SalesQuotaResource\Pages\CreateSalesQuota;
-use Focal\Filament\Resources\SalesQuotaResource\Pages\EditSalesQuota;
-use Focal\Filament\Resources\SalesQuotaResource\Pages\ListSalesQuotas;
-use Focal\Sales\Actions\CalculateQuotaAttainmentAction;
-use Focal\Sales\Enums\QuotaPeriod;
-use Focal\Sales\Models\SalesQuota;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\SalesQuotaResource\Pages\CreateSalesQuota;
+use Odden\Filament\Resources\SalesQuotaResource\Pages\EditSalesQuota;
+use Odden\Filament\Resources\SalesQuotaResource\Pages\ListSalesQuotas;
+use Odden\Sales\Actions\CalculateQuotaAttainmentAction;
+use Odden\Sales\Enums\QuotaPeriod;
+use Odden\Sales\Models\SalesQuota;
 use UnitEnum;
 
 class SalesQuotaResource extends Resource

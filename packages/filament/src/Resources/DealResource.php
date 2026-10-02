@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -28,29 +28,29 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\DealResource\Pages\CreateDeal;
-use Focal\Filament\Resources\DealResource\Pages\EditDeal;
-use Focal\Filament\Resources\DealResource\Pages\KanbanDeals;
-use Focal\Filament\Resources\DealResource\Pages\ListDeals;
-use Focal\Filament\Resources\DealResource\Pages\ViewDeal;
-use Focal\Filament\Resources\DealResource\RelationManagers\DealCompaniesRelationManager;
-use Focal\Filament\Resources\DealResource\RelationManagers\DealContactsRelationManager;
-use Focal\Filament\Resources\DealResource\RelationManagers\DealProductsRelationManager;
-use Focal\Filament\Resources\DealResource\RelationManagers\QuotesRelationManager;
-use Focal\Filament\Resources\DealResource\RelationManagers\StageHistoryRelationManager;
-use Focal\Filament\Resources\RelationManagers\ActivitiesRelationManager;
-use Focal\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
-use Focal\Filament\Support\CustomPropertyFieldBuilder;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Sales\Actions\ExecuteSalesPlaybookAction;
-use Focal\Sales\Actions\RouteLeadAction;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Enums\LostReason;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
-use Focal\Sales\Models\SalesPlaybook;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\DealResource\Pages\CreateDeal;
+use Odden\Filament\Resources\DealResource\Pages\EditDeal;
+use Odden\Filament\Resources\DealResource\Pages\KanbanDeals;
+use Odden\Filament\Resources\DealResource\Pages\ListDeals;
+use Odden\Filament\Resources\DealResource\Pages\ViewDeal;
+use Odden\Filament\Resources\DealResource\RelationManagers\DealCompaniesRelationManager;
+use Odden\Filament\Resources\DealResource\RelationManagers\DealContactsRelationManager;
+use Odden\Filament\Resources\DealResource\RelationManagers\DealProductsRelationManager;
+use Odden\Filament\Resources\DealResource\RelationManagers\QuotesRelationManager;
+use Odden\Filament\Resources\DealResource\RelationManagers\StageHistoryRelationManager;
+use Odden\Filament\Resources\RelationManagers\ActivitiesRelationManager;
+use Odden\Filament\Resources\RelationManagers\PropertyHistoryRelationManager;
+use Odden\Filament\Support\CustomPropertyFieldBuilder;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Sales\Actions\ExecuteSalesPlaybookAction;
+use Odden\Sales\Actions\RouteLeadAction;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Enums\LostReason;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
+use Odden\Sales\Models\SalesPlaybook;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
@@ -238,7 +238,7 @@ class DealResource extends Resource
             ->recordActions([
                 Action::make('run_playbook')
                     ->label('Playbook')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::BookOpen)
                     ->color('primary')
                     ->form(function (): array {
@@ -295,7 +295,7 @@ class DealResource extends Resource
                         $playbook = SalesPlaybook::findOrFail($data['playbook_id']);
                         $answers = isset($data['answers']) && is_array($data['answers']) ? $data['answers'] : [];
 
-                        app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, FocalAuthorization::userId());
+                        app(ExecuteSalesPlaybookAction::class)->execute($record, $playbook, $answers, OddenAuthorization::userId());
 
                         Notification::make()
                             ->title('Playbook Completed')
@@ -305,7 +305,7 @@ class DealResource extends Resource
                     }),
                 Action::make('route_lead')
                     ->label('Auto-Route')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::ArrowsRightLeft)
                     ->color('gray')
                     ->requiresConfirmation()

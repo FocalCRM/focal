@@ -90,7 +90,7 @@
                         @forelse ($compared as $row)
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
                                 <td class="py-3 px-4 font-bold text-slate-900 dark:text-white">
-                                    <a href="{{ \Focal\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $row['id']]) }}" class="hover:underline text-sky-600 dark:text-sky-400">
+                                    <a href="{{ \Odden\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $row['id']]) }}" class="hover:underline text-sky-600 dark:text-sky-400">
                                         {{ $row['name'] }}
                                     </a>
                                     <div class="text-[10px] text-slate-400 font-normal truncate max-w-xs">{{ $row['subject'] }}</div>

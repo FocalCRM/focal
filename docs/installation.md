@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Install the Focal packages, run the migrations, and schedule the commands each module needs.
+description: Install the Odden packages, run the migrations, and schedule the commands each module needs.
 ---
 
 ## Requirements
@@ -12,10 +12,10 @@ description: Install the Focal packages, run the migrations, and schedule the co
 
 ## Install the packages
 
-Require the modules you want. Each one requires `focalcrm/core`, so you don't need to list it unless you only want Core:
+Require the modules you want. Each one requires `getodden/crm-core`, so you don't need to list it unless you only want Core:
 
 ```bash
-composer require focalcrm/sales focalcrm/service focalcrm/marketing
+composer require getodden/crm-sales getodden/crm-service getodden/crm-marketing
 ```
 
 Every package registers itself through Laravel's package discovery and loads its own migrations. Run them:
@@ -24,12 +24,12 @@ Every package registers itself through Laravel's package discovery and loads its
 php artisan migrate
 ```
 
-All Focal tables are prefixed with `focal_`. Table names are configurable per package (the `tables` key in each config file) if they would clash with your own.
+All Odden tables are prefixed with `odden_`. Table names are configurable per package (the `tables` key in each config file) if they would clash with your own.
 
 ## Add the Filament admin
 
 ```bash
-composer require focalcrm/filament
+composer require getodden/crm-filament
 ```
 
 Then register the plugin in your panel provider. See [Filament admin](filament/index.md) for the details.
@@ -39,17 +39,17 @@ Then register the plugin in your panel provider. See [Filament admin](filament/i
 Each package works with its defaults. Publish a config file only when you need to change something:
 
 ```bash
-php artisan vendor:publish --tag=focal-core-config
-php artisan vendor:publish --tag=focal-sales-config
-php artisan vendor:publish --tag=focal-service-config
-php artisan vendor:publish --tag=focal-marketing-config
+php artisan vendor:publish --tag=odden-core-config
+php artisan vendor:publish --tag=odden-sales-config
+php artisan vendor:publish --tag=odden-service-config
+php artisan vendor:publish --tag=odden-marketing-config
 ```
 
-Migrations can be published the same way with the `focal-core-migrations`, `focal-sales-migrations`, `focal-service-migrations`, and `focal-marketing-migrations` tags, if you want to modify them before they run.
+Migrations can be published the same way with the `odden-core-migrations`, `odden-sales-migrations`, `odden-service-migrations`, and `odden-marketing-migrations` tags, if you want to modify them before they run.
 
 ## Schedule the commands
 
-Several features run on a schedule: campaign sends, workflow steps, SLA checks, quote expiry, and more. Focal doesn't register a schedule for you, so add the commands for the modules you installed to `routes/console.php`:
+Several features run on a schedule: campaign sends, workflow steps, SLA checks, quote expiry, and more. Odden doesn't register a schedule for you, so add the commands for the modules you installed to `routes/console.php`:
 
 ```php
 use Illuminate\Support\Facades\Schedule;
@@ -70,7 +70,7 @@ Schedule::command('service:check-sla')->everyFiveMinutes()->withoutOverlapping()
 Schedule::command('service:run-automations')->hourly()->withoutOverlapping()->onOneServer();
 ```
 
-These are the frequencies Focal Cloud uses. `marketing:dispatch-scheduled` should run every minute, because campaigns that send in each recipient's local time are released in five-minute windows. `onOneServer()` needs a cache store shared by all your servers; drop it if you run a single server.
+These are the frequencies Odden Cloud uses. `marketing:dispatch-scheduled` should run every minute, because campaigns that send in each recipient's local time are released in five-minute windows. `onOneServer()` needs a cache store shared by all your servers; drop it if you run a single server.
 
 Then make sure the scheduler runs, with `php artisan schedule:work` locally or a cron entry for `php artisan schedule:run` in production.
 
@@ -78,7 +78,7 @@ Then make sure the scheduler runs, with `php artisan schedule:work` locally or a
 
 Configure a mailer in `config/mail.php` before you use any of the email features.
 
-> **Run a queue worker.** From v0.3, Focal queues every email it sends. Nothing is delivered from the request or command that triggers it: each email is pushed to the queue and a queue worker sends it. Without a worker, mail stays on the queue and is never delivered. This covers:
+> **Run a queue worker.** From v0.3, Odden queues every email it sends. Nothing is delivered from the request or command that triggers it: each email is pushed to the queue and a queue worker sends it. Without a worker, mail stays on the queue and is never delivered. This covers:
 >
 > - Marketing: campaign messages, workflow email steps, campaign proofs, and the [transactional email API](marketing/transactional-email.md)
 > - Sales: [sequence email steps](sales/sequences.md#email-steps) and [meeting confirmations](sales/meeting-links.md#confirmation-emails)
@@ -96,9 +96,9 @@ By default each package uses your default queue connection, its default queue, a
 
 | Package | Config keys | Environment variables |
 |---|---|---|
-| Marketing | `focal-marketing.mail.mailer`, `.connection`, `.queue` | `FOCAL_MARKETING_MAILER`, `FOCAL_MARKETING_MAIL_CONNECTION`, `FOCAL_MARKETING_MAIL_QUEUE` |
-| Sales | `focal-sales.mail.mailer`, `.connection`, `.queue` | `FOCAL_SALES_MAILER`, `FOCAL_SALES_QUEUE_CONNECTION`, `FOCAL_SALES_MAIL_QUEUE` |
-| Service | `focal-service.notifications.connection`, `.queue` | `FOCAL_SERVICE_NOTIFICATIONS_CONNECTION`, `FOCAL_SERVICE_NOTIFICATIONS_QUEUE` |
+| Marketing | `odden-marketing.mail.mailer`, `.connection`, `.queue` | `ODDEN_MARKETING_MAILER`, `ODDEN_MARKETING_MAIL_CONNECTION`, `ODDEN_MARKETING_MAIL_QUEUE` |
+| Sales | `odden-sales.mail.mailer`, `.connection`, `.queue` | `ODDEN_SALES_MAILER`, `ODDEN_SALES_QUEUE_CONNECTION`, `ODDEN_SALES_MAIL_QUEUE` |
+| Service | `odden-service.notifications.connection`, `.queue` | `ODDEN_SERVICE_NOTIFICATIONS_CONNECTION`, `ODDEN_SERVICE_NOTIFICATIONS_QUEUE` |
 
 Service notifications always use your default mailer. If you set a queue name, include it in your worker's `--queue` list, for example `php artisan queue:work --queue=marketing-mail,sales-mail,support-mail,default`. See [Sending mail](marketing/index.md#sending-mail), [Sales `mail` configuration](sales/configuration.md#mail) (which also sets the Sales "from" address), and [Service notifications](service/tickets.md#notifications).
 
