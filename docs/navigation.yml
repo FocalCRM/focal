@@ -1,0 +1,75 @@
+# Sidebar sections and page order for focalcrm.io/docs.
+# Each page is a path below docs/ without the .md extension. Pages not listed here aren't published.
+- title: Getting started
+  pages:
+    - index
+    - installation
+    - configuration
+
+- title: Core
+  pages:
+    - core/index
+    - core/contacts-and-companies
+    - core/custom-properties
+    - core/associations
+    - core/activities
+    - core/lifecycle-stages
+    - core/lists
+    - core/duplicates-and-merging
+    - core/events
+    - core/integration
+
+- title: Sales
+  pages:
+    - sales/index
+    - sales/pipelines-and-stages
+    - sales/deals
+    - sales/health-and-forecasting
+    - sales/quotes
+    - sales/lead-routing
+    - sales/sequences
+    - sales/meeting-links
+    - sales/configuration
+
+- title: Service
+  pages:
+    - service/index
+    - service/tickets
+    - service/sla-policies
+    - service/routing
+    - service/inbound-email
+    - service/customer-portal
+    - service/chat-widget
+    - service/knowledge-base
+    - service/configuration
+
+- title: Marketing
+  pages:
+    - marketing/index
+    - marketing/campaigns
+    - marketing/email-templates
+    - marketing/subscriptions-and-compliance
+    - marketing/deliverability
+    - marketing/transactional-email
+    - marketing/forms-and-landing-pages
+    - marketing/web-tracking
+    - marketing/lead-scoring
+    - marketing/workflows
+    - marketing/events-and-assets
+    - marketing/inbound-webhooks
+    - marketing/attribution
+
+- title: Filament admin
+  pages:
+    - filament/index
+    - filament/configuration
+    - filament/resources
+    - filament/pages
+    - filament/custom-properties
+    - filament/authorization
+    - filament/customizing
+
+- title: Related packages
+  pages:
+    - title: Mail builder
+      url: https://github.com/doPHP/laravel-mail-builder

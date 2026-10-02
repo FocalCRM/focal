@@ -1,0 +1,41 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', '.github/scripts/check-docs.php', '.github/workflows/docs.yml']
+  pull_request:
+    paths: ['docs/**', '.github/scripts/check-docs.php', '.github/workflows/docs.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - name: Check pages, navigation, and links
+        run: php .github/scripts/check-docs.php docs
+
+  publish:
+    # focalcrm.io/docs is built from main: redeploy the website when the docs change.
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger a website deploy
+        env:
+          DEPLOY_HOOK: ${{ secrets.WEBSITE_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::notice::WEBSITE_DEPLOY_HOOK isn't set; the docs will update on the website's next deploy."
+            exit 0
+          fi
+          curl --fail --silent --show-error -X POST "$DEPLOY_HOOK"

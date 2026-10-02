@@ -1,0 +1,39 @@
+---
+title: Writing the docs
+description: How the Focal documentation is organized and the conventions every page follows.
+---
+
+These docs are published at [focalcrm.io/docs](https://focalcrm.io/docs). They live in this repository so that a change to a package and the change to its documentation can land in the same pull request.
+
+## Layout
+
+- `docs/navigation.yml` sets the sidebar: the sections, and the order of pages within each. A page that isn't listed there isn't published.
+- Each package has a folder (`docs/core`, `docs/sales`, and so on) with an `index.md` overview and one file per topic.
+- Shared pages (introduction, installation, configuration) sit at the top level.
+
+## Front matter
+
+Every page starts with:
+
+```yaml
+---
+title: Pipelines and deals
+description: One sentence that says what the page covers. Used for search results and link previews.
+---
+```
+
+Don't repeat the title as a `#` heading in the body; the site renders it. Start the body with a short paragraph, then use `##` and `###` headings.
+
+## Links
+
+Link to other pages with relative paths to the Markdown file, so the links also work on GitHub: `[custom properties](../core/custom-properties.md)`, or `[stages](pipelines.md#stages)` within a section. The site rewrites them.
+
+## Style
+
+- Write for a Laravel developer installing Focal into their own app. Use "you".
+- Document only what the code does today. Use the real class names, method signatures, config keys, environment variables, route names, events, and Artisan commands.
+- Every code example must work as written against the current packages. Prefer short, complete examples over fragments.
+- Use sentence case for headings. Keep paragraphs short. No marketing language.
+- Use fenced code blocks with a language (`php`, `bash`, `env`, `json`, `blade`).
+- When something is configurable, show the config key and its default.
+- Call out side effects a developer would not expect (queued jobs, emails, scheduled commands, events dispatched).
