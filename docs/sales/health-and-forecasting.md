@@ -25,7 +25,7 @@ There is no built-in command that flags or notifies on rotting deals. Rotting st
 
 ## Health score
 
-`$deal->getHealthScore()` (backed by `Focal\Sales\Actions\CalculateDealHealthScoreAction`) returns a score from 0 to 100 with an explanation:
+`$deal->getHealthScore()` (backed by `Odden\Sales\Actions\CalculateDealHealthScoreAction`) returns a score from 0 to 100 with an explanation:
 
 ```php
 $health = $deal->getHealthScore();
@@ -60,14 +60,14 @@ The result for open deals is clamped to 5–99. Status is `strong` at 75 or more
 
 Any activity on the deal counts toward recency, including activities the package logs itself, such as stage automation tasks and quote portal views.
 
-The package also ships a Blade partial, `focal-sales::deals.health-score-modal`, which renders this array (passed as `$health`). The Focal Filament panel uses it on the deal page. It uses `<x-filament::icon>` components and Tailwind classes, so it only renders in an app with Filament installed; outside Filament, build your own view from the array.
+The package also ships a Blade partial, `odden-sales::deals.health-score-modal`, which renders this array (passed as `$health`). The Odden Filament panel uses it on the deal page. It uses `<x-filament::icon>` components and Tailwind classes, so it only renders in an app with Filament installed; outside Filament, build your own view from the array.
 
 ## Pipeline forecast
 
-`$pipeline->forecast()` returns metrics for one pipeline. Call `Focal\Sales\Actions\CalculatePipelineForecastAction::execute(?int $pipelineId = null)` directly with `null` to cover all pipelines.
+`$pipeline->forecast()` returns metrics for one pipeline. Call `Odden\Sales\Actions\CalculatePipelineForecastAction::execute(?int $pipelineId = null)` directly with `null` to cover all pipelines.
 
 ```php
-use Focal\Sales\Actions\CalculatePipelineForecastAction;
+use Odden\Sales\Actions\CalculatePipelineForecastAction;
 
 $forecast = $pipeline->forecast();
 
@@ -91,10 +91,10 @@ All values are all-time; there is no date filter. Soft-deleted deals are exclude
 
 ## Stage velocity
 
-`Focal\Sales\Actions\CalculateStageVelocityAction::execute(?int $pipelineId = null)` reports time spent per stage:
+`Odden\Sales\Actions\CalculateStageVelocityAction::execute(?int $pipelineId = null)` reports time spent per stage:
 
 ```php
-use Focal\Sales\Actions\CalculateStageVelocityAction;
+use Odden\Sales\Actions\CalculateStageVelocityAction;
 
 $velocity = app(CalculateStageVelocityAction::class)->execute($pipeline->id);
 
@@ -113,7 +113,7 @@ foreach ($velocity['stages'] as $stageId => $metrics) {
 
 ## Quotas
 
-A `Focal\Sales\Models\SalesQuota` is a revenue target for one user:
+An `Odden\Sales\Models\SalesQuota` is a revenue target for one user:
 
 | Attribute | Type | Notes |
 | --- | --- | --- |
@@ -124,12 +124,12 @@ A `Focal\Sales\Models\SalesQuota` is a revenue target for one user:
 | `target_amount` | decimal | |
 | `currency` | string(3) | Defaults to `USD`. Not used in calculations. |
 
-`Focal\Sales\Actions\CalculateQuotaAttainmentAction::execute(SalesQuota $quota)` measures it:
+`Odden\Sales\Actions\CalculateQuotaAttainmentAction::execute(SalesQuota $quota)` measures it:
 
 ```php
-use Focal\Sales\Actions\CalculateQuotaAttainmentAction;
-use Focal\Sales\Enums\QuotaPeriod;
-use Focal\Sales\Models\SalesQuota;
+use Odden\Sales\Actions\CalculateQuotaAttainmentAction;
+use Odden\Sales\Enums\QuotaPeriod;
+use Odden\Sales\Models\SalesQuota;
 
 $quota = SalesQuota::create([
     'user_id' => $rep->id,

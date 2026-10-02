@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\TransitionLifecycleStageAction;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Exceptions\InvalidLifecycleStageTransitionException;
-use Focal\Core\Models\Contact;
-use Focal\Core\Support\LifecycleStateMachine;
+use Odden\Core\Actions\TransitionLifecycleStageAction;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Exceptions\InvalidLifecycleStageTransitionException;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\LifecycleStateMachine;
 
 it('determines standard allowed forward transitions', function () {
     $sm = app(LifecycleStateMachine::class);

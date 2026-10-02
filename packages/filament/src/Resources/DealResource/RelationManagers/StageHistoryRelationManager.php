@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\DealResource\RelationManagers;
+namespace Odden\Filament\Resources\DealResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Sales\Models\DealStageHistory;
+use Odden\Sales\Models\DealStageHistory;
 
 class StageHistoryRelationManager extends RelationManager
 {

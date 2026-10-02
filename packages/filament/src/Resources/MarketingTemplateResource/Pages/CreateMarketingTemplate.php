@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\MarketingTemplateResource\Pages;
+namespace Odden\Filament\Resources\MarketingTemplateResource\Pages;
 
-use DoPHP\MailBuilder\Filament\Components\EmailSlotBuilder;
-use DoPHP\MailBuilder\MailBuilder;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\MailBuilder\MailBuilder;
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\MarketingTemplateResource;
+use Odden\Filament\Resources\MarketingTemplateResource;
 
 class CreateMarketingTemplate extends CreateRecord
 {

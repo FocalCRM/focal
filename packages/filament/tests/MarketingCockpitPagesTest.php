@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Filament\Pages\AbmCockpit;
-use Focal\Filament\Resources\CampaignResource;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Company;
+use Odden\Filament\Pages\AbmCockpit;
+use Odden\Filament\Resources\CampaignResource;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Marketing\Actions\CalculateCompanyIntentScoreAction;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingCockpitPagesTest extends TestCase
@@ -71,7 +71,7 @@ class MarketingCockpitPagesTest extends TestCase
 
         // Test recalculateAll
         $cockpit->recalculateAll($action);
-        $this->assertDatabaseHas('focal_companies', [
+        $this->assertDatabaseHas('odden_companies', [
             'id' => $tier1->id,
             'account_tier' => 'tier_1',
         ]);
@@ -81,17 +81,17 @@ class MarketingCockpitPagesTest extends TestCase
     {
         $template = MarketingTemplate::create([
             'name' => 'Product Announcement',
-            'subject' => 'Major Update: Focal 2.0 Released',
+            'subject' => 'Major Update: Odden 2.0 Released',
             'preview_text' => 'Discover our new Account-Based Marketing cockpit.',
-            'body_html' => '<h1>Hello {{contact.first_name}}</h1><p>We are thrilled to unveil Focal 2.0 for {{company.name}}.</p>',
+            'body_html' => '<h1>Hello {{contact.first_name}}</h1><p>We are thrilled to unveil Odden 2.0 for {{company.name}}.</p>',
         ]);
 
         $campaign = Campaign::create([
             'name' => 'Q4 Product Launch Broadcast',
-            'subject' => 'Major Update: Focal 2.0 Released',
+            'subject' => 'Major Update: Odden 2.0 Released',
             'preview_text' => 'Discover our new Account-Based Marketing cockpit.',
-            'sender_name' => 'Focal Marketing',
-            'sender_email' => 'marketing@focal.test',
+            'sender_name' => 'Odden Marketing',
+            'sender_email' => 'marketing@odden.test',
             'template_id' => $template->id,
         ]);
 
@@ -101,14 +101,14 @@ class MarketingCockpitPagesTest extends TestCase
         $this->assertStringContainsString('Acme Corporation', $html);
 
         // Test rendering the preview view
-        $view = view('focal-marketing::template-preview', [
+        $view = view('odden-marketing::template-preview', [
             'renderedHtml' => $html,
             'template' => $campaign,
         ])->render();
 
         $this->assertStringContainsString('Desktop (600px)', $view);
         $this->assertStringContainsString('Mobile Device (375px)', $view);
-        $this->assertStringContainsString('Major Update: Focal 2.0 Released', $view);
+        $this->assertStringContainsString('Major Update: Odden 2.0 Released', $view);
         $this->assertStringContainsString('Alex Morgan', $view);
     }
 }

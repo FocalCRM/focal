@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\CreateSalesMeetingLink;
-use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\EditSalesMeetingLink;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Sales\Database\Seeders\SalesDatabaseSeeder;
-use Focal\Sales\Enums\LeadRoutingStrategy;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\LeadRoutingRule;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\SalesMeetingLink;
-use Focal\Sales\Models\SalesPlaybook;
-use Focal\Sales\Models\SalesSequence;
+use Odden\Filament\Resources\SalesMeetingLinkResource\Pages\CreateSalesMeetingLink;
+use Odden\Filament\Resources\SalesMeetingLinkResource\Pages\EditSalesMeetingLink;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Sales\Database\Seeders\SalesDatabaseSeeder;
+use Odden\Sales\Enums\LeadRoutingStrategy;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\LeadRoutingRule;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\SalesMeetingLink;
+use Odden\Sales\Models\SalesPlaybook;
+use Odden\Sales\Models\SalesSequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -175,11 +175,11 @@ class EnterpriseSalesResourcesTest extends TestCase
 
         $this->seed(SalesDatabaseSeeder::class);
 
-        $this->assertDatabaseHas('focal_sales_playbooks', ['slug' => 'bant-qualification']);
-        $this->assertDatabaseHas('focal_sales_playbooks', ['slug' => 'meddic-enterprise']);
-        $this->assertDatabaseHas('focal_sales_sequences', ['name' => 'Enterprise Outbound 14-Day Cadence']);
-        $this->assertDatabaseHas('focal_sales_meeting_links', ['slug' => 'beth-caldwell']);
-        $this->assertDatabaseHas('focal_sales_lead_routing_rules', ['name' => 'Inbound Enterprise Round Robin']);
+        $this->assertDatabaseHas('odden_sales_playbooks', ['slug' => 'bant-qualification']);
+        $this->assertDatabaseHas('odden_sales_playbooks', ['slug' => 'meddic-enterprise']);
+        $this->assertDatabaseHas('odden_sales_sequences', ['name' => 'Enterprise Outbound 14-Day Cadence']);
+        $this->assertDatabaseHas('odden_sales_meeting_links', ['slug' => 'beth-caldwell']);
+        $this->assertDatabaseHas('odden_sales_lead_routing_rules', ['name' => 'Inbound Enterprise Round Robin']);
 
         // Verify seeded deals with health scores
         $deals = Deal::where('pipeline_id', $pipeline->id)->get();

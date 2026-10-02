@@ -3,7 +3,7 @@
         <div>
             <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Inbound Campaign UTM Builder</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400">
-                Generate tracked URLs for LinkedIn ads, partner newsletters, webinars, and search campaigns to feed directly into Focal attribution.
+                Generate tracked URLs for LinkedIn ads, partner newsletters, webinars, and search campaigns to feed directly into Odden attribution.
             </p>
         </div>
 
@@ -24,7 +24,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Destination Base URL *</label>
-                    <input type="url" wire:model.live.debounce.300ms="baseUrl" placeholder="https://focal.test/demo" class="w-full text-sm rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white" required />
+                    <input type="url" wire:model.live.debounce.300ms="baseUrl" placeholder="https://odden.test/demo" class="w-full text-sm rounded-lg border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white" required />
                 </div>
 
                 <div>

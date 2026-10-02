@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests\Fixtures;
+namespace Odden\Core\Tests\Fixtures;
 
 use Closure;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,7 +21,7 @@ final class CrossHubRelations
         foreach ([Contact::class, Company::class] as $model) {
             $model::resolveRelationUsing('deals', fn (Model $record) => $record->belongsToMany(
                 Deal::class,
-                config('focal-core.tables.associations', 'focal_associations'),
+                config('odden-core.tables.associations', 'odden_associations'),
                 'child_id',
                 'parent_id'
             )
@@ -50,7 +50,7 @@ final class CrossHubRelations
      */
     public static function attachDeal(Contact|Company $record, Deal $deal): void
     {
-        $deal->newQuery()->getConnection()->table(config('focal-core.tables.associations', 'focal_associations'))->insert([
+        $deal->newQuery()->getConnection()->table(config('odden-core.tables.associations', 'odden_associations'))->insert([
             'parent_type' => $deal->getMorphClass(),
             'parent_id' => $deal->getKey(),
             'child_type' => $record->getMorphClass(),

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\AssociateRecordsAction;
-use Focal\Core\Actions\CreateAssociationTypeAction;
-use Focal\Core\Enums\AssociationCardinality;
-use Focal\Core\Exceptions\CardinalityViolationException;
-use Focal\Core\Models\AssociationType;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\AssociateRecordsAction;
+use Odden\Core\Actions\CreateAssociationTypeAction;
+use Odden\Core\Enums\AssociationCardinality;
+use Odden\Core\Exceptions\CardinalityViolationException;
+use Odden\Core\Models\AssociationType;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 
 it('creates association types with labels and cardinality rules', function () {
     $action = app(CreateAssociationTypeAction::class);

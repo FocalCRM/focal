@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -21,10 +21,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\SalesPlaybookResource\Pages\CreateSalesPlaybook;
-use Focal\Filament\Resources\SalesPlaybookResource\Pages\EditSalesPlaybook;
-use Focal\Filament\Resources\SalesPlaybookResource\Pages\ListSalesPlaybooks;
-use Focal\Sales\Models\SalesPlaybook;
+use Odden\Filament\Resources\SalesPlaybookResource\Pages\CreateSalesPlaybook;
+use Odden\Filament\Resources\SalesPlaybookResource\Pages\EditSalesPlaybook;
+use Odden\Filament\Resources\SalesPlaybookResource\Pages\ListSalesPlaybooks;
+use Odden\Sales\Models\SalesPlaybook;
 use UnitEnum;
 
 class SalesPlaybookResource extends Resource

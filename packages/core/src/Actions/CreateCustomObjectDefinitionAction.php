@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Events\CustomObjectDefinitionCreated;
-use Focal\Core\Models\CustomObjectDefinition;
+use Odden\Core\Events\CustomObjectDefinitionCreated;
+use Odden\Core\Models\CustomObjectDefinition;
 use Illuminate\Support\Str;
 
 class CreateCustomObjectDefinitionAction

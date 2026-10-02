@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\KnowledgeArticleResource\Pages;
+namespace Odden\Filament\Resources\KnowledgeArticleResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\KnowledgeArticleResource;
+use Odden\Filament\Resources\KnowledgeArticleResource;
 
 class EditKnowledgeArticle extends EditRecord
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -37,7 +37,7 @@ class ListMembership extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.list_memberships', 'focal_list_memberships');
+        return config('odden-core.tables.list_memberships', 'odden_list_memberships');
     }
 
     /**

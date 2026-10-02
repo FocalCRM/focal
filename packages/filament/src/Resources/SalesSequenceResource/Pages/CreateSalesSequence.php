@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SalesSequenceResource\Pages;
+namespace Odden\Filament\Resources\SalesSequenceResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\SalesSequenceResource;
+use Odden\Filament\Resources\SalesSequenceResource;
 
 class CreateSalesSequence extends CreateRecord
 {

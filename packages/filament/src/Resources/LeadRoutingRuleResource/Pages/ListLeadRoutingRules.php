@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LeadRoutingRuleResource\Pages;
+namespace Odden\Filament\Resources\LeadRoutingRuleResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\LeadRoutingRuleResource;
+use Odden\Filament\Resources\LeadRoutingRuleResource;
 
 class ListLeadRoutingRules extends ListRecords
 {

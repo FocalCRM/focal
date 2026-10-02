@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\KnowledgeArticleResource\Pages;
+namespace Odden\Filament\Resources\KnowledgeArticleResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\KnowledgeArticleResource;
+use Odden\Filament\Resources\KnowledgeArticleResource;
 
 class CreateKnowledgeArticle extends CreateRecord
 {

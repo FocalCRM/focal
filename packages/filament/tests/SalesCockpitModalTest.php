@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\SalesCockpit;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Sales\Enums\CallDisposition;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\SalesCockpit;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Sales\Enums\CallDisposition;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -44,13 +44,13 @@ class SalesCockpitModalTest extends TestCase
         $this->assertSame(LeadStatus::Connected, $contact->lead_status);
         $this->assertNotNull($contact->last_contacted_at);
 
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_type' => $contact->getMorphClass(),
             'subject_id' => $contact->id,
             'type' => ActivityType::Call->value,
         ]);
 
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_type' => $contact->getMorphClass(),
             'subject_id' => $contact->id,
             'type' => ActivityType::Task->value,
@@ -75,7 +75,7 @@ class SalesCockpitModalTest extends TestCase
             ->call('saveMeetingLog')
             ->assertSet('showMeetingModal', false);
 
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_type' => $contact->getMorphClass(),
             'subject_id' => $contact->id,
             'type' => ActivityType::Meeting->value,

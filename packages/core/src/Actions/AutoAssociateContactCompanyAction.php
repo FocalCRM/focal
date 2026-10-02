@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 
 class AutoAssociateContactCompanyAction
 {

@@ -2,34 +2,34 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Models\Activity;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\CompanyResource;
-use Focal\Filament\Resources\ContactResource;
-use Focal\Filament\Resources\DealResource;
-use Focal\Filament\Resources\QuoteResource;
-use Focal\Filament\Resources\SalesSequenceResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Sales\Enums\CallDisposition;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Enums\QuoteStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Quote;
-use Focal\Sales\Models\SalesSequence;
-use Focal\Sales\Models\SalesSequenceEnrollment;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Models\Activity;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\CompanyResource;
+use Odden\Filament\Resources\ContactResource;
+use Odden\Filament\Resources\DealResource;
+use Odden\Filament\Resources\QuoteResource;
+use Odden\Filament\Resources\SalesSequenceResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Sales\Enums\CallDisposition;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Enums\QuoteStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Quote;
+use Odden\Sales\Models\SalesSequence;
+use Odden\Sales\Models\SalesSequenceEnrollment;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -49,7 +49,7 @@ class SalesCockpit extends Page
 
     protected static ?string $title = 'Sales Prospecting Workspace';
 
-    protected string $view = 'focal-filament::pages.sales-cockpit';
+    protected string $view = 'odden-filament::pages.sales-cockpit';
 
     public string $currentWorkspaceTab = 'summary';
 
@@ -110,7 +110,7 @@ class SalesCockpit extends Page
 
     public function mount(): void
     {
-        $this->selectedUserId = (int) FocalAuthorization::userId();
+        $this->selectedUserId = (int) OddenAuthorization::userId();
     }
 
     public function setWorkspaceTab(string $tab): void
@@ -616,7 +616,7 @@ class SalesCockpit extends Page
         $enrollment = SalesSequenceEnrollment::query()->with('sequence')->findOrFail($enrollmentId);
 
         $contact = $this->findContactForUpdate($enrollment->contact_id);
-        FocalAuthorization::authorize('update', $enrollment);
+        OddenAuthorization::authorize('update', $enrollment);
 
         $enrollment->advanceStep();
 
@@ -640,7 +640,7 @@ class SalesCockpit extends Page
         /** @var Activity $activity */
         $activity = Activity::query()->findOrFail($activityId);
 
-        FocalAuthorization::authorize('update', $activity);
+        OddenAuthorization::authorize('update', $activity);
 
         // Completing a task changes the record it belongs to, so that record must be in scope and updatable.
         $subjectResource = match (true) {
@@ -651,7 +651,7 @@ class SalesCockpit extends Page
         };
 
         if ($subjectResource !== null) {
-            FocalAuthorization::findAndAuthorize($subjectResource, $activity->subject::class, $activity->subject->getKey(), 'update');
+            OddenAuthorization::findAndAuthorize($subjectResource, $activity->subject::class, $activity->subject->getKey(), 'update');
         }
 
         $activity->update([
@@ -815,7 +815,7 @@ class SalesCockpit extends Page
                 $contact->updateQuietly(['lead_status' => LeadStatus::InProgress]);
             }
         } else {
-            FocalAuthorization::authorize('create', Activity::class);
+            OddenAuthorization::authorize('create', Activity::class);
 
             Activity::query()->create([
                 'type' => ActivityType::Meeting,
@@ -824,7 +824,7 @@ class SalesCockpit extends Page
                 'metadata' => ['duration_minutes' => $this->meetingDurationMinutes],
                 'due_at' => $dueAt,
                 'status' => ActivityStatus::Pending,
-                'creator_id' => FocalAuthorization::userId(),
+                'creator_id' => OddenAuthorization::userId(),
             ]);
         }
 
@@ -842,7 +842,7 @@ class SalesCockpit extends Page
      */
     protected function findContactForUpdate(int $contactId): Contact
     {
-        return FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $contactId, 'update');
+        return OddenAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $contactId, 'update');
     }
 
     protected function getInitials(string $name): string

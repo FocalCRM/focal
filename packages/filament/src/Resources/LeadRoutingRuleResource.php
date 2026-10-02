@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -20,12 +20,12 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\LeadRoutingRuleResource\Pages\CreateLeadRoutingRule;
-use Focal\Filament\Resources\LeadRoutingRuleResource\Pages\EditLeadRoutingRule;
-use Focal\Filament\Resources\LeadRoutingRuleResource\Pages\ListLeadRoutingRules;
-use Focal\Sales\Enums\LeadRoutingStrategy;
-use Focal\Sales\Models\LeadRoutingRule;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\LeadRoutingRuleResource\Pages\CreateLeadRoutingRule;
+use Odden\Filament\Resources\LeadRoutingRuleResource\Pages\EditLeadRoutingRule;
+use Odden\Filament\Resources\LeadRoutingRuleResource\Pages\ListLeadRoutingRules;
+use Odden\Sales\Enums\LeadRoutingStrategy;
+use Odden\Sales\Models\LeadRoutingRule;
 use UnitEnum;
 
 class LeadRoutingRuleResource extends Resource

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\CampaignResource;
-use Focal\Marketing\Services\DomainHealthCheckService;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\CampaignResource;
+use Odden\Marketing\Services\DomainHealthCheckService;
 use UnitEnum;
 
 /**
@@ -30,11 +30,11 @@ class SenderDomainHealth extends Page
 
     protected static ?string $title = 'Sender Domain Health & Deliverability Diagnostics';
 
-    protected string $view = 'focal-filament::pages.sender-domain-health';
+    protected string $view = 'odden-filament::pages.sender-domain-health';
 
-    public string $domain = 'focal.test';
+    public string $domain = 'odden.test';
 
-    public string $selector = 'focal';
+    public string $selector = 'odden';
 
     /**
      * @return list<class-string<\Filament\Resources\Resource>>
@@ -48,7 +48,7 @@ class SenderDomainHealth extends Page
 
     public function mount(): void
     {
-        $senderEmail = (string) config('focal-marketing.defaults.sender_email', 'newsletter@focal.test');
+        $senderEmail = (string) config('odden-marketing.defaults.sender_email', 'newsletter@odden.test');
         if (str_contains($senderEmail, '@')) {
             $this->domain = explode('@', $senderEmail)[1];
         }

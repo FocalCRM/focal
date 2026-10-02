@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Filament\Resources\DealResource\Pages\KanbanDeals;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
+use Odden\Filament\Resources\DealResource\Pages\KanbanDeals;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Actions\FindDuplicateCompaniesAction;
-use Focal\Core\Actions\FindDuplicateContactsAction;
-use Focal\Core\Actions\MergeCompaniesAction;
-use Focal\Core\Actions\MergeContactsAction;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\CompanyResource;
-use Focal\Filament\Resources\ContactResource;
-use Focal\Filament\Support\FocalAuthorization;
+use Odden\Core\Actions\FindDuplicateCompaniesAction;
+use Odden\Core\Actions\FindDuplicateContactsAction;
+use Odden\Core\Actions\MergeCompaniesAction;
+use Odden\Core\Actions\MergeContactsAction;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\CompanyResource;
+use Odden\Filament\Resources\ContactResource;
+use Odden\Filament\Support\OddenAuthorization;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
@@ -42,7 +42,7 @@ class DataQuality extends Page
 
     protected static ?string $title = 'CRM Data Quality & Deduplication Command Center';
 
-    protected string $view = 'focal-filament::pages.data-quality';
+    protected string $view = 'odden-filament::pages.data-quality';
 
     public string $activeTab = 'contacts';
 
@@ -111,8 +111,8 @@ class DataQuality extends Page
     {
         abort_if($primaryId === $secondaryId, 422);
 
-        $primary = FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $primaryId, 'update');
-        $secondary = FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $secondaryId, 'delete');
+        $primary = OddenAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $primaryId, 'update');
+        $secondary = OddenAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $secondaryId, 'delete');
 
         app(MergeContactsAction::class)->execute($primary, $secondary);
 
@@ -130,8 +130,8 @@ class DataQuality extends Page
     {
         abort_if($primaryId === $secondaryId, 422);
 
-        $primary = FocalAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $primaryId, 'update');
-        $secondary = FocalAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $secondaryId, 'delete');
+        $primary = OddenAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $primaryId, 'update');
+        $secondary = OddenAuthorization::findAndAuthorize(CompanyResource::class, Company::class, $secondaryId, 'delete');
 
         app(MergeCompaniesAction::class)->execute($primary, $secondary);
 

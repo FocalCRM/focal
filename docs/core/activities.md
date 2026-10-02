@@ -3,7 +3,7 @@ title: Activities and the timeline
 description: Log notes, calls, tasks, and other activities on CRM records, read a record's timeline including associated records, and generate a timeline summary.
 ---
 
-An activity is a timeline entry attached to one record, its subject. Activities are stored in `focal_activities` as `Focal\Core\Models\Activity`. Contacts, companies, and custom object records get logging helpers and a timeline from the `HasActivities` trait.
+An activity is a timeline entry attached to one record, its subject. Activities are stored in `odden_activities` as `Odden\Core\Models\Activity`. Contacts, companies, and custom object records get logging helpers and a timeline from the `HasActivities` trait.
 
 ## The Activity model
 
@@ -17,7 +17,7 @@ An activity is a timeline entry attached to one record, its subject. Activities 
 | `creator_id` | Your user model. `creator()` is a `BelongsTo` relation. |
 | `metadata` | JSON, cast to array. |
 
-`Focal\Core\Enums\ActivityType`:
+`Odden\Core\Enums\ActivityType`:
 
 | Case | Value | `label()` |
 | --- | --- | --- |
@@ -30,15 +30,15 @@ An activity is a timeline entry attached to one record, its subject. Activities 
 | `StageChange` | `stage_change` | Stage Change |
 | `SystemEvent` | `system_event` | System Event |
 
-`Focal\Core\Enums\ActivityStatus`: `Pending` (`pending`), `InProgress` (`in_progress`), `Completed` (`completed`), `Cancelled` (`cancelled`), each with a `label()`.
+`Odden\Core\Enums\ActivityStatus`: `Pending` (`pending`), `InProgress` (`in_progress`), `Completed` (`completed`), `Cancelled` (`cancelled`), each with a `label()`.
 
 Methods that accept `ActivityType|string` or `ActivityStatus|string` only accept the backing values above. Any other string, such as `'whatsapp'`, throws `ValueError`. Put channel-specific detail in `metadata`.
 
 ## Logging from a record
 
 ```php
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
 
 $contact->logNote('Prefers email over phone.');
 
@@ -72,8 +72,8 @@ For all of them:
 `LogActivityAction` works on any model, including ones without the trait, and dispatches `ActivityLogged`:
 
 ```php
-use Focal\Core\Actions\LogActivityAction;
-use Focal\Core\Enums\ActivityType;
+use Odden\Core\Actions\LogActivityAction;
+use Odden\Core\Enums\ActivityType;
 
 $activity = app(LogActivityAction::class)->execute(
     subject: $contact,
@@ -118,7 +118,7 @@ The rollup is one level deep. Activities on records associated with the associat
 `SummarizeTimelineAction::execute(Contact|Company $subject): array` builds a rule-based briefing from the record's 15 most recent direct activities, its health or lead score, and its deals and tickets. It calls no external API.
 
 ```php
-use Focal\Core\Actions\SummarizeTimelineAction;
+use Odden\Core\Actions\SummarizeTimelineAction;
 
 $briefing = app(SummarizeTimelineAction::class)->execute($company);
 ```
@@ -127,7 +127,7 @@ It returns:
 
 | Key | Value |
 | --- | --- |
-| `title` | `"Focal Breeze Briefing: {name}"` |
+| `title` | `"Odden Breeze Briefing: {name}"` |
 | `sentiment` | `positive`, `neutral`, or `at_risk` |
 | `executive_summary` | A sentence or two built from templates. |
 | `key_milestones` | Up to 5 strings like `"[call] Check-in call (2 hours ago)"`. |

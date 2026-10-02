@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Database\Factories\ActivityFactory;
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Support\UserModel;
+use Odden\Core\Database\Factories\ActivityFactory;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -57,7 +57,7 @@ class Activity extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.activities', 'focal_activities');
+        return config('odden-core.tables.activities', 'odden_activities');
     }
 
     /**

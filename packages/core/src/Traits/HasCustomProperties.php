@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Traits;
+namespace Odden\Core\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 

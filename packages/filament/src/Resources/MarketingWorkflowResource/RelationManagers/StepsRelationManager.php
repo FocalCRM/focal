@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\MarketingWorkflowResource\RelationManagers;
+namespace Odden\Filament\Resources\MarketingWorkflowResource\RelationManagers;
 
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -14,8 +14,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Models\WorkflowStep;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Models\WorkflowStep;
 
 class StepsRelationManager extends RelationManager
 {

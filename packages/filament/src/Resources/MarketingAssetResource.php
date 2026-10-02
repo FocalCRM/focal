@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -22,10 +22,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\MarketingAssetResource\Pages\CreateMarketingAsset;
-use Focal\Filament\Resources\MarketingAssetResource\Pages\EditMarketingAsset;
-use Focal\Filament\Resources\MarketingAssetResource\Pages\ListMarketingAssets;
-use Focal\Marketing\Models\MarketingAsset;
+use Odden\Filament\Resources\MarketingAssetResource\Pages\CreateMarketingAsset;
+use Odden\Filament\Resources\MarketingAssetResource\Pages\EditMarketingAsset;
+use Odden\Filament\Resources\MarketingAssetResource\Pages\ListMarketingAssets;
+use Odden\Marketing\Models\MarketingAsset;
 use UnitEnum;
 
 class MarketingAssetResource extends Resource

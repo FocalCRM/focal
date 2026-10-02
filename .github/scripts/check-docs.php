@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Checks the docs/ folder before it is published to focalcrm.io/docs:
+ * Checks the docs/ folder before it is published to odden.io/docs:
  * every page in navigation.yml exists and has a title and description,
  * every Markdown page is listed, and every relative .md link (and its
  * #anchor) points at a page and heading that exist.

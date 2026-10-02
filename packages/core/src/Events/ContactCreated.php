@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Events;
+namespace Odden\Core\Events;
 
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\PipelineResource\Pages;
+namespace Odden\Filament\Resources\PipelineResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\PipelineResource;
+use Odden\Filament\Resources\PipelineResource;
 
 class EditPipeline extends EditRecord
 {

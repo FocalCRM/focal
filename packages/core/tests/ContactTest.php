@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests;
+namespace Odden\Core\Tests;
 
-use Focal\Core\Actions\CreateContactAction;
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Events\ContactCreated;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\CreateContactAction;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Events\ContactCreated;
+use Odden\Core\Models\Contact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 
@@ -25,7 +25,7 @@ class ContactTest extends TestCase
             'lifecycle_stage' => LifecycleStage::Lead,
         ]);
 
-        $this->assertDatabaseHas('focal_contacts', [
+        $this->assertDatabaseHas('odden_contacts', [
             'id' => $contact->id,
             'email' => 'sarah@example.com',
             'lifecycle_stage' => LifecycleStage::Lead->value,
@@ -86,7 +86,7 @@ class ContactTest extends TestCase
 
         $contact->delete();
 
-        $this->assertSoftDeleted('focal_contacts', ['id' => $contact->id]);
+        $this->assertSoftDeleted('odden_contacts', ['id' => $contact->id]);
         $this->assertNull(Contact::find($contact->id));
         $this->assertNotNull(Contact::withTrashed()->find($contact->id));
     }

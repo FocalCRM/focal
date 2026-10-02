@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -23,16 +23,16 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Resources\CrmListResource\Pages\CreateCrmList;
-use Focal\Filament\Resources\CrmListResource\Pages\EditCrmList;
-use Focal\Filament\Resources\CrmListResource\Pages\ListCrmLists;
-use Focal\Filament\Resources\CrmListResource\Pages\ViewCrmList;
-use Focal\Filament\Resources\CrmListResource\RelationManagers\MembersRelationManager;
-use Focal\Filament\Support\FocalAuthorization;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Resources\CrmListResource\Pages\CreateCrmList;
+use Odden\Filament\Resources\CrmListResource\Pages\EditCrmList;
+use Odden\Filament\Resources\CrmListResource\Pages\ListCrmLists;
+use Odden\Filament\Resources\CrmListResource\Pages\ViewCrmList;
+use Odden\Filament\Resources\CrmListResource\RelationManagers\MembersRelationManager;
+use Odden\Filament\Support\OddenAuthorization;
 use UnitEnum;
 
 class CrmListResource extends Resource
@@ -162,7 +162,7 @@ class CrmListResource extends Resource
                     ->icon(Heroicon::ArrowPath)
                     ->color('primary')
                     ->visible(fn (CrmList $record): bool => $record->type === ListType::Active)
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->action(function (CrmList $record): void {
                         $count = $record->syncActiveMembers();
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -44,7 +44,7 @@ class Association extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.associations', 'focal_associations');
+        return config('odden-core.tables.associations', 'odden_associations');
     }
 
     /**

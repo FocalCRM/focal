@@ -97,7 +97,7 @@
                         @forelse ($this->campaignsData as $row)
                             <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
                                 <td class="py-3 px-4 font-bold text-slate-900 dark:text-white">
-                                    <a href="{{ \Focal\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $row['campaign']->id]) }}" class="hover:underline text-sky-600 dark:text-sky-400">
+                                    <a href="{{ \Odden\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $row['campaign']->id]) }}" class="hover:underline text-sky-600 dark:text-sky-400">
                                         {{ $row['campaign_name'] }}
                                     </a>
                                 </td>

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CrmListResource\RelationManagers;
+namespace Odden\Filament\Resources\CrmListResource\RelationManagers;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\ListMembership;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\ListMembership;
 
 class MembersRelationManager extends RelationManager
 {

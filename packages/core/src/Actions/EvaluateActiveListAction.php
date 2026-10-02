@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Core\Models\ListMembership;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Core\Models\ListMembership;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
@@ -42,18 +42,18 @@ class EvaluateActiveListAction
 
             // Marketing behavioral cohort criteria
             if ($property === 'has_downloaded_asset' && $modelClass === Contact::class) {
-                $table = config('focal-marketing.tables.asset_downloads', 'focal_marketing_asset_downloads');
+                $table = config('odden-marketing.tables.asset_downloads', 'odden_marketing_asset_downloads');
                 if ((bool) $value) {
                     $query->whereExists(function ($sub) use ($table): void {
                         $sub->selectRaw(1)
                             ->from($table)
-                            ->whereColumn('contact_id', 'focal_contacts.id');
+                            ->whereColumn('contact_id', 'odden_contacts.id');
                     });
                 } else {
                     $query->whereNotExists(function ($sub) use ($table): void {
                         $sub->selectRaw(1)
                             ->from($table)
-                            ->whereColumn('contact_id', 'focal_contacts.id');
+                            ->whereColumn('contact_id', 'odden_contacts.id');
                     });
                 }
 
@@ -61,19 +61,19 @@ class EvaluateActiveListAction
             }
 
             if ($property === 'has_attended_event' && $modelClass === Contact::class) {
-                $table = config('focal-marketing.tables.event_registrations', 'focal_marketing_event_registrations');
+                $table = config('odden-marketing.tables.event_registrations', 'odden_marketing_event_registrations');
                 if ((bool) $value) {
                     $query->whereExists(function ($sub) use ($table): void {
                         $sub->selectRaw(1)
                             ->from($table)
-                            ->whereColumn('contact_id', 'focal_contacts.id')
+                            ->whereColumn('contact_id', 'odden_contacts.id')
                             ->where('status', 'attended');
                     });
                 } else {
                     $query->whereNotExists(function ($sub) use ($table): void {
                         $sub->selectRaw(1)
                             ->from($table)
-                            ->whereColumn('contact_id', 'focal_contacts.id')
+                            ->whereColumn('contact_id', 'odden_contacts.id')
                             ->where('status', 'attended');
                     });
                 }

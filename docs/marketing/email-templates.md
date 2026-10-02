@@ -3,14 +3,14 @@ title: Email templates
 description: Build reusable email templates from mail builder slots, keep revisions and translations, personalize them with merge tags and smart content, and add dynamic images and AMP.
 ---
 
-Campaigns, workflow emails, and the transactional API all send a `Focal\Marketing\Models\MarketingTemplate`. A template is either a list of [mail builder](https://github.com/dophp/laravel-mail-builder) slots, which the package compiles to responsive HTML for you, or raw HTML you supply.
+Campaigns, workflow emails, and the transactional API all send an `Odden\Marketing\Models\MarketingTemplate`. A template is either a list of [mail builder](https://github.com/getodden/mail) slots, which the package compiles to responsive HTML for you, or raw HTML you supply.
 
 ## Creating a template
 
-Build a template from slots, the content blocks of `dophp/laravel-mail-builder`:
+Build a template from slots, the content blocks of `getodden/mail`:
 
 ```php
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\MarketingTemplate;
 
 $template = MarketingTemplate::create([
     'name' => 'March newsletter',
@@ -66,7 +66,7 @@ Every time a template is saved:
 
 ## Slots
 
-A slot is an array with a `type`, a `data` array, and an optional `visibility` rule. The types come from `DoPHP\MailBuilder\Enums\SlotType`:
+A slot is an array with a `type`, a `data` array, and an optional `visibility` rule. The types come from `Odden\MailBuilder\Enums\SlotType`:
 
 `header`, `hero`, `body_text`, `button`, `two_column`, `three_column`, `four_column`, `asymmetric_columns`, `features`, `testimonial`, `stat_box`, `divider`, `labeled_divider`, `social_links`, `footer`, `html`, `image_banner`, `video_card`, `pricing_grid`, `rating_bar`, `countdown_timer`, `accordion`, `dynamic_feed`, `rss_feed`, `order_receipt`, `product_catalog`, `coupon_code`, `app_badges`, and `data_table`.
 
@@ -111,7 +111,7 @@ Rules aren't evaluated when `body_html` is compiled on save, so the stored HTML 
 `MarketingSavedBlock` stores a single slot for reuse in an editor: `name`, `category` (default `general`), `slot_type`, `slot_data` (array), and `created_by`. The package only stores them; inserting one into a template is up to your editor.
 
 ```php
-use Focal\Marketing\Models\MarketingSavedBlock;
+use Odden\Marketing\Models\MarketingSavedBlock;
 
 MarketingSavedBlock::create([
     'name' => 'Standard footer',
@@ -138,7 +138,7 @@ $template->getVariantText('B');
 `EvaluateTemplateAbTestsAction` compares the variants across every campaign that uses the template and stores the winner:
 
 ```php
-use Focal\Marketing\Actions\EvaluateTemplateAbTestsAction;
+use Odden\Marketing\Actions\EvaluateTemplateAbTestsAction;
 
 $result = app(EvaluateTemplateAbTestsAction::class)->execute($template, 'click_rate');
 
@@ -197,7 +197,7 @@ The package registers three groups with the mail builder's `MergeTagRegistry`, w
 The registry is what editors show as the tag list. Register your own groups the same way:
 
 ```php
-use DoPHP\MailBuilder\MailBuilder;
+use Odden\MailBuilder\MailBuilder;
 
 MailBuilder::mergeTags()->register('Order', [
     '{{order.number}}' => 'Order number',
@@ -257,7 +257,7 @@ Rules:
 Comparisons ignore case. With no contact, blocks fall back to the default and inline tokens to the false branch.
 
 ```php
-use Focal\Marketing\Actions\EvaluateSmartContentBlocksAction;
+use Odden\Marketing\Actions\EvaluateSmartContentBlocksAction;
 
 $html = app(EvaluateSmartContentBlocksAction::class)->execute(
     '[smart min_score="100"]Hot[/smart][smart default]Cold[/smart]',
@@ -272,7 +272,7 @@ The action also accepts an `@smart(…) … @endsmart` syntax, but it doesn't wo
 `ContactPersonaPreviewService::preview()` compiles a template's slots for a real contact or a sample persona, with visibility rules and merge tags applied:
 
 ```php
-use Focal\Marketing\Services\ContactPersonaPreviewService;
+use Odden\Marketing\Services\ContactPersonaPreviewService;
 
 $preview = ContactPersonaPreviewService::preview($template, 'trial_user');
 
@@ -289,7 +289,7 @@ For a real contact, the context uses flat keys (`contact.first_name`, `company.n
 
 Two routes return SVG images generated from query parameters, for use in an `<img>` tag. They're rendered when the email is opened, so the image is current each time.
 
-**Countdown timer.** `GET /marketing/images/countdown-timer.svg` (`focal.marketing.images.countdown-timer`)
+**Countdown timer.** `GET /marketing/images/countdown-timer.svg` (`odden.marketing.images.countdown-timer`)
 
 | Parameter | Default |
 | :--- | :--- |
@@ -301,10 +301,10 @@ Two routes return SVG images generated from query parameters, for use in an `<im
 
 After `until` passes, every digit shows `00`.
 
-**Badge.** `GET /marketing/images/badge.svg` (`focal.marketing.images.badge`) draws an attendee badge with `name` (default `Valued Guest`), `company` (`Acme Corporation`), `role` (`VIP Attendee`), and `color` (`#4F46E5`). Its footer reads "OFFICIAL FOCAL SUMMIT ACCESS PASS" and can't be changed.
+**Badge.** `GET /marketing/images/badge.svg` (`odden.marketing.images.badge`) draws an attendee badge with `name` (default `Valued Guest`), `company` (`Acme Corporation`), `role` (`VIP Attendee`), and `color` (`#4F46E5`). Its footer reads "OFFICIAL ODDEN SUMMIT ACCESS PASS" and can't be changed.
 
 ```php
-$src = route('focal.marketing.images.countdown-timer', [
+$src = route('odden.marketing.images.countdown-timer', [
     'until' => '2026-12-01 17:00:00',
     'label' => 'SALE ENDS IN',
 ]);
@@ -320,20 +320,20 @@ Both are public and send no-cache headers. Many email clients, Gmail among them,
 
 The mail builder can compile slots to AMP for Email markup with `MailBuilder::amp($slots, $options)`. Neither campaigns nor the transactional API attach an AMP part to the messages they build, so adding one is up to you.
 
-Two public endpoints in the `api` group accept submissions from AMP forms. Both are CSRF exempt and limited by `throttle:focal-public`.
+Two public endpoints in the `api` group accept submissions from AMP forms. Both are CSRF exempt and limited by `throttle:odden-public`.
 
-They follow the [AMP for Email CORS rules](https://amp.dev/documentation/guides-and-tutorials/learn/cors-in-email). The request's `Origin` must be in `focal-marketing.amp.allowed_origins`; any other origin, or none, gets a `403` with no CORS headers. An allowed request gets `Access-Control-Allow-Origin` set to its origin, `AMP-Email-Allow-Sender` set to the request's `AMP-Email-Sender` header, and `Access-Control-Expose-Headers: AMP-Email-Allow-Sender`. Credentials aren't allowed. The default origins are the AMP email clients':
+They follow the [AMP for Email CORS rules](https://amp.dev/documentation/guides-and-tutorials/learn/cors-in-email). The request's `Origin` must be in `odden-marketing.amp.allowed_origins`; any other origin, or none, gets a `403` with no CORS headers. An allowed request gets `Access-Control-Allow-Origin` set to its origin, `AMP-Email-Allow-Sender` set to the request's `AMP-Email-Sender` header, and `Access-Control-Expose-Headers: AMP-Email-Allow-Sender`. Credentials aren't allowed. The default origins are the AMP email clients':
 
 ```php
-// config/focal-marketing.php
+// config/odden-marketing.php
 'amp' => [
     'allowed_origins' => ['https://mail.google.com', 'https://outlook.live.com', 'https://mail.yahoo.com', 'https://mail.aol.com'],
 ],
 ```
 
-Set `FOCAL_MARKETING_AMP_ALLOWED_ORIGINS` to a comma-separated list to replace them. The package tells Laravel's global CORS middleware to skip these two routes, so your `config/cors.php` doesn't override their headers.
+Set `ODDEN_MARKETING_AMP_ALLOWED_ORIGINS` to a comma-separated list to replace them. The package tells Laravel's global CORS middleware to skip these two routes, so your `config/cors.php` doesn't override their headers.
 
-**Feedback.** `POST /api/marketing/amp/feedback` (`focal.marketing.amp.feedback`)
+**Feedback.** `POST /api/marketing/amp/feedback` (`odden.marketing.amp.feedback`)
 
 | Field | Rules |
 | :--- | :--- |
@@ -348,7 +348,7 @@ If `token` matches an NPS response, its `score`, `feedback`, and `responded_at` 
 {"status": "success", "message": "Thank you! Your feedback has been recorded.", "score": 9}
 ```
 
-**RSVP.** `POST /api/marketing/amp/rsvp` (`focal.marketing.amp.rsvp`)
+**RSVP.** `POST /api/marketing/amp/rsvp` (`odden.marketing.amp.rsvp`)
 
 | Field | Rules |
 | :--- | :--- |
@@ -382,4 +382,4 @@ See [Events and gated assets](events-and-assets.md) for events.
 
 ## Other renderers
 
-`Focal\Marketing\Services\EmailBlockRenderer` is a simpler HTML renderer, separate from the mail builder, used by the Filament plugin's preset picker. `render(array $blocks)` accepts flat blocks of type `hero`, `columns`, `features`, `testimonial`, `cta`, `footer`, or text, and `renderPreset('product_launch')` renders a built-in preset. New templates should use slots.
+`Odden\Marketing\Services\EmailBlockRenderer` is a simpler HTML renderer, separate from the mail builder, used by the Filament plugin's preset picker. `render(array $blocks)` accepts flat blocks of type `hero`, `columns`, `features`, `testimonial`, `cta`, `footer`, or text, and `renderPreset('product_launch')` renders a built-in preset. New templates should use slots.

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Enums\CustomerHealthStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\ExecutiveOverview;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
-use Focal\Sales\Models\SalesQuota;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Enums\TicketSource;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Enums\CustomerHealthStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\ExecutiveOverview;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
+use Odden\Sales\Models\SalesQuota;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Enums\TicketSource;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 

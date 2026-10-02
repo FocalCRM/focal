@@ -1,9 +1,9 @@
 ---
 title: Writing the docs
-description: How the Focal documentation is organized and the conventions every page follows.
+description: How the Odden documentation is organized and the conventions every page follows.
 ---
 
-These docs are published at [focalcrm.io/docs](https://focalcrm.io/docs). They live in this repository so that a change to a package and the change to its documentation can land in the same pull request.
+These docs are published at [odden.io/docs](https://odden.io/docs). They live in this repository so that a change to a package and the change to its documentation can land in the same pull request.
 
 ## Layout
 
@@ -30,7 +30,7 @@ Link to other pages with relative paths to the Markdown file, so the links also 
 
 ## Style
 
-- Write for a Laravel developer installing Focal into their own app. Use "you".
+- Write for a Laravel developer installing Odden into their own app. Use "you".
 - Document only what the code does today. Use the real class names, method signatures, config keys, environment variables, route names, events, and Artisan commands.
 - Every code example must work as written against the current packages. Prefer short, complete examples over fragments.
 - Use sentence case for headings. Keep paragraphs short. No marketing language.

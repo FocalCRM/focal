@@ -1,12 +1,12 @@
 <x-filament-panels::page>
     <style>
-        .focal-kanban-wrapper {
+        .odden-kanban-wrapper {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }
 
-        .focal-header-bar {
+        .odden-header-bar {
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -17,38 +17,38 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
-        :where(.dark, .dark *) .focal-header-bar {
+        :where(.dark, .dark *) .odden-header-bar {
             background: #111827;
             border-color: #1f2937;
         }
 
         @media (min-width: 640px) {
-            .focal-header-bar {
+            .odden-header-bar {
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
             }
         }
 
-        .focal-stats-grid {
+        .odden-stats-grid {
             display: grid;
             grid-template-columns: repeat(1, minmax(0, 1fr));
             gap: 1rem;
         }
 
         @media (min-width: 640px) {
-            .focal-stats-grid {
+            .odden-stats-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
         @media (min-width: 1024px) {
-            .focal-stats-grid {
+            .odden-stats-grid {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
 
-        .focal-stat-card {
+        .odden-stat-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 0.75rem;
@@ -59,22 +59,22 @@
             gap: 0.375rem;
         }
 
-        :where(.dark, .dark *) .focal-stat-card {
+        :where(.dark, .dark *) .odden-stat-card {
             background: #111827;
             border-color: #1f2937;
         }
 
-        .focal-stat-label {
+        .odden-stat-label {
             font-size: 0.8125rem;
             font-weight: 500;
             color: #64748b;
         }
 
-        :where(.dark, .dark *) .focal-stat-label {
+        :where(.dark, .dark *) .odden-stat-label {
             color: #94a3b8;
         }
 
-        .focal-stat-value {
+        .odden-stat-value {
             font-size: 1.625rem;
             font-weight: 700;
             color: #0f172a;
@@ -82,21 +82,21 @@
             letter-spacing: -0.025em;
         }
 
-        :where(.dark, .dark *) .focal-stat-value {
+        :where(.dark, .dark *) .odden-stat-value {
             color: #f8fafc;
         }
 
-        .focal-stat-subtext {
+        .odden-stat-subtext {
             font-size: 0.75rem;
             font-weight: 500;
             color: #64748b;
         }
 
-        :where(.dark, .dark *) .focal-stat-subtext {
+        :where(.dark, .dark *) .odden-stat-subtext {
             color: #94a3b8;
         }
 
-        .focal-kanban-board {
+        .odden-kanban-board {
             display: flex;
             flex-direction: row;
             gap: 1.25rem;
@@ -106,7 +106,7 @@
             min-height: 480px;
         }
 
-        .focal-stage-column {
+        .odden-stage-column {
             flex: 0 0 21rem;
             width: 21rem;
             min-width: 21rem;
@@ -120,12 +120,12 @@
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
         }
 
-        :where(.dark, .dark *) .focal-stage-column {
+        :where(.dark, .dark *) .odden-stage-column {
             background: #0f172a;
             border-color: #1e293b;
         }
 
-        .focal-stage-header {
+        .odden-stage-header {
             padding: 0.875rem 1rem;
             border-bottom: 1px solid #e2e8f0;
             background: #ffffff;
@@ -134,19 +134,19 @@
             gap: 0.375rem;
         }
 
-        :where(.dark, .dark *) .focal-stage-header {
+        :where(.dark, .dark *) .odden-stage-header {
             background: #1e293b;
             border-color: #334155;
         }
 
-        .focal-stage-header-row {
+        .odden-stage-header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 0.5rem;
         }
 
-        .focal-stage-title {
+        .odden-stage-title {
             font-size: 0.875rem;
             font-weight: 600;
             color: #0f172a;
@@ -156,11 +156,11 @@
             text-overflow: ellipsis;
         }
 
-        :where(.dark, .dark *) .focal-stage-title {
+        :where(.dark, .dark *) .odden-stage-title {
             color: #f8fafc;
         }
 
-        .focal-stage-meta {
+        .odden-stage-meta {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -168,11 +168,11 @@
             color: #64748b;
         }
 
-        :where(.dark, .dark *) .focal-stage-meta {
+        :where(.dark, .dark *) .odden-stage-meta {
             color: #94a3b8;
         }
 
-        .focal-stage-dropzone {
+        .odden-stage-dropzone {
             padding: 0.75rem;
             display: flex;
             flex-direction: column;
@@ -183,13 +183,13 @@
             transition: background-color 0.15s ease, outline 0.15s ease;
         }
 
-        .focal-stage-dropzone.is-dragging-over {
+        .odden-stage-dropzone.is-dragging-over {
             background-color: rgba(249, 115, 22, 0.08);
             outline: 2px dashed #f97316;
             outline-offset: -2px;
         }
 
-        .focal-deal-card {
+        .odden-deal-card {
             cursor: grab;
             user-select: none;
             background: #ffffff;
@@ -200,28 +200,28 @@
             transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
         }
 
-        :where(.dark, .dark *) .focal-deal-card {
+        :where(.dark, .dark *) .odden-deal-card {
             background: #1e293b;
             border-color: #334155;
         }
 
-        .focal-deal-card:hover {
+        .odden-deal-card:hover {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             transform: translateY(-1px);
         }
 
-        .focal-deal-card:active {
+        .odden-deal-card:active {
             cursor: grabbing;
         }
 
-        .focal-deal-card.is-dragging {
+        .odden-deal-card.is-dragging {
             opacity: 0.35;
             transform: scale(0.97);
             border-style: dashed;
             border-color: #f97316;
         }
 
-        .focal-card-title {
+        .odden-card-title {
             font-size: 0.875rem;
             font-weight: 600;
             color: #0f172a;
@@ -233,15 +233,15 @@
             overflow: hidden;
         }
 
-        :where(.dark, .dark *) .focal-card-title {
+        :where(.dark, .dark *) .odden-card-title {
             color: #f8fafc;
         }
 
-        .focal-card-title:hover {
+        .odden-card-title:hover {
             color: #f97316;
         }
 
-        .focal-card-row {
+        .odden-card-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -249,17 +249,17 @@
             margin-top: 0.5rem;
         }
 
-        .focal-card-amount {
+        .odden-card-amount {
             font-size: 0.9375rem;
             font-weight: 700;
             color: #0f172a;
         }
 
-        :where(.dark, .dark *) .focal-card-amount {
+        :where(.dark, .dark *) .odden-card-amount {
             color: #f8fafc;
         }
 
-        .focal-card-date {
+        .odden-card-date {
             display: flex;
             align-items: center;
             gap: 0.375rem;
@@ -268,11 +268,11 @@
             margin-top: 0.5rem;
         }
 
-        :where(.dark, .dark *) .focal-card-date {
+        :where(.dark, .dark *) .odden-card-date {
             color: #94a3b8;
         }
 
-        .focal-card-entities {
+        .odden-card-entities {
             display: flex;
             flex-wrap: wrap;
             gap: 0.375rem;
@@ -281,17 +281,17 @@
             margin-top: 0.5rem;
         }
 
-        :where(.dark, .dark *) .focal-card-entities {
+        :where(.dark, .dark *) .odden-card-entities {
             color: #cbd5e1;
         }
 
-        .focal-card-entity {
+        .odden-card-entity {
             display: inline-flex;
             align-items: center;
             gap: 0.25rem;
         }
 
-        .focal-card-footer {
+        .odden-card-footer {
             margin-top: 0.625rem;
             padding-top: 0.5rem;
             border-top: 1px solid #f1f5f9;
@@ -301,18 +301,18 @@
             gap: 0.5rem;
         }
 
-        :where(.dark, .dark *) .focal-card-footer {
+        :where(.dark, .dark *) .odden-card-footer {
             border-top-color: #334155;
         }
 
-        .focal-card-footer-label {
+        .odden-card-footer-label {
             font-size: 0.6875rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: #94a3b8;
         }
 
-        .focal-card-select {
+        .odden-card-select {
             font-size: 0.75rem;
             padding: 0.2rem 0.5rem;
             border-radius: 0.375rem;
@@ -321,13 +321,13 @@
             color: #334155;
         }
 
-        :where(.dark, .dark *) .focal-card-select {
+        :where(.dark, .dark *) .odden-card-select {
             background: #0f172a;
             border-color: #334155;
             color: #e2e8f0;
         }
 
-        .focal-empty-dropzone {
+        .odden-empty-dropzone {
             padding: 2.5rem 1rem;
             text-align: center;
             font-size: 0.75rem;
@@ -336,15 +336,15 @@
             border-radius: 0.5rem;
         }
 
-        :where(.dark, .dark *) .focal-empty-dropzone {
+        :where(.dark, .dark *) .odden-empty-dropzone {
             border-color: #334155;
             color: #64748b;
         }
     </style>
 
-    <div class="focal-kanban-wrapper">
+    <div class="odden-kanban-wrapper">
         {{-- Pipeline Header & Switcher --}}
-        <div class="focal-header-bar">
+        <div class="odden-header-bar">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <span style="font-size: 0.875rem; font-weight: 600; color: #475569;" class="dark:text-gray-300">Active Pipeline:</span>
                 <div style="min-width: 220px;">
@@ -364,13 +364,13 @@
         </div>
 
         {{-- Revenue Forecast KPI Cards --}}
-        <div class="focal-stats-grid">
-            <div class="focal-stat-card">
-                <div class="focal-stat-label">Open Pipeline</div>
-                <div class="focal-stat-value">
+        <div class="odden-stats-grid">
+            <div class="odden-stat-card">
+                <div class="odden-stat-label">Open Pipeline</div>
+                <div class="odden-stat-value">
                     ${{ number_format($this->forecast['open_value'], 2) }}
                 </div>
-                <div class="focal-stat-subtext" style="color: #0284c7;">
+                <div class="odden-stat-subtext" style="color: #0284c7;">
                     {{ $this->forecast['open_count'] }} active open {{ \Illuminate\Support\Str::plural('deal', $this->forecast['open_count']) }}
                 </div>
                 @if ($this->forecast['stale_deals_count'] > 0)
@@ -380,52 +380,52 @@
                 @endif
             </div>
 
-            <div class="focal-stat-card">
-                <div class="focal-stat-label">Weighted Forecast</div>
-                <div class="focal-stat-value" style="color: #f97316;">
+            <div class="odden-stat-card">
+                <div class="odden-stat-label">Weighted Forecast</div>
+                <div class="odden-stat-value" style="color: #f97316;">
                     ${{ number_format($this->forecast['weighted_forecast'], 2) }}
                 </div>
-                <div class="focal-stat-subtext">
+                <div class="odden-stat-subtext">
                     Probability-adjusted revenue
                 </div>
             </div>
 
-            <div class="focal-stat-card">
-                <div class="focal-stat-label">Closed Won</div>
-                <div class="focal-stat-value" style="color: #16a34a;">
+            <div class="odden-stat-card">
+                <div class="odden-stat-label">Closed Won</div>
+                <div class="odden-stat-value" style="color: #16a34a;">
                     ${{ number_format($this->forecast['won_value'], 2) }}
                 </div>
-                <div class="focal-stat-subtext" style="color: #16a34a;">
+                <div class="odden-stat-subtext" style="color: #16a34a;">
                     {{ $this->forecast['won_count'] }} {{ \Illuminate\Support\Str::plural('deal', $this->forecast['won_count']) }} won
                 </div>
             </div>
 
-            <div class="focal-stat-card">
-                <div class="focal-stat-label">Win Rate</div>
-                <div class="focal-stat-value" style="color: {{ $this->forecast['win_rate'] >= 50.0 ? '#16a34a' : '#d97706' }};">
+            <div class="odden-stat-card">
+                <div class="odden-stat-label">Win Rate</div>
+                <div class="odden-stat-value" style="color: {{ $this->forecast['win_rate'] >= 50.0 ? '#16a34a' : '#d97706' }};">
                     {{ $this->forecast['win_rate'] }}%
                 </div>
-                <div class="focal-stat-subtext">
+                <div class="odden-stat-subtext">
                     Avg deal: ${{ number_format($this->forecast['average_deal_size'], 0) }}
                 </div>
             </div>
         </div>
 
         {{-- Kanban Columns Container with Drag & Drop --}}
-        <div class="focal-kanban-board">
+        <div class="odden-kanban-board">
             @forelse ($this->stages as $stage)
-                <div class="focal-stage-column">
+                <div class="odden-stage-column">
                     {{-- Stage Header --}}
-                    <div class="focal-stage-header">
-                        <div class="focal-stage-header-row">
-                            <h3 class="focal-stage-title">
+                    <div class="odden-stage-header">
+                        <div class="odden-stage-header-row">
+                            <h3 class="odden-stage-title">
                                 {{ $stage->name }}
                             </h3>
                             <x-filament::badge :color="$stage->is_closed_won ? 'success' : ($stage->is_closed_lost ? 'danger' : 'gray')" size="sm">
                                 {{ $stage->probability }}%
                             </x-filament::badge>
                         </div>
-                        <div class="focal-stage-meta">
+                        <div class="odden-stage-meta">
                             <span>{{ $stage->deals->count() }} {{ \Illuminate\Support\Str::plural('deal', $stage->deals->count()) }}</span>
                             <span style="font-weight: 600;">
                                 ${{ number_format($stage->deals->sum('amount'), 2) }}
@@ -446,7 +446,7 @@
                             }
                         "
                         :class="{ 'is-dragging-over': isDraggingOver }"
-                        class="focal-stage-dropzone"
+                        class="odden-stage-dropzone"
                     >
                         @forelse ($stage->deals as $deal)
                             {{-- Draggable Deal Card --}}
@@ -460,19 +460,19 @@
                                 "
                                 x-on:dragend="isDragging = false"
                                 :class="{ 'is-dragging': isDragging }"
-                                class="focal-deal-card"
+                                class="odden-deal-card"
                             >
                                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
                                     <a
-                                        href="{{ \Focal\Filament\Resources\DealResource::getUrl('view', ['record' => $deal->id]) }}"
-                                        class="focal-card-title"
+                                        href="{{ \Odden\Filament\Resources\DealResource::getUrl('view', ['record' => $deal->id]) }}"
+                                        class="odden-card-title"
                                     >
                                         {{ $deal->name }}
                                     </a>
                                 </div>
 
-                                <div class="focal-card-row">
-                                    <span class="focal-card-amount">
+                                <div class="odden-card-row">
+                                    <span class="odden-card-amount">
                                         ${{ number_format((float) $deal->amount, 2) }}
                                     </span>
                                     <div style="display: flex; align-items: center; gap: 0.375rem;">
@@ -491,27 +491,27 @@
 
                                 @if ($deal->status->isLost() && $deal->lost_reason)
                                     <div style="font-size: 0.6875rem; color: #dc2626; margin-top: 0.375rem; font-weight: 500;" class="dark:text-red-400">
-                                        Loss: {{ \Focal\Sales\Enums\LostReason::tryFrom($deal->lost_reason)?->label() ?? $deal->lost_reason }}
+                                        Loss: {{ \Odden\Sales\Enums\LostReason::tryFrom($deal->lost_reason)?->label() ?? $deal->lost_reason }}
                                     </div>
                                 @endif
 
                                 @if ($deal->expected_close_date)
-                                    <div class="focal-card-date">
+                                    <div class="odden-card-date">
                                         <x-filament::icon :icon="\Filament\Support\Icons\Heroicon::Calendar" style="width: 0.875rem; height: 0.875rem;" />
                                         <span>Target: {{ $deal->expected_close_date->format('M j, Y') }}</span>
                                     </div>
                                 @endif
 
                                 @if ($deal->companies->isNotEmpty() || $deal->contacts->isNotEmpty())
-                                    <div class="focal-card-entities">
+                                    <div class="odden-card-entities">
                                         @if ($company = $deal->companies->first())
-                                            <span class="focal-card-entity">
+                                            <span class="odden-card-entity">
                                                 <x-filament::icon :icon="\Filament\Support\Icons\Heroicon::BuildingOffice" style="width: 0.875rem; height: 0.875rem;" />
                                                 {{ $company->name }}
                                             </span>
                                         @endif
                                         @if ($contact = $deal->contacts->first())
-                                            <span class="focal-card-entity">
+                                            <span class="odden-card-entity">
                                                 <x-filament::icon :icon="\Filament\Support\Icons\Heroicon::User" style="width: 0.875rem; height: 0.875rem;" />
                                                 {{ $contact->first_name }} {{ $contact->last_name }}
                                             </span>
@@ -520,11 +520,11 @@
                                 @endif
 
                                 {{-- Quick Stage Move Selector (Fallback for keyboard/mobile) --}}
-                                <div class="focal-card-footer">
-                                    <span class="focal-card-footer-label">Move:</span>
+                                <div class="odden-card-footer">
+                                    <span class="odden-card-footer-label">Move:</span>
                                     <select
                                         wire:change="moveDeal({{ $deal->id }}, $event.target.value)"
-                                        class="focal-card-select"
+                                        class="odden-card-select"
                                     >
                                         @foreach ($this->stages as $targetStage)
                                             <option value="{{ $targetStage->id }}" {{ $targetStage->id === $deal->stage_id ? 'selected' : '' }}>
@@ -535,7 +535,7 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="focal-empty-dropzone">
+                            <div class="odden-empty-dropzone">
                                 Drag deals here
                             </div>
                         @endforelse

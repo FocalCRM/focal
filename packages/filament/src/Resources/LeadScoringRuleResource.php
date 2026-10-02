@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -20,11 +20,11 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\LeadScoringRuleResource\Pages\CreateLeadScoringRule;
-use Focal\Filament\Resources\LeadScoringRuleResource\Pages\EditLeadScoringRule;
-use Focal\Filament\Resources\LeadScoringRuleResource\Pages\ListLeadScoringRules;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\LeadScoringRule;
+use Odden\Filament\Resources\LeadScoringRuleResource\Pages\CreateLeadScoringRule;
+use Odden\Filament\Resources\LeadScoringRuleResource\Pages\EditLeadScoringRule;
+use Odden\Filament\Resources\LeadScoringRuleResource\Pages\ListLeadScoringRules;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\LeadScoringRule;
 use UnitEnum;
 
 class LeadScoringRuleResource extends Resource

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\ContactResource\Pages;
+namespace Odden\Filament\Resources\ContactResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\ContactResource;
+use Odden\Filament\Resources\ContactResource;
 
 class EditContact extends EditRecord
 {

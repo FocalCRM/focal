@@ -3,11 +3,11 @@ title: Contacts and companies
 description: The Contact and Company models, the actions that create them, corporate-domain auto-association, company enrichment, and customer health scores.
 ---
 
-`Focal\Core\Models\Contact` and `Focal\Core\Models\Company` are the two built-in CRM records. Both use soft deletes, [custom properties](custom-properties.md) with change history, [associations](associations.md), [activities](activities.md), [lifecycle stages](lifecycle-stages.md), and the `forTeam()` scope.
+`Odden\Core\Models\Contact` and `Odden\Core\Models\Company` are the two built-in CRM records. Both use soft deletes, [custom properties](custom-properties.md) with change history, [associations](associations.md), [activities](activities.md), [lifecycle stages](lifecycle-stages.md), and the `forTeam()` scope.
 
 ## Contacts
 
-The `focal_contacts` table has these columns:
+The `odden_contacts` table has these columns:
 
 | Column | Type | Default |
 | --- | --- | --- |
@@ -29,19 +29,19 @@ Helpers on `Contact`:
 - `became_mql_at` and `became_sql_at`: read-only aliases for `became_marketing_qualified_lead_at` and `became_sales_qualified_lead_at`.
 - `markContacted(?CarbonInterface $at = null)`: sets `last_contacted_at` (default `now()`) with `updateQuietly()`, so no model events fire and no history is recorded.
 - `owner()`: `BelongsTo` your user model (see [the user model](integration.md#the-user-model)).
-- `companies()`: `BelongsToMany` companies through `focal_associations`, where the contact is the parent and the company the child, of any association type. The pivot includes `id` and `type`.
+- `companies()`: `BelongsToMany` companies through `odden_associations`, where the contact is the parent and the company the child, of any association type. The pivot includes `id` and `type`.
 - `whereEmail(string $email)` scope: lowercases and trims the value before matching. It compares the stored value exactly, so it won't find a contact saved with mixed case; use `ContactLookup` below for that.
 
 ### Looking up contacts by email
 
-`Focal\Core\Support\ContactLookup` finds and creates contacts by email address, ignoring case and surrounding whitespace. The Service portal, chat widget, and inbound email, and Sales meeting booking all use it, so one person is one contact however they type their address.
+`Odden\Core\Support\ContactLookup` finds and creates contacts by email address, ignoring case and surrounding whitespace. The Service portal, chat widget, and inbound email, and Sales meeting booking all use it, so one person is one contact however they type their address.
 
 - `ContactLookup::normalizeEmail(string $email): string` lowercases and trims.
 - `ContactLookup::findByEmail(string $email): ?Contact` first looks for a contact stored with exactly the normalized address, which can use the `email` index. Only when there's none does it compare `LOWER(TRIM(email))`, which also matches older contacts saved with mixed case or spaces (this query can't use the index). Among several matches, the oldest wins. An empty address returns `null`.
 - `ContactLookup::findOrCreate(string $email, array $attributes = []): Contact` returns the match, or creates a contact with the given attributes and the normalized email.
 
 ```php
-use Focal\Core\Support\ContactLookup;
+use Odden\Core\Support\ContactLookup;
 
 $contact = ContactLookup::findOrCreate(' Dana@Example.com', ['first_name' => 'Dana']);
 $contact->email; // "dana@example.com" for a new contact
@@ -51,7 +51,7 @@ $contact->email; // "dana@example.com" for a new contact
 
 ### Lead status
 
-`Focal\Core\Enums\LeadStatus` is a sales-qualification status, separate from the lifecycle stage. Each case has `label()` and `color()` (a Filament color name).
+`Odden\Core\Enums\LeadStatus` is a sales-qualification status, separate from the lifecycle stage. Each case has `label()` and `color()` (a Filament color name).
 
 | Case | Value | `label()` |
 | --- | --- | --- |
@@ -65,7 +65,7 @@ $contact->email; // "dana@example.com" for a new contact
 
 ## Companies
 
-The `focal_companies` table has these columns:
+The `odden_companies` table has these columns:
 
 | Column | Type | Default |
 | --- | --- | --- |
@@ -101,9 +101,9 @@ When you query through `companies()` or `contacts()`, qualify column names that 
 Use the actions rather than `Model::create()`. Only the actions normalize input and dispatch `ContactCreated` and `CompanyCreated`.
 
 ```php
-use Focal\Core\Actions\CreateCompanyAction;
-use Focal\Core\Actions\CreateContactAction;
-use Focal\Core\Enums\LeadStatus;
+use Odden\Core\Actions\CreateCompanyAction;
+use Odden\Core\Actions\CreateContactAction;
+use Odden\Core\Enums\LeadStatus;
 
 $company = app(CreateCompanyAction::class)->execute([
     'name' => 'Acme Corp',
@@ -130,22 +130,22 @@ $contact->companies()->first();      // Acme Corp, association type "primary"
 - lowercases and trims `email`.
 - converts a string `lifecycle_stage` to `LifecycleStage`. An invalid value throws `ValueError`.
 - creates the contact and dispatches `ContactCreated`.
-- runs domain auto-association when `$autoAssociateCompany` is `true` or `focal-core.auto_associate_companies` is `true`.
+- runs domain auto-association when `$autoAssociateCompany` is `true` or `odden-core.auto_associate_companies` is `true`.
 
 `CreateCompanyAction::execute(array $attributes, bool $enrich = false): Company`
 
 - lowercases and trims `domain`, and strips a leading `http://` or `https://` and any trailing `/`. It does not strip `www.` or a path.
 - creates the company and dispatches `CompanyCreated`.
-- runs [enrichment](#enrichment) when `$enrich` is `true` or `focal-core.enrichment.auto_enrich` is `true`.
+- runs [enrichment](#enrichment) when `$enrich` is `true` or `odden-core.enrichment.auto_enrich` is `true`.
 
 ## Domain auto-association
 
 `AutoAssociateContactCompanyAction` links a contact to the company whose `domain` matches the contact's email domain:
 
 ```php
-use Focal\Core\Actions\AutoAssociateContactCompanyAction;
+use Odden\Core\Actions\AutoAssociateContactCompanyAction;
 
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 
 $contact = Contact::create(['email' => 'sam@mail.globex-corp.com']);
 
@@ -169,7 +169,7 @@ Through `CreateContactAction` this runs with `createCompanyIfMissing` as passed 
 `ExtractCorporateDomainAction::execute(string $email): ?string` lowercases the address and validates it. It strips a leading `www.` and one common mail-server prefix (`mail.`, `email.`, `smtp.`, `webmail.`, `mx.`, `exchange.`, `pop.`, `imap.`) when at least two dots remain. It returns `null` for freemail domains.
 
 ```php
-use Focal\Core\Actions\ExtractCorporateDomainAction;
+use Odden\Core\Actions\ExtractCorporateDomainAction;
 
 $domains = app(ExtractCorporateDomainAction::class);
 
@@ -177,10 +177,10 @@ $domains->execute('ann@gmail.com');      // null
 $domains->execute('ann@www.initech.io'); // "initech.io"
 ```
 
-`Focal\Core\Support\FreemailDomains` holds a built-in list of about 60 consumer providers (`gmail.com`, `outlook.com`, `icloud.com`, regional ISPs, and so on). Add your own with `focal-core.freemail_domains`. The values are compared exactly, so write them in lowercase:
+`Odden\Core\Support\FreemailDomains` holds a built-in list of about 60 consumer providers (`gmail.com`, `outlook.com`, `icloud.com`, regional ISPs, and so on). Add your own with `odden-core.freemail_domains`. The values are compared exactly, so write them in lowercase:
 
 ```php
-// config/focal-core.php
+// config/odden-core.php
 'freemail_domains' => ['example-isp.net'],
 ```
 
@@ -209,11 +209,11 @@ The default `heuristic` driver (`HeuristicEnrichmentDriver`) makes no HTTP reque
 
 ### Custom drivers
 
-Implement `Focal\Core\Contracts\EnrichmentDriver` and register it on the `EnrichmentManager` singleton, typically in a service provider's `boot()` method:
+Implement `Odden\Core\Contracts\EnrichmentDriver` and register it on the `EnrichmentManager` singleton, typically in a service provider's `boot()` method:
 
 ```php
-use Focal\Core\Contracts\EnrichmentDriver;
-use Focal\Core\Support\Enrichment\EnrichmentManager;
+use Odden\Core\Contracts\EnrichmentDriver;
+use Odden\Core\Support\Enrichment\EnrichmentManager;
 
 class ClearbitDriver implements EnrichmentDriver
 {
@@ -227,10 +227,10 @@ class ClearbitDriver implements EnrichmentDriver
 app(EnrichmentManager::class)->extend('clearbit', fn () => new ClearbitDriver);
 ```
 
-`extend()` accepts a driver instance or a closure that returns one. Select it with `FOCAL_ENRICHMENT_DRIVER=clearbit`, or pass the name per call: `app(EnrichCompanyAction::class)->execute($company, 'clearbit')`. An unknown driver name throws `InvalidArgumentException`.
+`extend()` accepts a driver instance or a closure that returns one. Select it with `ODDEN_ENRICHMENT_DRIVER=clearbit`, or pass the name per call: `app(EnrichCompanyAction::class)->execute($company, 'clearbit')`. An unknown driver name throws `InvalidArgumentException`.
 
 ```env
-FOCAL_ENRICHMENT_DRIVER=heuristic
+ODDEN_ENRICHMENT_DRIVER=heuristic
 ```
 
 ## Customer health scores
@@ -238,7 +238,7 @@ FOCAL_ENRICHMENT_DRIVER=heuristic
 `CalculateCustomerHealthScoreAction::execute(Company $company): Company` computes a score from 0 to 100, saves `health_score`, `health_status`, and `last_health_calculated_at`, and returns the refreshed company. Within Core, only [merging companies](duplicates-and-merging.md#merging-companies) calls it. The Filament package adds a button that runs it on demand. Nothing recalculates scores on a schedule, so schedule it yourself if you want them kept current.
 
 ```php
-use Focal\Core\Actions\CalculateCustomerHealthScoreAction;
+use Odden\Core\Actions\CalculateCustomerHealthScoreAction;
 
 $company = app(CalculateCustomerHealthScoreAction::class)->execute($company);
 
@@ -273,7 +273,7 @@ The status is `Healthy` at 70 or above, `Neutral` from 40 to 69, and `AtRisk` be
 
 When a company moves into `AtRisk` from another status, the action also logs a pending task on the company, "Customer Churn Risk Alert: {name}", due in 24 hours.
 
-`Focal\Core\Enums\CustomerHealthStatus` cases:
+`Odden\Core\Enums\CustomerHealthStatus` cases:
 
 | Case | Value | `label()` | `color()` | `badgeIcon()` |
 | --- | --- | --- | --- | --- |

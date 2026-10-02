@@ -3,7 +3,7 @@ title: Lead routing
 description: Assign owners to new contacts and deals with round robin or quota-weighted routing rules.
 ---
 
-Lead routing sets `owner_id` on a contact or deal by picking a user from a rule's pool. Rules are stored as `Focal\Sales\Models\LeadRoutingRule` records and applied by `Focal\Sales\Actions\RouteLeadAction`. Routing never runs automatically: call the action where new leads arrive, such as after a form submission or in a `created` model observer.
+Lead routing sets `owner_id` on a contact or deal by picking a user from a rule's pool. Rules are stored as `Odden\Sales\Models\LeadRoutingRule` records and applied by `Odden\Sales\Actions\RouteLeadAction`. Routing never runs automatically: call the action where new leads arrive, such as after a form submission or in a `created` model observer.
 
 ## Rules
 
@@ -17,7 +17,7 @@ Lead routing sets `owner_id` on a contact or deal by picking a user from a rule'
 | `is_active` | bool | Defaults to `true`. |
 | `sort_order` | int | Rules are tried in ascending order. |
 
-`Focal\Sales\Enums\LeadRoutingStrategy` has `RoundRobin` (`round_robin`), `QuotaWeighted` (`quota_weighted`), and `Territory` (`territory`), each with a `label()`.
+`Odden\Sales\Enums\LeadRoutingStrategy` has `RoundRobin` (`round_robin`), `QuotaWeighted` (`quota_weighted`), and `Territory` (`territory`), each with a `label()`.
 
 ## Routing a record
 
@@ -26,10 +26,10 @@ public function execute(Contact|Deal $target): ?array
 ```
 
 ```php
-use Focal\Core\Enums\LeadStatus;
-use Focal\Sales\Actions\RouteLeadAction;
-use Focal\Sales\Enums\LeadRoutingStrategy;
-use Focal\Sales\Models\LeadRoutingRule;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Sales\Actions\RouteLeadAction;
+use Odden\Sales\Enums\LeadRoutingStrategy;
+use Odden\Sales\Models\LeadRoutingRule;
 
 LeadRoutingRule::create([
     'name' => 'Inbound round robin',

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Events;
+namespace Odden\Core\Events;
 
-use Focal\Core\Models\LifecycleStageTransition;
+use Odden\Core\Models\LifecycleStageTransition;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;

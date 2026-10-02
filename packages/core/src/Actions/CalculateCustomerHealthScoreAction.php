@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Enums\CustomerHealthStatus;
-use Focal\Core\Models\Company;
-use Focal\Core\Support\OptionalRelation;
+use Odden\Core\Enums\CustomerHealthStatus;
+use Odden\Core\Models\Company;
+use Odden\Core\Support\OptionalRelation;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;

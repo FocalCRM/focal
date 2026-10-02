@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support;
+namespace Odden\Core\Support;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Exceptions\InvalidLifecycleStageTransitionException;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Exceptions\InvalidLifecycleStageTransitionException;
 use Illuminate\Database\Eloquent\Model;
 
 class LifecycleStateMachine
@@ -153,7 +153,7 @@ class LifecycleStateMachine
      */
     public function isStrict(): bool
     {
-        return $this->strict ?? (bool) config('focal-core.lifecycle.strict_transitions', false);
+        return $this->strict ?? (bool) config('odden-core.lifecycle.strict_transitions', false);
     }
 
     /**

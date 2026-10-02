@@ -3,12 +3,12 @@ title: Email campaigns
 description: Create broadcast email campaigns, choose their audience, schedule them in each recipient's time zone, run A/B tests, and track opens and clicks.
 ---
 
-A campaign is a one-off email to an audience: a `Focal\Marketing\Models\Campaign` with a subject, a sender, a [template](email-templates.md), and a Core list. Dispatching it creates a `CampaignRecipient` row per contact and queues each contact's email; those rows carry the tokens that power open tracking, click tracking, and unsubscribe links.
+A campaign is a one-off email to an audience: an `Odden\Marketing\Models\Campaign` with a subject, a sender, a [template](email-templates.md), and a Core list. Dispatching it creates a `CampaignRecipient` row per contact and queues each contact's email; those rows carry the tokens that power open tracking, click tracking, and unsubscribe links.
 
 ## Creating a campaign
 
 ```php
-use Focal\Marketing\Models\Campaign;
+use Odden\Marketing\Models\Campaign;
 
 $campaign = Campaign::create([
     'name' => 'March newsletter',
@@ -70,8 +70,8 @@ $campaign->open_rate; // 42.5
 Point the campaign at a Core list with `crm_list_id` (or `list_id`). If the list is an active list, dispatch re-evaluates its criteria first, so the audience is current at send time. See [Core concepts](../core/index.md) for lists.
 
 ```php
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\CrmList;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\CrmList;
 
 $list = CrmList::create([
     'name' => 'Engaged leads',
@@ -85,13 +85,13 @@ $list = CrmList::create([
 $campaign->update(['crm_list_id' => $list->id]);
 ```
 
-A campaign needs an audience. If neither `crm_list_id` nor `list_id` is set and you don't pass contacts, dispatch throws `Focal\Marketing\Exceptions\CampaignHasNoAudienceException` and changes nothing; it never falls back to every contact. `marketing:dispatch-scheduled` reports the error, leaves the campaign `Scheduled`, and exits with a failure code, so the campaign goes out on the next run after you assign a list.
+A campaign needs an audience. If neither `crm_list_id` nor `list_id` is set and you don't pass contacts, dispatch throws `Odden\Marketing\Exceptions\CampaignHasNoAudienceException` and changes nothing; it never falls back to every contact. `marketing:dispatch-scheduled` reports the error, leaves the campaign `Scheduled`, and exits with a failure code, so the campaign goes out on the next run after you assign a list.
 
 You can also pass the contacts yourself. Your collection is used instead of the list's members:
 
 ```php
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\DispatchCampaignAction;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\DispatchCampaignAction;
 
 $contacts = Contact::query()->where('lifecycle_stage', 'customer')->get();
 
@@ -113,7 +113,7 @@ Dispatch skips, and counts as suppressed, any contact:
 ## Dispatching
 
 ```php
-use Focal\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
 
 $result = app(DispatchCampaignAction::class)->execute($campaign);
 
@@ -134,14 +134,14 @@ Dispatch runs in the calling process, one contact at a time. Only compiling and 
 
 ### Delivering the messages
 
-Every send path uses the same delivery: `DispatchCampaignAction`, the local-time release in `marketing:dispatch-scheduled`, and the A/B rollout in `marketing:evaluate-ab-tests` all call `DeliverCampaignMessageAction::execute()` once per recipient. It queues a `Focal\Marketing\Mail\MarketingMessageMailable` with:
+Every send path uses the same delivery: `DispatchCampaignAction`, the local-time release in `marketing:dispatch-scheduled`, and the A/B rollout in `marketing:evaluate-ab-tests` all call `DeliverCampaignMessageAction::execute()` once per recipient. It queues an `Odden\Marketing\Mail\MarketingMessageMailable` with:
 
 - the compiled HTML, and a plain-text alternative generated from it (links become `label (url)`)
 - the subject for the recipient's variant, and the campaign's `sender_email`, `sender_name`, and `reply_to_email`
 - `List-Unsubscribe` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click` headers pointing at the recipient's [one-click unsubscribe URL](subscriptions-and-compliance.md#one-click-unsubscribe)
-- an `X-Focal-Tracking-Token` header with the recipient's `tracking_token`, so your provider's events can be [matched to the recipient](deliverability.md#matching-events-to-recipients)
+- an `X-Odden-Tracking-Token` header with the recipient's `tracking_token`, so your provider's events can be [matched to the recipient](deliverability.md#matching-events-to-recipients)
 
-The mailable implements `ShouldQueue`. It goes on the `focal-marketing.mail` connection and queue through the `focal-marketing.mail.mailer` mailer (each empty by default, meaning your defaults), so you need a queue worker running; see [Sending mail](index.md#sending-mail).
+The mailable implements `ShouldQueue`. It goes on the `odden-marketing.mail` connection and queue through the `odden-marketing.mail.mailer` mailer (each empty by default, meaning your defaults), so you need a queue worker running; see [Sending mail](index.md#sending-mail).
 
 A recipient is sent at most once. `DeliverCampaignMessageAction` claims the recipient row (sets `sent_at`) with a conditional update before it queues the message, so a retry, a re-run, or a second worker finds the row already claimed and sends nothing. If queueing throws, the claim is released and the recipient stays `Pending`. Its `execute()` returns `DeliverCampaignMessageAction::QUEUED`, `ALREADY_SENT`, or `SUPPRESSED`.
 
@@ -151,10 +151,10 @@ Recipients held back for a local send time or an A/B result are checked again wh
 
 ### Sending a proof
 
-`SendCampaignProofAction` queues a test copy of the campaign to the addresses you give it, through the same `focal-marketing.mail` queue and mailer as campaign messages.
+`SendCampaignProofAction` queues a test copy of the campaign to the addresses you give it, through the same `odden-marketing.mail` queue and mailer as campaign messages.
 
 ```php
-use Focal\Marketing\Actions\SendCampaignProofAction;
+use Odden\Marketing\Actions\SendCampaignProofAction;
 
 $result = app(SendCampaignProofAction::class)->execute($campaign, 'me@acme.test, legal@acme.test');
 
@@ -163,7 +163,7 @@ $result = app(SendCampaignProofAction::class)->execute($campaign, 'me@acme.test,
 
 `execute(Campaign $campaign, string|array $recipientEmails, ?Contact $sampleContact = null): array` accepts a comma-separated string or an array and drops invalid addresses.
 
-- The mailable is `Focal\Marketing\Mail\CampaignProofMailable` (it implements `ShouldQueue`), and the subject is prefixed with `[TEST] `.
+- The mailable is `Odden\Marketing\Mail\CampaignProofMailable` (it implements `ShouldQueue`), and the subject is prefixed with `[TEST] `.
 - Merge tags are filled from `$sampleContact`, or the first contact on the campaign's `crm_list_id` list, or the first contact in the database.
 - The unsubscribe link points at a placeholder token, and no tracking is added.
 - Errors while queueing are caught and returned as `success: false` with the exception message. Delivery errors happen later, in the queue worker.
@@ -173,7 +173,7 @@ $result = app(SendCampaignProofAction::class)->execute($campaign, 'me@acme.test,
 To send later, set the status to `Scheduled` and a `scheduled_at`:
 
 ```php
-use Focal\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\CampaignStatus;
 
 $campaign->update([
     'status' => CampaignStatus::Scheduled,
@@ -262,7 +262,7 @@ With 10 eligible contacts and a 40% sample, 2 get A, 2 get B, and 6 wait.
 You can run the evaluation yourself at any time:
 
 ```php
-use Focal\Marketing\Actions\EvaluateAbTestWinnerAction;
+use Odden\Marketing\Actions\EvaluateAbTestWinnerAction;
 
 $result = app(EvaluateAbTestWinnerAction::class)->execute($campaign);
 
@@ -275,10 +275,10 @@ In A/B mode, dispatch doesn't apply [fatigue protection](#fatigue-protection) or
 
 ### Significance
 
-`Focal\Marketing\Services\AbTestSignificanceCalculator` runs a two-tailed two-proportion z-test if you want to report confidence alongside the winner. It isn't used by the evaluation above.
+`Odden\Marketing\Services\AbTestSignificanceCalculator` runs a two-tailed two-proportion z-test if you want to report confidence alongside the winner. It isn't used by the evaluation above.
 
 ```php
-use Focal\Marketing\Services\AbTestSignificanceCalculator;
+use Odden\Marketing\Services\AbTestSignificanceCalculator;
 
 $stats = AbTestSignificanceCalculator::calculate(
     sampleA: 500, conversionsA: 60,
@@ -315,7 +315,7 @@ When it's on, standard (non-A/B) dispatch runs `CheckFatiguePolicyAction` for ea
 You can check a contact yourself:
 
 ```php
-use Focal\Marketing\Actions\CheckFatiguePolicyAction;
+use Odden\Marketing\Actions\CheckFatiguePolicyAction;
 
 $check = app(CheckFatiguePolicyAction::class)->execute($contact);
 
@@ -340,20 +340,20 @@ $check = app(CheckFatiguePolicyAction::class)->execute($contact);
    | `{{campaign.name}}` | The campaign name |
 
 3. **Smart content.** `[smart]` blocks and `{{smart:…}}` tokens are resolved for the contact; see [Smart content](email-templates.md#smart-content).
-4. **UTM parameters.** When `utm_auto_tag` is on, `utm_source=focal`, `utm_medium=email`, and `utm_campaign` (the slug of `utm_campaign`, or of the campaign name) are added to every absolute link, plus `utm_content=variant_a` or `variant_b` for A/B recipients. Parameters already in a link keep their value. `mailto:`, `tel:`, `#` and unsubscribe links are left alone.
+4. **UTM parameters.** When `utm_auto_tag` is on, `utm_source=odden`, `utm_medium=email`, and `utm_campaign` (the slug of `utm_campaign`, or of the campaign name) are added to every absolute link, plus `utm_content=variant_a` or `variant_b` for A/B recipients. Parameters already in a link keep their value. `mailto:`, `tel:`, `#` and unsubscribe links are left alone.
 5. **Click tracking.** Every link except `mailto:`, `tel:`, `#` and unsubscribe links is rewritten to the recipient's [click-tracking URL](#tracking-opens-and-clicks).
 6. **Open pixel.** A 1×1 image pointing at the recipient's open-tracking URL is added before `</body>`, or at the end.
 
-Both link steps read each `href` as HTML: they decode it to the real URL (so `&amp;` in your template means `&`), work on that, and write the result back escaped once. The UTM parameters are appended after the link's own query string, which is kept exactly as written. So a template link `https://acme.test/sale?ref=news&amp;id=5` in a campaign named "Spring Sale" redirects, after the click is recorded, to `https://acme.test/sale?ref=news&id=5&utm_source=focal&utm_medium=email&utm_campaign=spring-sale`.
+Both link steps read each `href` as HTML: they decode it to the real URL (so `&amp;` in your template means `&`), work on that, and write the result back escaped once. The UTM parameters are appended after the link's own query string, which is kept exactly as written. So a template link `https://acme.test/sale?ref=news&amp;id=5` in a campaign named "Spring Sale" redirects, after the click is recorded, to `https://acme.test/sale?ref=news&id=5&utm_source=odden&utm_medium=email&utm_campaign=spring-sale`.
 
 ## Tracking opens and clicks
 
 Each recipient has three links, built from its tokens:
 
 ```php
-$recipient->getTrackingPixelUrl();                       // route('focal.marketing.track.open', $token)
-$recipient->getClickRedirectUrl('https://acme.test/x');  // route('focal.marketing.track.click', ['token' => ..., 'url' => ..., 'sig' => ...])
-$recipient->getUnsubscribeUrl();                         // route('focal.marketing.unsubscribe.show', $unsubscribeToken)
+$recipient->getTrackingPixelUrl();                       // route('odden.marketing.track.open', $token)
+$recipient->getClickRedirectUrl('https://acme.test/x');  // route('odden.marketing.track.click', ['token' => ..., 'url' => ..., 'sig' => ...])
+$recipient->getUnsubscribeUrl();                         // route('odden.marketing.unsubscribe.show', $unsubscribeToken)
 ```
 
 **Opens.** `GET /marketing/track/open/{token}` returns a transparent GIF with no-cache headers. For a known token it calls `$recipient->recordOpen()`: status becomes `Opened`, `opened_at` is set on the first open, `opens_count` increases on every request, and `unique_opens_count` on the first.

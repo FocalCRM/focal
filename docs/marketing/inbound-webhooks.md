@@ -3,28 +3,28 @@ title: Inbound webhooks and events API
 description: Ingest leads from Zapier, LinkedIn Lead Gen, and other tools, track custom in-app behavioral events, and see which lead capture endpoints need the API token.
 ---
 
-Two server-to-server endpoints bring data from other systems into Focal: the external lead webhook creates or updates contacts from lead sources such as Zapier or LinkedIn Lead Gen, and the behavioral events API records what contacts do in your product. Both need the marketing API token.
+Two server-to-server endpoints bring data from other systems into Odden: the external lead webhook creates or updates contacts from lead sources such as Zapier or LinkedIn Lead Gen, and the behavioral events API records what contacts do in your product. Both need the marketing API token.
 
 Paths below use the default API prefix, `api/marketing`. See [public routes](../configuration.md#public-routes) to change it.
 
 ## Authentication
 
-Server-to-server endpoints use the `FOCAL_MARKETING_API_TOKEN` shared secret (config key `focal-marketing.api.token`). Send it as an `Authorization: Bearer` header, an `X-Focal-Token` header, or a `token` query parameter for providers that only let you enter a URL. A missing or wrong token returns `401`. While no token is configured, these endpoints return `403`. See [API tokens](../configuration.md#api-tokens).
+Server-to-server endpoints use the `ODDEN_MARKETING_API_TOKEN` shared secret (config key `odden-marketing.api.token`). Send it as an `Authorization: Bearer` header, an `X-Odden-Token` header, or a `token` query parameter for providers that only let you enter a URL. A missing or wrong token returns `401`. While no token is configured, these endpoints return `403`. See [API tokens](../configuration.md#api-tokens).
 
-They're rate limited by `focal-api` (600 requests per minute per IP by default, see [rate limits](../configuration.md#rate-limits)) and are exempt from CSRF verification.
+They're rate limited by `odden-api` (600 requests per minute per IP by default, see [rate limits](../configuration.md#rate-limits)) and are exempt from CSRF verification.
 
 ### Lead capture endpoints at a glance
 
 | Endpoint | Route name | Token | Rate limiter | Documented in |
 | --- | --- | --- | --- | --- |
-| `POST /api/marketing/leads/webhook/{source?}` | `focal.marketing.leads.webhook` | Yes | `focal-api` | [below](#external-lead-webhook) |
-| `POST /api/marketing/events/track` | `focal.marketing.events.track` | Yes | `focal-api` | [below](#custom-behavioral-events) |
-| `POST /api/marketing/workflows/{workflow}/enroll` | `focal.marketing.workflows.enroll-webhook` | Yes | `focal-api` | [Workflows](workflows.md#enrollment-webhook) |
-| `POST /api/marketing/events/{slug}/attendance-webhook` | `focal.marketing.events.attendance-webhook` | Yes | `focal-api` | [Events](events-and-assets.md#attendance-webhook) |
-| `POST /api/marketing/forms/{slug}` | `focal.marketing.forms.api-submit` | No | `focal-public` | [Forms](forms-and-landing-pages.md#form-api-endpoint) |
-| `POST /api/marketing/events/{slug}/register` | `focal.marketing.events.register` | No | `focal-public` | [Events](events-and-assets.md#registration-endpoint) |
-| `POST /marketing/track/pageview` | `focal.marketing.track.pageview` | No | `focal-public` | [Web tracking](web-tracking.md#pageview-endpoint) |
-| `POST /marketing/forms/auto-capture` | `focal.marketing.forms.auto-capture` | No | `focal-public` | [Web tracking](web-tracking.md#form-auto-capture) |
+| `POST /api/marketing/leads/webhook/{source?}` | `odden.marketing.leads.webhook` | Yes | `odden-api` | [below](#external-lead-webhook) |
+| `POST /api/marketing/events/track` | `odden.marketing.events.track` | Yes | `odden-api` | [below](#custom-behavioral-events) |
+| `POST /api/marketing/workflows/{workflow}/enroll` | `odden.marketing.workflows.enroll-webhook` | Yes | `odden-api` | [Workflows](workflows.md#enrollment-webhook) |
+| `POST /api/marketing/events/{slug}/attendance-webhook` | `odden.marketing.events.attendance-webhook` | Yes | `odden-api` | [Events](events-and-assets.md#attendance-webhook) |
+| `POST /api/marketing/forms/{slug}` | `odden.marketing.forms.api-submit` | No | `odden-public` | [Forms](forms-and-landing-pages.md#form-api-endpoint) |
+| `POST /api/marketing/events/{slug}/register` | `odden.marketing.events.register` | No | `odden-public` | [Events](events-and-assets.md#registration-endpoint) |
+| `POST /marketing/track/pageview` | `odden.marketing.track.pageview` | No | `odden-public` | [Web tracking](web-tracking.md#pageview-endpoint) |
+| `POST /marketing/forms/auto-capture` | `odden.marketing.forms.auto-capture` | No | `odden-public` | [Web tracking](web-tracking.md#form-auto-capture) |
 
 All of these are CSRF exempt. Email delivery webhooks (ESP bounces and complaints) are covered in [deliverability](deliverability.md).
 
@@ -32,13 +32,13 @@ All of these are CSRF exempt. Email delivery webhooks (ESP bounces and complaint
 
 | Method | URI | Route name |
 | --- | --- | --- |
-| `POST` | `/api/marketing/leads/webhook/{source?}` | `focal.marketing.leads.webhook` |
+| `POST` | `/api/marketing/leads/webhook/{source?}` | `odden.marketing.leads.webhook` |
 
 `{source}` names the lead source, for example `zapier`, `linkedin`, or `zoom`. It's stored on the contact as the `lead_source` custom property. The segment is optional: without it (`/api/marketing/leads/webhook`) the `source` field of the payload is used, or `webhook` if that's missing too. A source segment takes precedence over the payload's `source`.
 
 ```bash
 curl -X POST https://your-app.test/api/marketing/leads/webhook/linkedin \
-  -H "Authorization: Bearer $FOCAL_MARKETING_API_TOKEN" \
+  -H "Authorization: Bearer $ODDEN_MARKETING_API_TOKEN" \
   -H "Accept: application/json" -H "Content-Type: application/json" \
   -d '{
     "email": "Jordan@Globex.com",
@@ -65,11 +65,11 @@ curl -X POST https://your-app.test/api/marketing/leads/webhook/linkedin \
     "is_new": true,
     "lead_score": 15,
     "enrolled_workflows": 0,
-    "message": "Lead successfully ingested into Focal CRM."
+    "message": "Lead successfully ingested into Odden CRM."
 }
 ```
 
-`Focal\Marketing\Actions\IngestExternalLeadAction` processes the lead in a database transaction:
+`Odden\Marketing\Actions\IngestExternalLeadAction` processes the lead in a database transaction:
 
 1. Loads the contact by lowercased email, or creates one with `lifecycle_stage` `lead`, `lead_status` `new`, and a score of 0.
 2. Overwrites `first_name`, `last_name`, `phone`, and `job_title` with any non-empty values from the payload. Unlike form submissions, existing values are replaced.
@@ -83,7 +83,7 @@ curl -X POST https://your-app.test/api/marketing/leads/webhook/linkedin \
 You can call the action directly, for example from an import job. `email` is the only required key:
 
 ```php
-use Focal\Marketing\Actions\IngestExternalLeadAction;
+use Odden\Marketing\Actions\IngestExternalLeadAction;
 
 $result = app(IngestExternalLeadAction::class)->execute([
     'email' => 'jordan@globex.com',
@@ -104,11 +104,11 @@ Track what contacts do in your product (created a project, invited a teammate, h
 
 | Method | URI | Route name |
 | --- | --- | --- |
-| `POST` | `/api/marketing/events/track` | `focal.marketing.events.track` |
+| `POST` | `/api/marketing/events/track` | `odden.marketing.events.track` |
 
 ```bash
 curl -X POST https://your-app.test/api/marketing/events/track \
-  -H "Authorization: Bearer $FOCAL_MARKETING_API_TOKEN" \
+  -H "Authorization: Bearer $ODDEN_MARKETING_API_TOKEN" \
   -H "Accept: application/json" -H "Content-Type: application/json" \
   -d '{"event_name": "project_created", "email": "builder@example.com", "properties": {"plan": "pro", "projects": 3}}'
 ```
@@ -131,7 +131,7 @@ curl -X POST https://your-app.test/api/marketing/events/track \
 }
 ```
 
-`Focal\Marketing\Actions\TrackCustomBehavioralEventAction` stores the event in `Focal\Marketing\Models\CustomBehavioralEvent` (`contact_id`, `company_id`, `event_name`, `properties`, `occurred_at`). An email without a matching contact creates one (`lead` / `new`) and runs [lead-to-account matching](lead-scoring.md#lead-to-account-matching) on it. `company_id` is the contact's first associated company.
+`Odden\Marketing\Actions\TrackCustomBehavioralEventAction` stores the event in `Odden\Marketing\Models\CustomBehavioralEvent` (`contact_id`, `company_id`, `event_name`, `properties`, `occurred_at`). An email without a matching contact creates one (`lead` / `new`) and runs [lead-to-account matching](lead-scoring.md#lead-to-account-matching) on it. `company_id` is the contact's first associated company.
 
 With a contact, the action also:
 
@@ -145,7 +145,7 @@ Without `contact_id` or `email`, the event is stored anonymously and nothing els
 From PHP, for example in an event listener in your app:
 
 ```php
-use Focal\Marketing\Actions\TrackCustomBehavioralEventAction;
+use Odden\Marketing\Actions\TrackCustomBehavioralEventAction;
 
 $event = app(TrackCustomBehavioralEventAction::class)->execute(
     eventName: 'project_created',

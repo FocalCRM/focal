@@ -3,7 +3,7 @@ title: Lists
 description: Group contacts or companies into static lists, or into active lists whose members are recalculated from criteria.
 ---
 
-`Focal\Core\Models\CrmList` (table `focal_lists`) is a named list of contacts or companies. Membership rows are `ListMembership` records in `focal_list_memberships`. A list has a `type` from `Focal\Core\Enums\ListType`:
+`Odden\Core\Models\CrmList` (table `odden_lists`) is a named list of contacts or companies. Membership rows are `ListMembership` records in `odden_list_memberships`. A list has a `type` from `Odden\Core\Enums\ListType`:
 
 | Case | Value | `label()` |
 | --- | --- | --- |
@@ -23,8 +23,8 @@ description: Group contacts or companies into static lists, or into active lists
 Add and remove members yourself:
 
 ```php
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\CrmList;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\CrmList;
 
 $list = CrmList::create([
     'name' => 'Webinar attendees',

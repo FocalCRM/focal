@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\NpsSurveyResource\Pages;
+namespace Odden\Filament\Resources\NpsSurveyResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\NpsSurveyResource;
+use Odden\Filament\Resources\NpsSurveyResource;
 
 class EditNpsSurvey extends EditRecord
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CampaignResource\Pages;
+namespace Odden\Filament\Resources\CampaignResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\CampaignResource;
+use Odden\Filament\Resources\CampaignResource;
 
 class CreateCampaign extends CreateRecord
 {

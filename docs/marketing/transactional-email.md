@@ -5,12 +5,12 @@ description: Send a marketing template to one recipient or a batch over HTTP, wi
 
 The transactional API sends a [template](email-templates.md) on demand, for example an order receipt from your checkout service or a password reset from another app. Each request builds the email and puts it on the queue, then returns; a queue worker delivers it. Run a worker for the marketing mail queue (see [Sending mail](index.md#sending-mail)), or nothing is sent.
 
-Both endpoints are in the `api` route group, require the [API token](index.md#the-api-token), are CSRF exempt, and are limited by `throttle:focal-api`.
+Both endpoints are in the `api` route group, require the [API token](index.md#the-api-token), are CSRF exempt, and are limited by `throttle:odden-api`.
 
 | Method | URI | Route name |
 | :--- | :--- | :--- |
-| `POST` | `/api/marketing/templates/{template}/send` | `focal.marketing.templates.send` |
-| `POST` | `/api/marketing/templates/{template}/send-batch` | `focal.marketing.templates.send-batch` |
+| `POST` | `/api/marketing/templates/{template}/send` | `odden.marketing.templates.send` |
+| `POST` | `/api/marketing/templates/{template}/send-batch` | `odden.marketing.templates.send-batch` |
 
 `{template}` is a template id if it's numeric, otherwise a slug. A template whose slug is all digits can only be reached by its id.
 
@@ -19,7 +19,7 @@ Both endpoints are in the `api` route group, require the [API token](index.md#th
 Given this template:
 
 ```php
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\MarketingTemplate;
 
 MarketingTemplate::create([
     'name' => 'Order receipt',
@@ -33,7 +33,7 @@ Send it with:
 
 ```bash
 curl -X POST https://example.com/api/marketing/templates/order-receipt/send \
-  -H "Authorization: Bearer $FOCAL_MARKETING_API_TOKEN" \
+  -H "Authorization: Bearer $ODDEN_MARKETING_API_TOKEN" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
@@ -78,7 +78,7 @@ The email reads "Hi Sam, your order A-1001 total is $49.50." The response comes 
 
 1. The variant's slots are compiled with the template's `theme`, the request's `context`, and the subject. Without slots, the variant's stored HTML is used. The template's preview text isn't passed to the compiler, so slot-built transactional emails have no preview text.
 2. The HTML, its plain-text version, and the subject are run through the mail builder [merge tag interpolator](email-templates.md#in-the-mail-builder) with `data`. Filters and conditionals work; tags without a value are left as written.
-3. The message is a `Focal\Marketing\Mail\TransactionalTemplateMailable` (a queued `DoPHP\MailBuilder\Mail\TemplateMailable`), queued through the `focal-marketing.mail.mailer` mailer on the `focal-marketing.mail.connection` and `focal-marketing.mail.queue` queue. The HTML is final when it's queued, so later template edits don't change it.
+3. The message is an `Odden\Marketing\Mail\TransactionalTemplateMailable` (a queued `Odden\MailBuilder\Mail\TemplateMailable`), queued through the `odden-marketing.mail.mailer` mailer on the `odden-marketing.mail.connection` and `odden-marketing.mail.queue` queue. The HTML is final when it's queued, so later template edits don't change it.
 
 About `name` and `data`:
 
@@ -115,10 +115,10 @@ The API can't attach files from your server or fetch them from a URL. A request 
 | Status | When |
 | :--- | :--- |
 | `401` | Missing or wrong API token |
-| `403` | `FOCAL_MARKETING_API_TOKEN` isn't set |
+| `403` | `ODDEN_MARKETING_API_TOKEN` isn't set |
 | `404` | No template matches: `{"error": "Marketing template not found."}` |
 | `422` | Validation failed. Send `Accept: application/json` to get the errors as JSON |
-| `429` | The `focal-api` rate limit was hit |
+| `429` | The `odden-api` rate limit was hit |
 
 A failure to queue the email (for example, the queue connection is down) isn't caught and returns a `500`. A delivery failure happens later, in the queue worker: the API has already returned `200`, and the job fails and is retried like any other queued job.
 
@@ -128,7 +128,7 @@ A failure to queue the email (for example, the queue connection is down) isn't c
 
 ```bash
 curl -X POST https://example.com/api/marketing/templates/order-receipt/send-batch \
-  -H "X-Focal-Token: $FOCAL_MARKETING_API_TOKEN" \
+  -H "X-Odden-Token: $ODDEN_MARKETING_API_TOKEN" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d '{
@@ -181,7 +181,7 @@ Differences from a single send:
 
 ## Webhook notifications
 
-Pass `webhook_url` and the API posts a notification there once the email is queued (not when it's delivered; the event names are unchanged), signed with `webhook_secret` (or the `focal-marketing.webhooks.secret` config key):
+Pass `webhook_url` and the API posts a notification there once the email is queued (not when it's delivered; the event names are unchanged), signed with `webhook_secret` (or the `odden-marketing.webhooks.secret` config key):
 
 | Endpoint | Event | `data` |
 | :--- | :--- | :--- |
@@ -197,28 +197,28 @@ Pass `webhook_url` and the API posts a notification there once the email is queu
 }
 ```
 
-The request has these headers: `X-Focal-Event`, `X-Focal-Delivery` (the `id`), `X-Focal-Timestamp`, and `X-Focal-Signature`. It's sent synchronously with a 5-second timeout. A failure is logged as a warning and doesn't affect the API response.
+The request has these headers: `X-Odden-Event`, `X-Odden-Delivery` (the `id`), `X-Odden-Timestamp`, and `X-Odden-Signature`. It's sent synchronously with a 5-second timeout. A failure is logged as a warning and doesn't affect the API response.
 
-Without `webhook_url`, the URL comes from the `focal-marketing.webhooks.outbound_url` config key, if set. The signing secret is `webhook_secret`, then `focal-marketing.webhooks.secret`. If neither is set, the webhook isn't sent and a warning is logged; there's no default secret.
+Without `webhook_url`, the URL comes from the `odden-marketing.webhooks.outbound_url` config key, if set. The signing secret is `webhook_secret`, then `odden-marketing.webhooks.secret`. If neither is set, the webhook isn't sent and a warning is logged; there's no default secret.
 
 ```env
-FOCAL_MARKETING_WEBHOOK_URL=https://example.com/hooks/focal
-FOCAL_MARKETING_WEBHOOK_SECRET=a-long-random-string
+ODDEN_MARKETING_WEBHOOK_URL=https://example.com/hooks/odden
+ODDEN_MARKETING_WEBHOOK_SECRET=a-long-random-string
 ```
 
 ### Verifying the signature
 
-`X-Focal-Signature` has the form `t={timestamp},v1={hex}`, where the hex is an HMAC-SHA256 of `{timestamp}.{body}` keyed with the secret, and `{body}` is the raw request body. Verify against the body exactly as received, before decoding it:
+`X-Odden-Signature` has the form `t={timestamp},v1={hex}`, where the hex is an HMAC-SHA256 of `{timestamp}.{body}` keyed with the secret, and `{body}` is the raw request body. Verify against the body exactly as received, before decoding it:
 
 ```php
-use Focal\Marketing\Services\MarketingWebhookDispatcher;
+use Odden\Marketing\Services\MarketingWebhookDispatcher;
 use Illuminate\Http\Request;
 
-Route::post('/hooks/focal', function (Request $request) {
+Route::post('/hooks/odden', function (Request $request) {
     abort_unless(MarketingWebhookDispatcher::verifySignature(
         payload: $request->getContent(),
-        headerSignature: (string) $request->header('X-Focal-Signature'),
-        secret: config('services.focal.webhook_secret'),
+        headerSignature: (string) $request->header('X-Odden-Signature'),
+        secret: config('services.odden.webhook_secret'),
     ), 401);
 
     // handle $request->input('event')
@@ -232,9 +232,9 @@ Route::post('/hooks/focal', function (Request $request) {
 There's no action class for transactional sends, but the API is a thin layer over `TransactionalTemplateMailable`, so you can do the same in your own code:
 
 ```php
-use Focal\Marketing\Mail\TransactionalTemplateMailable;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Support\MarketingMailer;
+use Odden\Marketing\Mail\TransactionalTemplateMailable;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Support\MarketingMailer;
 
 $template = MarketingTemplate::query()->where('slug', 'order-receipt')->firstOrFail();
 
@@ -246,4 +246,4 @@ MarketingMailer::queue(new TransactionalTemplateMailable(
 ), 'sam@example.com', 'Sam');
 ```
 
-`TransactionalTemplateMailable` implements `ShouldQueue` and picks up the `focal-marketing.mail` connection and queue when it's constructed. `MarketingMailer::queue()` sends it through the `focal-marketing.mail.mailer` mailer; with plain `Mail::to(...)->queue(...)` it goes through your default mailer instead.
+`TransactionalTemplateMailable` implements `ShouldQueue` and picks up the `odden-marketing.mail` connection and queue when it's constructed. `MarketingMailer::queue()` sends it through the `odden-marketing.mail.mailer` mailer; with plain `Mail::to(...)->queue(...)` it goes through your default mailer instead.

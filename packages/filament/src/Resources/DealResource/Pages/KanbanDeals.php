@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\DealResource\Pages;
+namespace Odden\Filament\Resources\DealResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Resources\DealResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Sales\Actions\CalculatePipelineForecastAction;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
+use Odden\Filament\Resources\DealResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Sales\Actions\CalculatePipelineForecastAction;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
 use Illuminate\Database\Eloquent\Collection;
 
 class KanbanDeals extends Page
@@ -24,7 +24,7 @@ class KanbanDeals extends Page
 
     protected static ?string $navigationLabel = 'Pipeline Board';
 
-    protected string $view = 'focal-filament::pages.deal-kanban';
+    protected string $view = 'odden-filament::pages.deal-kanban';
 
     public ?int $pipelineId = null;
 
@@ -33,7 +33,7 @@ class KanbanDeals extends Page
      */
     public static function canAccess(array $parameters = []): bool
     {
-        return FocalAuthorization::canViewAny([DealResource::class]);
+        return OddenAuthorization::canViewAny([DealResource::class]);
     }
 
     public function mount(): void
@@ -77,7 +77,7 @@ class KanbanDeals extends Page
             return 0.0;
         }
 
-        return (float) FocalAuthorization::query(DealResource::class, Deal::class)
+        return (float) OddenAuthorization::query(DealResource::class, Deal::class)
             ->where('pipeline_id', $this->pipelineId)
             ->where('status', 'open')
             ->sum('amount');
@@ -104,12 +104,12 @@ class KanbanDeals extends Page
 
     public function moveDeal(int $dealId, int $stageId): void
     {
-        $deal = FocalAuthorization::findAndAuthorize(DealResource::class, Deal::class, $dealId, 'update');
+        $deal = OddenAuthorization::findAndAuthorize(DealResource::class, Deal::class, $dealId, 'update');
 
         /** @var PipelineStage $stage */
         $stage = PipelineStage::query()->findOrFail($stageId);
 
-        $deal->moveToStage($stage, FocalAuthorization::userId());
+        $deal->moveToStage($stage, OddenAuthorization::userId());
 
         Notification::make()
             ->title('Deal Updated')

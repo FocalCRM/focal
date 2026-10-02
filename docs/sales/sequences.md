@@ -7,7 +7,7 @@ Sequences (also called cadences) take a contact through a series of timed steps:
 
 ## Sequences
 
-A `Focal\Sales\Models\SalesSequence` has a `name`, an optional `description`, `is_active` (defaults to `true`), an optional `user_id` (the author), and a `steps` array. Each step is an array with:
+An `Odden\Sales\Models\SalesSequence` has a `name`, an optional `description`, `is_active` (defaults to `true`), an optional `user_id` (the author), and a `steps` array. Each step is an array with:
 
 | Key | Notes |
 | --- | --- |
@@ -18,7 +18,7 @@ A `Focal\Sales\Models\SalesSequence` has a `name`, an optional `description`, `i
 | `template_id` | A `SalesEmailTemplate` ID. Required for `email` steps to send anything; see [Email steps](#email-steps). |
 
 ```php
-use Focal\Sales\Models\SalesSequence;
+use Odden\Sales\Models\SalesSequence;
 
 $sequence = SalesSequence::create([
     'name' => 'Outbound Q3',
@@ -38,7 +38,7 @@ The first step's `delay_days` counts from enrollment. Each later step's `delay_d
 ## Enrolling contacts
 
 ```php
-use Focal\Sales\Actions\EnrollContactInSequenceAction;
+use Odden\Sales\Actions\EnrollContactInSequenceAction;
 
 $enrollment = app(EnrollContactInSequenceAction::class)->execute($contact, $sequence, $rep->id);
 ```
@@ -81,7 +81,7 @@ A contact has one enrollment per sequence, so if both contacts are enrolled in t
 
 ## Processing due steps
 
-Steps are only executed by `Focal\Sales\Actions\ProcessCadencesAction`, usually through the Artisan command:
+Steps are only executed by `Odden\Sales\Actions\ProcessCadencesAction`, usually through the Artisan command:
 
 ```bash
 php artisan sales:process-cadences
@@ -100,7 +100,7 @@ After the last step the enrollment is set to `completed`.
 `execute()` returns counts:
 
 ```php
-use Focal\Sales\Actions\ProcessCadencesAction;
+use Odden\Sales\Actions\ProcessCadencesAction;
 
 $stats = app(ProcessCadencesAction::class)->execute();
 // ['processed' => 1, 'emails_sent' => 1, 'tasks_created' => 0, 'unenrolled' => 0, 'completed' => 0]
@@ -115,24 +115,24 @@ Each step runs at most once. Advancing the enrollment is an atomic update that o
 When an email step is due, the action:
 
 1. Renders the step's template with `renderWithContext()`, passing the contact and the enrollment's owner as the user. The owner is the user who enrolled the contact (`enrolled_by_id`), or the sequence's `user_id` if there isn't one, so `{{ sender.name }}`, `{{ rep.email }}`, and the other user tags refer to them. The subject goes through `TemplateParser::parse()` and the body through `parseHtml()`, so merge values are HTML-escaped in the body.
-2. Queues a `Focal\Sales\Mail\SequenceStepMail` to the contact's email address. The mailable implements `ShouldQueue`, so a queue worker must be running; it is dispatched after the database transaction commits. The mailer, queue connection, and queue come from [`focal-sales.mail`](configuration.md#mail).
+2. Queues an `Odden\Sales\Mail\SequenceStepMail` to the contact's email address. The mailable implements `ShouldQueue`, so a queue worker must be running; it is dispatched after the database transaction commits. The mailer, queue connection, and queue come from [`odden-sales.mail`](configuration.md#mail).
 3. Logs a completed `email` activity on the contact with the rendered subject as its title and the rendered HTML as its body. Its metadata holds `sequence_id`, `sequence_enrollment_id`, `step`, `template_id`, and `to`.
 4. Marks the contact as contacted, changes a `New` lead status to `InProgress`, and advances the enrollment.
 
-The email is sent from `focal-sales.mail.from` if set, otherwise from your app's `mail.from`. The owner's address is used as the reply-to. Set `focal-sales.mail.sequences.send_as_owner` to `true` to send from the owner's address and name instead; your mail provider must be allowed to send as those addresses.
+The email is sent from `odden-sales.mail.from` if set, otherwise from your app's `mail.from`. The owner's address is used as the reply-to. Set `odden-sales.mail.sequences.send_as_owner` to `true` to send from the owner's address and name instead; your mail provider must be allowed to send as those addresses.
 
 A step is skipped, not sent, when the contact has no email address, the address is not valid, or the step has no `template_id` (or its template was deleted). The package never sends placeholder text. A skipped step logs a `cancelled` `email` activity titled `Not sent: {title}` whose body gives the reason, with `skipped => true` and `skip_reason` (`missing_email`, `invalid_email`, or `missing_template`) in its metadata. The contact is not marked as contacted, and the enrollment still advances so later steps run. `ProcessCadencesAction::SKIP_REASONS` maps each reason to its message.
 
 ## Email templates
 
-A `Focal\Sales\Models\SalesEmailTemplate` has `name`, `subject`, `body_html`, `category` (defaults to `general`), `user_id`, and `is_shared` (defaults to `true`).
+An `Odden\Sales\Models\SalesEmailTemplate` has `name`, `subject`, `body_html`, `category` (defaults to `general`), `user_id`, and `is_shared` (defaults to `true`).
 
 ### Rendering with CRM context
 
 `renderWithContext(?Contact $contact = null, ?Deal $deal = null, ?Model $user = null, array $extra = [])` returns `['subject' => ..., 'body_html' => ...]` with merge tags replaced. Sequence email steps call it with the contact and the enrollment's owner as `$user`.
 
 ```php
-use Focal\Sales\Models\SalesEmailTemplate;
+use Odden\Sales\Models\SalesEmailTemplate;
 
 $template = SalesEmailTemplate::create([
     'name' => 'Intro',
@@ -161,7 +161,7 @@ Tags that don't resolve become an empty string. `deal.formatted_amount` always u
 
 In `body_html`, merge values are HTML-escaped with Laravel's `e()`, so a contact named `<b>Dana</b>` or a company called `R&D Labs` appears as typed (`&lt;b&gt;Dana&lt;/b&gt;`, `R&amp;D Labs`) and can't inject markup. The subject is plain text, so values go into it unescaped; escape the subject yourself if you put it into HTML. Write the HTML you want in the template itself, not in merge values. Escaping happens once, when the template is rendered, so don't escape values before passing them in `$extra` or they will be escaped twice.
 
-The parser is `Focal\Sales\Services\TemplateParser`, with `parse(string $template, array $context = [])` for plain text (values inserted as-is), `parseHtml(string $template, array $context = [])` for HTML (values escaped with `e()`), and `buildContext(?Contact, ?Deal, ?Model $user, array $extra)` if you want to use it on other strings.
+The parser is `Odden\Sales\Services\TemplateParser`, with `parse(string $template, array $context = [])` for plain text (values inserted as-is), `parseHtml(string $template, array $context = [])` for HTML (values escaped with `e()`), and `buildContext(?Contact, ?Deal, ?Model $user, array $extra)` if you want to use it on other strings.
 
 ### Simple replacement
 
@@ -173,7 +173,7 @@ $template->render(['first_name' => 'Sam']);
 
 ## Playbooks
 
-A `Focal\Sales\Models\SalesPlaybook` is a list of questions. Answers are written to custom properties on a deal or contact and summarized in a note.
+An `Odden\Sales\Models\SalesPlaybook` is a list of questions. Answers are written to custom properties on a deal or contact and summarized in a note.
 
 | Attribute | Notes |
 | --- | --- |
@@ -191,8 +191,8 @@ A `Focal\Sales\Models\SalesPlaybook` is a list of questions. Answers are written
 Two presets return ready-to-create attribute arrays: `SalesPlaybook::defaultBantPreset()` (slug `bant-qualification`) and `SalesPlaybook::defaultMeddicPreset()` (slug `meddic-enterprise`).
 
 ```php
-use Focal\Sales\Actions\ExecuteSalesPlaybookAction;
-use Focal\Sales\Models\SalesPlaybook;
+use Odden\Sales\Actions\ExecuteSalesPlaybookAction;
+use Odden\Sales\Models\SalesPlaybook;
 
 $playbook = SalesPlaybook::create(SalesPlaybook::defaultBantPreset());
 

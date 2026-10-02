@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LandingPageResource\Pages;
+namespace Odden\Filament\Resources\LandingPageResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\LandingPageResource;
+use Odden\Filament\Resources\LandingPageResource;
 
 class ListLandingPages extends ListRecords
 {

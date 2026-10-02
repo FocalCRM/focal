@@ -1,8 +1,8 @@
-# Focal Core (`focalcrm/core`)
+# Odden Core (`getodden/crm-core`)
 
-> This is a read-only split of the [focalcrm/focal](https://github.com/focalcrm/focal) monorepo. Please open issues and pull requests there.
+> This is a read-only split of the [getodden/crm](https://github.com/getodden/crm) monorepo. Please open issues and pull requests there.
 
-The headless CRM foundation engine for the Focal RevOps platform. Manages contacts, companies, extensible custom properties (EAV), polymorphic associations, activity audit timelines, list segmentation, and lifecycle stage state transitions.
+The headless CRM foundation engine for the Odden RevOps platform. Manages contacts, companies, extensible custom properties (EAV), polymorphic associations, activity audit timelines, list segmentation, and lifecycle stage state transitions.
 
 ---
 
@@ -10,7 +10,7 @@ The headless CRM foundation engine for the Focal RevOps platform. Manages contac
 
 ```
 +-------------------------------------------------------------------------+
-|                               FOCAL CORE                                |
+|                               ODDEN CORE                                |
 |                                                                         |
 |  +--------------------+   +--------------------+   +-----------------+  |
 |  |      Contacts      |   |     Companies      |   | Custom Objects  |  |
@@ -46,14 +46,14 @@ The headless CRM foundation engine for the Focal RevOps platform. Manages contac
 ## Installation
 
 ```bash
-composer require focalcrm/core
+composer require getodden/crm-core
 ```
 
 Publish migrations and configuration (optional):
 
 ```bash
-php artisan vendor:publish --tag=focal-core-migrations
-php artisan vendor:publish --tag=focal-core-config
+php artisan vendor:publish --tag=odden-core-migrations
+php artisan vendor:publish --tag=odden-core-config
 ```
 
 Run migrations:
@@ -69,8 +69,8 @@ php artisan migrate
 ### 1. Creating Contacts & Automatic Company Association
 
 ```php
-use Focal\Core\Actions\CreateContactAction;
-use Focal\Core\Enums\LifecycleStage;
+use Odden\Core\Actions\CreateContactAction;
+use Odden\Core\Enums\LifecycleStage;
 
 $contact = app(CreateContactAction::class)->execute([
     'first_name' => 'Jane',
@@ -89,9 +89,9 @@ $contact = app(CreateContactAction::class)->execute([
 ### 2. Polymorphic Associations
 
 ```php
-use Focal\Core\Actions\AssociateRecordsAction;
-use Focal\Core\Models\AssociationType;
-use Focal\Core\Enums\AssociationCardinality;
+use Odden\Core\Actions\AssociateRecordsAction;
+use Odden\Core\Models\AssociationType;
+use Odden\Core\Enums\AssociationCardinality;
 
 $type = AssociationType::firstOrCreate([
     'name' => 'billing_contact',
@@ -109,8 +109,8 @@ app(AssociateRecordsAction::class)->execute(
 ### 3. Lifecycle Stage State Transitions
 
 ```php
-use Focal\Core\Actions\TransitionLifecycleStageAction;
-use Focal\Core\Enums\LifecycleStage;
+use Odden\Core\Actions\TransitionLifecycleStageAction;
+use Odden\Core\Enums\LifecycleStage;
 
 // Transitions validate against allowed paths and record a LifecycleStageTransition audit entry
 app(TransitionLifecycleStageAction::class)->execute(
@@ -123,8 +123,8 @@ app(TransitionLifecycleStageAction::class)->execute(
 ### 4. Logging Timeline Activities
 
 ```php
-use Focal\Core\Actions\LogActivityAction;
-use Focal\Core\Enums\ActivityType;
+use Odden\Core\Actions\LogActivityAction;
+use Odden\Core\Enums\ActivityType;
 
 app(LogActivityAction::class)->execute([
     'type' => ActivityType::Call,
@@ -142,8 +142,8 @@ app(LogActivityAction::class)->execute([
 ### 5. Deduplication & Record Merging
 
 ```php
-use Focal\Core\Actions\FindDuplicateContactsAction;
-use Focal\Core\Actions\MergeContactsAction;
+use Odden\Core\Actions\FindDuplicateContactsAction;
+use Odden\Core\Actions\MergeContactsAction;
 
 // Discover duplicates by email or normalized name
 $duplicates = app(FindDuplicateContactsAction::class)->execute($contact);

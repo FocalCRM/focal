@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -20,11 +20,11 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\KnowledgeArticleResource\Pages\CreateKnowledgeArticle;
-use Focal\Filament\Resources\KnowledgeArticleResource\Pages\EditKnowledgeArticle;
-use Focal\Filament\Resources\KnowledgeArticleResource\Pages\ListKnowledgeArticles;
-use Focal\Service\Models\KnowledgeArticle;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\KnowledgeArticleResource\Pages\CreateKnowledgeArticle;
+use Odden\Filament\Resources\KnowledgeArticleResource\Pages\EditKnowledgeArticle;
+use Odden\Filament\Resources\KnowledgeArticleResource\Pages\ListKnowledgeArticles;
+use Odden\Service\Models\KnowledgeArticle;
 use Illuminate\Support\Str;
 use UnitEnum;
 

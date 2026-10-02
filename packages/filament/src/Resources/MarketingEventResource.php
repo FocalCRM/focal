@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -21,10 +21,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\MarketingEventResource\Pages\CreateMarketingEvent;
-use Focal\Filament\Resources\MarketingEventResource\Pages\EditMarketingEvent;
-use Focal\Filament\Resources\MarketingEventResource\Pages\ListMarketingEvents;
-use Focal\Marketing\Models\MarketingEvent;
+use Odden\Filament\Resources\MarketingEventResource\Pages\CreateMarketingEvent;
+use Odden\Filament\Resources\MarketingEventResource\Pages\EditMarketingEvent;
+use Odden\Filament\Resources\MarketingEventResource\Pages\ListMarketingEvents;
+use Odden\Marketing\Models\MarketingEvent;
 use UnitEnum;
 
 class MarketingEventResource extends Resource

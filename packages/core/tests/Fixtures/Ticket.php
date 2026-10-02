@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests\Fixtures;
+namespace Odden\Core\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Model;
 

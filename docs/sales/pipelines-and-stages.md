@@ -7,7 +7,7 @@ A pipeline is an ordered list of stages that deals move through. Each stage carr
 
 ## Pipelines
 
-`Focal\Sales\Models\Pipeline` has these fillable attributes:
+`Odden\Sales\Models\Pipeline` has these fillable attributes:
 
 | Attribute | Type | Notes |
 | --- | --- | --- |
@@ -18,7 +18,7 @@ A pipeline is an ordered list of stages that deals move through. Each stage carr
 | `team_id` | int, nullable | From Core's `BelongsToTeam` trait. |
 
 ```php
-use Focal\Sales\Models\Pipeline;
+use Odden\Sales\Models\Pipeline;
 
 $pipeline = Pipeline::create([
     'name' => 'New Business',
@@ -39,7 +39,7 @@ Relations and helpers:
 
 ## Stages
 
-`Focal\Sales\Models\PipelineStage` attributes:
+`Odden\Sales\Models\PipelineStage` attributes:
 
 | Attribute | Type | Notes |
 | --- | --- | --- |
@@ -90,7 +90,7 @@ Each pipeline needs one closed won stage and one closed lost stage if you want t
 
 ## Stage automations
 
-A `Focal\Sales\Models\StageAutomation` is a rule attached to a stage. Rules run when a deal is moved into the stage with `Deal::moveToStage()`, `markWon()`, `markLost()`, or `ChangeDealStageAction`. They do not run when you create a deal directly in a stage or update `stage_id` yourself.
+An `Odden\Sales\Models\StageAutomation` is a rule attached to a stage. Rules run when a deal is moved into the stage with `Deal::moveToStage()`, `markWon()`, `markLost()`, or `ChangeDealStageAction`. They do not run when you create a deal directly in a stage or update `stage_id` yourself.
 
 | Attribute | Type | Notes |
 | --- | --- | --- |
@@ -104,7 +104,7 @@ A `Focal\Sales\Models\StageAutomation` is a rule attached to a stage. Rules run 
 
 ### Action types
 
-`Focal\Sales\Enums\StageAutomationActionType` has these cases:
+`Odden\Sales\Enums\StageAutomationActionType` has these cases:
 
 | Case | Value | Behavior |
 | --- | --- | --- |
@@ -115,7 +115,7 @@ A `Focal\Sales\Models\StageAutomation` is a rule attached to a stage. Rules run 
 | `CreateTask` | `create_task` | Logs a pending task activity on the deal. |
 | `NotifyOwner` | `notify_owner` | If the deal has an `owner_id`, logs a note activity on the deal. It does not send a notification. |
 
-The `Require*` types are stage requirements. When one fails, the action throws `Focal\Sales\Exceptions\StageRequirementException` (a `RuntimeException`). The stage change runs in a database transaction, so the deal stays where it was and anything an earlier rule created is rolled back.
+The `Require*` types are stage requirements. When one fails, the action throws `Odden\Sales\Exceptions\StageRequirementException` (a `RuntimeException`). The stage change runs in a database transaction, so the deal stays where it was and anything an earlier rule created is rolled back.
 
 `CreateTask` reads two optional payload keys:
 
@@ -123,10 +123,10 @@ The `Require*` types are stage requirements. When one fails, the action throws `
 - `due_days`: days from now until the task is due. Defaults to `2`.
 
 ```php
-use Focal\Core\Models\Contact;
-use Focal\Sales\Enums\StageAutomationActionType;
-use Focal\Sales\Exceptions\StageRequirementException;
-use Focal\Sales\Models\StageAutomation;
+use Odden\Core\Models\Contact;
+use Odden\Sales\Enums\StageAutomationActionType;
+use Odden\Sales\Exceptions\StageRequirementException;
+use Odden\Sales\Models\StageAutomation;
 
 StageAutomation::create([
     'stage_id' => $proposal->id,

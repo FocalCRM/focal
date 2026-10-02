@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\RelationManagers;
+namespace Odden\Filament\Resources\RelationManagers;
 
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -17,10 +17,10 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Models\Activity;
-use Focal\Filament\Support\FocalAuthorization;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Models\Activity;
+use Odden\Filament\Support\OddenAuthorization;
 
 class ActivitiesRelationManager extends RelationManager
 {
@@ -122,7 +122,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->icon(Heroicon::CheckCircle)
                     ->color('success')
                     ->visible(fn (Activity $record): bool => $record->status === ActivityStatus::Pending)
-                    ->authorize(FocalAuthorization::forRecord('update'))
+                    ->authorize(OddenAuthorization::forRecord('update'))
                     ->action(fn (Activity $record) => $record->update([
                         'status' => ActivityStatus::Completed,
                         'completed_at' => now(),

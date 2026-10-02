@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Widgets;
+namespace Odden\Filament\Widgets;
 
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Focal\Sales\Actions\CalculatePipelineForecastAction;
+use Odden\Sales\Actions\CalculatePipelineForecastAction;
 
 class DealPipelineForecastWidget extends StatsOverviewWidget
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -18,11 +18,11 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\PipelineResource\Pages\CreatePipeline;
-use Focal\Filament\Resources\PipelineResource\Pages\EditPipeline;
-use Focal\Filament\Resources\PipelineResource\Pages\ListPipelines;
-use Focal\Filament\Resources\PipelineResource\RelationManagers\StagesRelationManager;
-use Focal\Sales\Models\Pipeline;
+use Odden\Filament\Resources\PipelineResource\Pages\CreatePipeline;
+use Odden\Filament\Resources\PipelineResource\Pages\EditPipeline;
+use Odden\Filament\Resources\PipelineResource\Pages\ListPipelines;
+use Odden\Filament\Resources\PipelineResource\RelationManagers\StagesRelationManager;
+use Odden\Sales\Models\Pipeline;
 use UnitEnum;
 
 class PipelineResource extends Resource

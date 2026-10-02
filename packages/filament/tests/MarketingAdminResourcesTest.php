@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Marketing\Models\MarketingAsset;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\NpsSurvey;
+use Odden\Core\Models\Company;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Marketing\Models\MarketingAsset;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\NpsSurvey;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingAdminResourcesTest extends TestCase
@@ -53,7 +53,7 @@ class MarketingAdminResourcesTest extends TestCase
         $user = User::factory()->create();
 
         $asset = MarketingAsset::create([
-            'name' => 'Focal Architecture Guide',
+            'name' => 'Odden Architecture Guide',
             'asset_type' => 'guide',
         ]);
 
@@ -64,7 +64,7 @@ class MarketingAdminResourcesTest extends TestCase
 
         $this->actingAs($user)->get('/admin/marketing-assets')
             ->assertStatus(200)
-            ->assertSee('Focal Architecture Guide');
+            ->assertSee('Odden Architecture Guide');
 
         $this->actingAs($user)->get('/admin/marketing-events')
             ->assertStatus(200)

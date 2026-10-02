@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LandingPageResource\Pages;
+namespace Odden\Filament\Resources\LandingPageResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\LandingPageResource;
+use Odden\Filament\Resources\LandingPageResource;
 
 class CreateLandingPage extends CreateRecord
 {

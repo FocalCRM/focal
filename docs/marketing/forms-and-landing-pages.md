@@ -3,14 +3,14 @@ title: Forms and landing pages
 description: Capture leads with hosted forms, an embeddable form script, a headless JSON schema and API endpoint, progressive profiling, and hosted landing pages.
 ---
 
-A marketing form is a `Focal\Marketing\Models\MarketingForm` record with a list of fields. You can serve the same form four ways: as a hosted page, through an embed script on another site, from your own front end using its JSON schema, or inside a hosted landing page. Every submission goes through `ProcessFormSubmissionAction`, which finds or creates the contact, scores the lead, and enrolls the contact in workflows.
+A marketing form is an `Odden\Marketing\Models\MarketingForm` record with a list of fields. You can serve the same form four ways: as a hosted page, through an embed script on another site, from your own front end using its JSON schema, or inside a hosted landing page. Every submission goes through `ProcessFormSubmissionAction`, which finds or creates the contact, scores the lead, and enrolls the contact in workflows.
 
-All routes on this page are registered by the package. Their paths depend on the `focal-marketing.routes` prefixes (see [public routes](../configuration.md#public-routes)); the paths below use the defaults (no prefix for web routes, `api/marketing` for API routes). Route names never change, so build links with `route()` or the model helpers.
+All routes on this page are registered by the package. Their paths depend on the `odden-marketing.routes` prefixes (see [public routes](../configuration.md#public-routes)); the paths below use the defaults (no prefix for web routes, `api/marketing` for API routes). Route names never change, so build links with `route()` or the model helpers.
 
 ## Creating a form
 
 ```php
-use Focal\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingForm;
 
 $form = MarketingForm::create([
     'title' => 'Request a Demo',
@@ -58,7 +58,7 @@ Validation is built from the fields: each field becomes `required` or `nullable`
 
 ### What happens on submission
 
-`Focal\Marketing\Actions\ProcessFormSubmissionAction` handles every submission. Five field names are mapped to the contact record: `email`, `first_name`, `last_name`, `phone`, and `company`. When the submission carries an `email` and no verified contact was passed in:
+`Odden\Marketing\Actions\ProcessFormSubmissionAction` handles every submission. Five field names are mapped to the contact record: `email`, `first_name`, `last_name`, `phone`, and `company`. When the submission carries an `email` and no verified contact was passed in:
 
 1. The email is trimmed and lowercased, and the contact with that email is loaded or created (new contacts get `lead_status` `new` and `lifecycle_stage` `lead`). An existing contact's `first_name`, `last_name`, and `phone` are filled in only if they're empty.
 2. If `sms_consent` is truthy, `sms_consent` and `sms_consent_at` are set on the contact.
@@ -82,7 +82,7 @@ Submissions are available as `$form->submissions` (newest first) and `$contact->
 You can call the action yourself, for example to import submissions from another tool:
 
 ```php
-use Focal\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
 
 $submission = app(ProcessFormSubmissionAction::class)->execute(
     form: $form,
@@ -104,12 +104,12 @@ The full signature is `execute(MarketingForm $form, array $data, ?string $ipAddr
 
 | Method | URI | Route name | Notes |
 | --- | --- | --- | --- |
-| `GET` | `/forms/{slug}` | `focal.marketing.forms.show` | Renders `focal-marketing::forms.show`. |
-| `POST` | `/forms/{slug}` | `focal.marketing.forms.submit` | `web` middleware, so CSRF protected. Rate limited by `focal-public`. |
+| `GET` | `/forms/{slug}` | `odden.marketing.forms.show` | Renders `odden-marketing::forms.show`. |
+| `POST` | `/forms/{slug}` | `odden.marketing.forms.submit` | `web` middleware, so CSRF protected. Rate limited by `odden-public`. |
 
-The hosted page posts back to itself. After a successful submission it redirects to `redirect_url` if set, or renders `focal-marketing::forms.success` with the `success_message`. If the request expects JSON (an `Accept: application/json` header), it returns the same JSON as the [API endpoint](#form-api-endpoint) instead. Validation errors redirect back with the usual error bag.
+The hosted page posts back to itself. After a successful submission it redirects to `redirect_url` if set, or renders `odden-marketing::forms.success` with the `success_message`. If the request expects JSON (an `Accept: application/json` header), it returns the same JSON as the [API endpoint](#form-api-endpoint) instead. Validation errors redirect back with the usual error bag.
 
-To restyle the pages, override the views by creating `show.blade.php` and `success.blade.php` in `resources/views/vendor/focal-marketing/forms/` (the package has no view publish tag). The default views load Tailwind from its CDN.
+To restyle the pages, override the views by creating `show.blade.php` and `success.blade.php` in `resources/views/vendor/odden-marketing/forms/` (the package has no view publish tag). The default views load Tailwind from its CDN.
 
 ## Embedding a form on another site
 
@@ -117,28 +117,28 @@ The embed script renders a form from its JSON schema and submits it to the API e
 
 | Method | URI | Route name |
 | --- | --- | --- |
-| `GET` | `/marketing/forms/embed.js` | `focal.marketing.forms.embed-script` |
-| `GET` | `/marketing/forms/{slug}/embed.js` | `focal.marketing.forms.slug-embed-script` |
+| `GET` | `/marketing/forms/embed.js` | `odden.marketing.forms.embed-script` |
+| `GET` | `/marketing/forms/{slug}/embed.js` | `odden.marketing.forms.slug-embed-script` |
 
-The generic script renders every element with a `data-focal-form` attribute. The slug-specific script renders only the element with `data-focal-form="{slug}"` or `id="focal-form-{slug}"`.
+The generic script renders every element with a `data-odden-form` attribute. The slug-specific script renders only the element with `data-odden-form="{slug}"` or `id="odden-form-{slug}"`.
 
 ```html
-<div data-focal-form="request-a-demo"></div>
+<div data-odden-form="request-a-demo"></div>
 <script src="https://your-app.test/marketing/forms/embed.js" async></script>
 ```
 
 Two optional attributes on the container turn the form into a popup:
 
-- `data-focal-display`: `inline` (default, replaces the container's content), `modal` (centered overlay), or `slide-in` (bottom-right card).
-- `data-focal-trigger`, for `modal` and `slide-in` only: `immediate` (default), `exit-intent` (pointer leaves through the top of the window), `scroll-50` (half the page scrolled), or `delay-{seconds}`, for example `delay-10`.
+- `data-odden-display`: `inline` (default, replaces the container's content), `modal` (centered overlay), or `slide-in` (bottom-right card).
+- `data-odden-trigger`, for `modal` and `slide-in` only: `immediate` (default), `exit-intent` (pointer leaves through the top of the window), `scroll-50` (half the page scrolled), or `delay-{seconds}`, for example `delay-10`.
 
 ```html
-<div data-focal-form="request-a-demo" data-focal-display="modal" data-focal-trigger="exit-intent"></div>
+<div data-odden-form="request-a-demo" data-odden-display="modal" data-odden-trigger="exit-intent"></div>
 ```
 
 Closing a popup sets a `sessionStorage` flag, so it isn't shown again in that browser session. The script is served with `Cache-Control: public, max-age=3600`.
 
-On submit the script posts the field values as JSON together with the visitor's id as `visitor_token`. It uses the same id as the [tracking script](web-tracking.md#visitor-tokens-and-cross-domain-tracking) (`_focal_vid` in `localStorage` and a first-party cookie on your site, created if missing), so the contact the submission creates or matches is [stitched](web-tracking.md#identity-stitching) to the pages the visitor viewed before, even when your site is on another domain.
+On submit the script posts the field values as JSON together with the visitor's id as `visitor_token`. It uses the same id as the [tracking script](web-tracking.md#visitor-tokens-and-cross-domain-tracking) (`_odden_vid` in `localStorage` and a first-party cookie on your site, created if missing), so the contact the submission creates or matches is [stitched](web-tracking.md#identity-stitching) to the pages the visitor viewed before, even when your site is on another domain.
 
 ## Headless forms
 
@@ -146,7 +146,7 @@ Use the schema endpoint when you render the form yourself (Next.js, Remix, Webfl
 
 | Method | URI | Route name |
 | --- | --- | --- |
-| `GET` | `/marketing/forms/{slug}/schema.json` | `focal.marketing.forms.schema` |
+| `GET` | `/marketing/forms/{slug}/schema.json` | `odden.marketing.forms.schema` |
 
 ```json
 {
@@ -172,7 +172,7 @@ Use the schema endpoint when you render the form yourself (Next.js, Remix, Webfl
 
 | Method | URI | Route name | Auth |
 | --- | --- | --- | --- |
-| `POST` | `/api/marketing/forms/{slug}` | `focal.marketing.forms.api-submit` | Public. CSRF exempt, rate limited by `focal-public`. |
+| `POST` | `/api/marketing/forms/{slug}` | `odden.marketing.forms.api-submit` | Public. CSRF exempt, rate limited by `odden-public`. |
 
 This endpoint needs no API token, because browsers call it directly. Send the field values as JSON or form data, with `Accept: application/json`:
 
@@ -193,7 +193,7 @@ curl -X POST https://your-app.test/api/marketing/forms/request-a-demo \
 
 `message` falls back to `Thank you for your submission!` when the form has no `success_message`. Validation failures return Laravel's standard `422` JSON error response, and inactive or unknown forms return `404`. The controller returns JSON when the request expects JSON or its path matches `api/*`; if you change the API prefix, send the `Accept` header so you don't get a redirect.
 
-The `focal-public` limit is per IP address and defaults to 30 requests per minute (see [rate limits](../configuration.md#rate-limits)).
+The `odden-public` limit is per IP address and defaults to 30 requests per minute (see [rate limits](../configuration.md#rate-limits)).
 
 ## Progressive profiling
 
@@ -237,10 +237,10 @@ $url = $form->getPublicUrl($contact);
 
 The hosted page greets the contact ("Welcome back, Sarah!"), shows the progressive questions with a "Smart Question" badge, and carries the token in a hidden `contact` field. The schema endpoint accepts the same `contact` query parameter, and the submit endpoints accept it as a `contact` input. When the token is valid, the submission is attached to that contact: progressive answers are saved as custom properties (replacing existing values), but none of the email-based steps run, so no lead score is added and no timeline task is logged.
 
-The token comes from `Focal\Marketing\Support\ContactToken`:
+The token comes from `Odden\Marketing\Support\ContactToken`:
 
 ```php
-use Focal\Marketing\Support\ContactToken;
+use Odden\Marketing\Support\ContactToken;
 
 $scope = ContactToken::forForm($form->id);       // "form:{id}"
 $token = ContactToken::make($contact, $scope);   // "{contact id}.{64-char HMAC}"
@@ -256,15 +256,15 @@ A visitor without a token who types the email of an existing contact is matched 
 
 ## Landing pages
 
-`Focal\Marketing\Models\LandingPage` is a hosted page with a headline, HTML body, and an optional form.
+`Odden\Marketing\Models\LandingPage` is a hosted page with a headline, HTML body, and an optional form.
 
 ```php
-use Focal\Marketing\Models\LandingPage;
+use Odden\Marketing\Models\LandingPage;
 
 $page = LandingPage::create([
     'title' => 'Q3 Launch',
     'slug' => 'q3-launch',
-    'headline' => 'Ship faster with Focal',
+    'headline' => 'Ship faster with Odden',
     'body_content' => '<p>Join the beta.</p>',
     'form_id' => $form->id,
     'is_published' => true,
@@ -282,15 +282,15 @@ Other attributes: `subheadline`, `meta_title`, `meta_description`, `og_image_url
 
 | Method | URI | Route name | Notes |
 | --- | --- | --- | --- |
-| `GET` | `/p/{slug}` | `focal.marketing.landing-pages.show` | 404 unless `is_published`. |
-| `POST` | `/p/{slug}/submit` | `focal.marketing.landing-pages.submit` | CSRF protected, rate limited by `focal-public`. |
+| `GET` | `/p/{slug}` | `odden.marketing.landing-pages.show` | 404 unless `is_published`. |
+| `POST` | `/p/{slug}/submit` | `odden.marketing.landing-pages.submit` | CSRF protected, rate limited by `odden-public`. |
 
-Each view increments `views_count` and records a [page view](web-tracking.md#recording-visits-from-php) with the `utm_source`, `utm_medium` and `utm_campaign` query parameters, using the visitor's `focal_vid` cookie if there is one. The page also loads the [tracking script](web-tracking.md), whose pageview sets that cookie to the visitor's id (see [visitor tokens](web-tracking.md#visitor-tokens-and-cross-domain-tracking)), so the submission is stitched to the pages viewed before it.
+Each view increments `views_count` and records a [page view](web-tracking.md#recording-visits-from-php) with the `utm_source`, `utm_medium` and `utm_campaign` query parameters, using the visitor's `odden_vid` cookie if there is one. The page also loads the [tracking script](web-tracking.md), whose pageview sets that cookie to the visitor's id (see [visitor tokens](web-tracking.md#visitor-tokens-and-cross-domain-tracking)), so the submission is stitched to the pages viewed before it.
 
-A submission is passed to `ProcessFormSubmissionAction` with the page's form (with the `focal_vid` cookie value as `visitor_token`), increments `submissions_count`, and redirects back with the success message in the `success` session key. Unlike hosted forms, landing page submissions aren't validated against the form's fields. A page without a form returns 404 on submit.
+A submission is passed to `ProcessFormSubmissionAction` with the page's form (with the `odden_vid` cookie value as `visitor_token`), increments `submissions_count`, and redirects back with the success message in the `success` session key. Unlike hosted forms, landing page submissions aren't validated against the form's fields. A page without a form returns 404 on submit.
 
-The page is rendered by `focal-marketing::landing-page`.
+The page is rendered by `odden-marketing::landing-page`.
 
-## Capturing forms you didn't build with Focal
+## Capturing forms you didn't build with Odden
 
 To capture leads from existing forms on your website, use [form auto-capture](web-tracking.md#form-auto-capture) in the tracking script.

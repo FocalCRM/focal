@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\NpsSurveyResource\Pages;
+namespace Odden\Filament\Resources\NpsSurveyResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\NpsSurveyResource;
+use Odden\Filament\Resources\NpsSurveyResource;
 
 class CreateNpsSurvey extends CreateRecord
 {

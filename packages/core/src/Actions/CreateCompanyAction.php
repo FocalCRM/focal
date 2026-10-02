@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Events\CompanyCreated;
-use Focal\Core\Models\Company;
+use Odden\Core\Events\CompanyCreated;
+use Odden\Core\Models\Company;
 
 class CreateCompanyAction
 {
@@ -25,7 +25,7 @@ class CreateCompanyAction
 
         event(new CompanyCreated($company));
 
-        if ($enrich || (bool) config('focal-core.enrichment.auto_enrich', false)) {
+        if ($enrich || (bool) config('odden-core.enrichment.auto_enrich', false)) {
             app(EnrichCompanyAction::class)->execute($company);
         }
 

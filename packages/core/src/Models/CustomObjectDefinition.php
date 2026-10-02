@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Traits\BelongsToTeam;
+use Odden\Core\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -47,7 +47,7 @@ class CustomObjectDefinition extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.custom_object_definitions', 'focal_custom_object_definitions');
+        return config('odden-core.tables.custom_object_definitions', 'odden_custom_object_definitions');
     }
 
     /**

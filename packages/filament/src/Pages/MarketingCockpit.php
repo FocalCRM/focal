@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\CampaignResource;
-use Focal\Filament\Resources\ContactResource;
-use Focal\Filament\Resources\MarketingFormResource;
-use Focal\Filament\Resources\MarketingWorkflowResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\AnalyzeConversionFunnelAction;
-use Focal\Marketing\Actions\CalculateClosedLoopMetricsAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Exceptions\CampaignHasNoAudienceException;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\CampaignResource;
+use Odden\Filament\Resources\ContactResource;
+use Odden\Filament\Resources\MarketingFormResource;
+use Odden\Filament\Resources\MarketingWorkflowResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\AnalyzeConversionFunnelAction;
+use Odden\Marketing\Actions\CalculateClosedLoopMetricsAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Exceptions\CampaignHasNoAudienceException;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingWorkflow;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
@@ -42,7 +42,7 @@ class MarketingCockpit extends Page
 
     protected static ?string $title = 'Marketing Campaigns & Lead Acquisition';
 
-    protected string $view = 'focal-filament::pages.marketing-cockpit';
+    protected string $view = 'odden-filament::pages.marketing-cockpit';
 
     /**
      * @return list<class-string<\Filament\Resources\Resource>>
@@ -202,7 +202,7 @@ class MarketingCockpit extends Page
 
     public function sendCampaignNow(int $campaignId): void
     {
-        $campaign = FocalAuthorization::findAndAuthorize(CampaignResource::class, Campaign::class, $campaignId, 'update');
+        $campaign = OddenAuthorization::findAndAuthorize(CampaignResource::class, Campaign::class, $campaignId, 'update');
 
         try {
             $results = app(DispatchCampaignAction::class)->execute($campaign);

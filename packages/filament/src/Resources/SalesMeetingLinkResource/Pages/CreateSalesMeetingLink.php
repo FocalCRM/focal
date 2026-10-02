@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SalesMeetingLinkResource\Pages;
+namespace Odden\Filament\Resources\SalesMeetingLinkResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\SalesMeetingLinkResource;
+use Odden\Filament\Resources\SalesMeetingLinkResource;
 
 class CreateSalesMeetingLink extends CreateRecord
 {

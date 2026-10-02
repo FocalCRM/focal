@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests;
+namespace Odden\Core\Tests;
 
-use Focal\Core\Actions\AssociateRecordsAction;
-use Focal\Core\Events\RecordsAssociated;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\AssociateRecordsAction;
+use Odden\Core\Events\RecordsAssociated;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 

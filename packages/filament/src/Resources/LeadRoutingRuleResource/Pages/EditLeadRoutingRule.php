@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LeadRoutingRuleResource\Pages;
+namespace Odden\Filament\Resources\LeadRoutingRuleResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\LeadRoutingRuleResource;
+use Odden\Filament\Resources\LeadRoutingRuleResource;
 
 class EditLeadRoutingRule extends EditRecord
 {

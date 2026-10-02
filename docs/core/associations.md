@@ -3,7 +3,7 @@ title: Associations
 description: Link any two CRM records, define association types with labels and cardinality, and query associated records.
 ---
 
-An association is a directed link from a parent record to a child record, stored in `focal_associations`. Any two Eloquent models can be linked: contacts, companies, custom object records, or other modules' models such as deals. Contacts, companies, and custom object records get helper methods from the `HasAssociations` trait.
+An association is a directed link from a parent record to a child record, stored in `odden_associations`. Any two Eloquent models can be linked: contacts, companies, custom object records, or other modules' models such as deals. Contacts, companies, and custom object records get helper methods from the `HasAssociations` trait.
 
 ## Linking records
 
@@ -37,7 +37,7 @@ Direction matters for some queries. `Contact::companies()` and `Company::contact
 You can also call the action directly:
 
 ```php
-use Focal\Core\Actions\AssociateRecordsAction;
+use Odden\Core\Actions\AssociateRecordsAction;
 
 app(AssociateRecordsAction::class)->execute($company, $contact, 'billing_contact');
 ```
@@ -45,7 +45,7 @@ app(AssociateRecordsAction::class)->execute($company, $contact, 'billing_contact
 `AssociateRecordsAction::execute(Model $parent, Model $child, string|AssociationType $type = 'default', ?string $label = null): Association`:
 
 1. Resolves the association type. If you pass a string, it looks for an `AssociationType` with that `name`. If none exists, the string is still stored as `type` and no rules apply.
-2. Enforces the type's cardinality, throwing `Focal\Core\Exceptions\CardinalityViolationException`.
+2. Enforces the type's cardinality, throwing `Odden\Core\Exceptions\CardinalityViolationException`.
 3. Creates the link, or updates the existing one. It sets `association_type_id` and the `label`, which defaults to the type's `label`.
 4. Dispatches `RecordsAssociated`, only when a new row was created.
 
@@ -53,7 +53,7 @@ Merging records moves their associations to the surviving record. See [Duplicate
 
 ## Association types
 
-`Focal\Core\Models\AssociationType` (table `focal_association_types`) gives a type name a label, an optional reverse label, and a cardinality rule.
+`Odden\Core\Models\AssociationType` (table `odden_association_types`) gives a type name a label, an optional reverse label, and a cardinality rule.
 
 | Column | Notes |
 | --- | --- |
@@ -66,10 +66,10 @@ Merging records moves their associations to the surviving record. See [Duplicate
 | `team_id` | Nullable. |
 
 ```php
-use Focal\Core\Actions\AssociateRecordsAction;
-use Focal\Core\Actions\CreateAssociationTypeAction;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\AssociateRecordsAction;
+use Odden\Core\Actions\CreateAssociationTypeAction;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 
 $type = app(CreateAssociationTypeAction::class)->execute([
     'name' => 'billing_contact',
@@ -97,7 +97,7 @@ $company->associateWith($sam, 'billing_contact'); // throws CardinalityViolation
 
 ### Cardinality
 
-`Focal\Core\Enums\AssociationCardinality`:
+`Odden\Core\Enums\AssociationCardinality`:
 
 | Case | Value | Rule checked by `AssociateRecordsAction` |
 | --- | --- | --- |
@@ -120,10 +120,10 @@ $association->association_type_id; // null
 
 ## The Association model
 
-`Focal\Core\Models\Association` has `parent()` and `child()` morph relations, and `associationType()`, which belongs to `AssociationType`. Query it directly when you need the raw links:
+`Odden\Core\Models\Association` has `parent()` and `child()` morph relations, and `associationType()`, which belongs to `AssociationType`. Query it directly when you need the raw links:
 
 ```php
-use Focal\Core\Models\Association;
+use Odden\Core\Models\Association;
 
 $links = Association::query()
     ->where('parent_type', $contact->getMorphClass())

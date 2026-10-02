@@ -238,19 +238,19 @@
             </div>
 
             <div class="mc-actions">
-                <a href="{{ \Focal\Filament\Pages\MarketingAttribution::getUrl() }}" class="mc-btn mc-btn-secondary">
+                <a href="{{ \Odden\Filament\Pages\MarketingAttribution::getUrl() }}" class="mc-btn mc-btn-secondary">
                     <x-filament::icon icon="heroicon-m-chart-bar-square" class="w-4 h-4 text-sky-500" />
                     <span>Attribution & ROI</span>
                 </a>
-                <a href="{{ \Focal\Filament\Pages\UtmLinkBuilder::getUrl() }}" class="mc-btn mc-btn-secondary">
+                <a href="{{ \Odden\Filament\Pages\UtmLinkBuilder::getUrl() }}" class="mc-btn mc-btn-secondary">
                     <x-filament::icon icon="heroicon-m-link" class="w-4 h-4 text-indigo-500" />
                     <span>UTM Builder</span>
                 </a>
-                <a href="{{ \Focal\Filament\Resources\CampaignResource::getUrl('create') }}" class="mc-btn mc-btn-primary">
+                <a href="{{ \Odden\Filament\Resources\CampaignResource::getUrl('create') }}" class="mc-btn mc-btn-primary">
                     <x-filament::icon icon="heroicon-m-plus" class="w-4 h-4" />
                     <span>New Campaign</span>
                 </a>
-                <a href="{{ \Focal\Filament\Resources\MarketingFormResource::getUrl('create') }}" class="mc-btn mc-btn-secondary">
+                <a href="{{ \Odden\Filament\Resources\MarketingFormResource::getUrl('create') }}" class="mc-btn mc-btn-secondary">
                     <span>New Lead Form</span>
                 </a>
             </div>
@@ -440,7 +440,7 @@
                         <h3 style="font-size: 0.9375rem; font-weight: 700;">Recent Broadcast Campaigns</h3>
                         <p style="font-size: 0.75rem; color: #64748b;">Delivered and scheduled email campaigns</p>
                     </div>
-                    <a href="{{ \Focal\Filament\Resources\CampaignResource::getUrl('index') }}" class="text-xs font-semibold text-sky-600 hover:underline">
+                    <a href="{{ \Odden\Filament\Resources\CampaignResource::getUrl('index') }}" class="text-xs font-semibold text-sky-600 hover:underline">
                         View All
                     </a>
                 </div>
@@ -449,7 +449,7 @@
                     <div style="padding: 2.5rem; text-align: center; color: #64748b;">
                         <x-filament::icon icon="heroicon-o-paper-airplane" class="w-10 h-10 mx-auto text-slate-400 mb-2" />
                         <p class="text-sm font-medium">No campaigns created yet.</p>
-                        <a href="{{ \Focal\Filament\Resources\CampaignResource::getUrl('create') }}" class="text-xs text-sky-600 hover:underline mt-1 inline-block">
+                        <a href="{{ \Odden\Filament\Resources\CampaignResource::getUrl('create') }}" class="text-xs text-sky-600 hover:underline mt-1 inline-block">
                             Create your first email campaign
                         </a>
                     </div>
@@ -469,7 +469,7 @@
                                 <tr>
                                     <td>
                                         <div style="font-weight: 700; color: #0284c7;">
-                                            <a href="{{ \Focal\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $c->id]) }}" class="hover:underline">
+                                            <a href="{{ \Odden\Filament\Resources\CampaignResource::getUrl('edit', ['record' => $c->id]) }}" class="hover:underline">
                                                 {{ $c->name }}
                                             </a>
                                         </div>
@@ -489,7 +489,7 @@
                                         {{ $c->click_rate }}%
                                     </td>
                                     <td style="text-align: right;">
-                                        @if (in_array($c->status, [\Focal\Marketing\Enums\CampaignStatus::Draft, \Focal\Marketing\Enums\CampaignStatus::Scheduled], true))
+                                        @if (in_array($c->status, [\Odden\Marketing\Enums\CampaignStatus::Draft, \Odden\Marketing\Enums\CampaignStatus::Scheduled], true))
                                             <button
                                                 type="button"
                                                 wire:click="sendCampaignNow({{ $c->id }})"
@@ -521,7 +521,7 @@
                             <h3 style="font-size: 0.9375rem; font-weight: 700;">Lead Capture Forms</h3>
                             <p style="font-size: 0.75rem; color: #64748b;">High conversion capture funnels</p>
                         </div>
-                        <a href="{{ \Focal\Filament\Resources\MarketingFormResource::getUrl('index') }}" class="text-xs font-semibold text-sky-600 hover:underline">
+                        <a href="{{ \Odden\Filament\Resources\MarketingFormResource::getUrl('index') }}" class="text-xs font-semibold text-sky-600 hover:underline">
                             View All
                         </a>
                     </div>

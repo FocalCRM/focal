@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Database\Factories\CompanyFactory;
-use Focal\Core\Enums\CustomerHealthStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Support\UserModel;
-use Focal\Core\Traits\AuditsProperties;
-use Focal\Core\Traits\BelongsToTeam;
-use Focal\Core\Traits\HasActivities;
-use Focal\Core\Traits\HasAssociations;
-use Focal\Core\Traits\HasCustomProperties;
-use Focal\Core\Traits\HasLifecycleStageTransitions;
+use Odden\Core\Database\Factories\CompanyFactory;
+use Odden\Core\Enums\CustomerHealthStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Support\UserModel;
+use Odden\Core\Traits\AuditsProperties;
+use Odden\Core\Traits\BelongsToTeam;
+use Odden\Core\Traits\HasActivities;
+use Odden\Core\Traits\HasAssociations;
+use Odden\Core\Traits\HasCustomProperties;
+use Odden\Core\Traits\HasLifecycleStageTransitions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -105,7 +105,7 @@ class Company extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.companies', 'focal_companies');
+        return config('odden-core.tables.companies', 'odden_companies');
     }
 
     /**
@@ -205,7 +205,7 @@ class Company extends Model
     {
         return $this->belongsToMany(
             Contact::class,
-            config('focal-core.tables.associations', 'focal_associations'),
+            config('odden-core.tables.associations', 'odden_associations'),
             'child_id',
             'parent_id'
         )

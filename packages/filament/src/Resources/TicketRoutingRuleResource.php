@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -20,11 +20,11 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Resources\TicketRoutingRuleResource\Pages\CreateTicketRoutingRule;
-use Focal\Filament\Resources\TicketRoutingRuleResource\Pages\EditTicketRoutingRule;
-use Focal\Filament\Resources\TicketRoutingRuleResource\Pages\ListTicketRoutingRules;
-use Focal\Service\Models\TicketRoutingRule;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Resources\TicketRoutingRuleResource\Pages\CreateTicketRoutingRule;
+use Odden\Filament\Resources\TicketRoutingRuleResource\Pages\EditTicketRoutingRule;
+use Odden\Filament\Resources\TicketRoutingRuleResource\Pages\ListTicketRoutingRules;
+use Odden\Service\Models\TicketRoutingRule;
 use UnitEnum;
 
 class TicketRoutingRuleResource extends Resource

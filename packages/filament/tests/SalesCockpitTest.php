@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Tests;
+namespace Odden\Filament\Tests;
 
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Pages\SalesCockpit;
-use Focal\Filament\Tests\Fixtures\User;
-use Focal\Sales\Models\SalesSequence;
-use Focal\Sales\Models\SalesSequenceEnrollment;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Pages\SalesCockpit;
+use Odden\Filament\Tests\Fixtures\User;
+use Odden\Sales\Models\SalesSequence;
+use Odden\Sales\Models\SalesSequenceEnrollment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -93,7 +93,7 @@ class SalesCockpitTest extends TestCase
         $this->assertSame(LeadStatus::AttemptedContact, $contact->lead_status);
         $this->assertNotNull($contact->last_contacted_at);
 
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_type' => $contact->getMorphClass(),
             'subject_id' => $contact->id,
             'type' => ActivityType::Call->value,

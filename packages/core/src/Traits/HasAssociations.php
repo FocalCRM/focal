@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Traits;
+namespace Odden\Core\Traits;
 
-use Focal\Core\Actions\AssociateRecordsAction;
-use Focal\Core\Models\Association;
-use Focal\Core\Models\AssociationType;
+use Odden\Core\Actions\AssociateRecordsAction;
+use Odden\Core\Models\Association;
+use Odden\Core\Models\AssociationType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

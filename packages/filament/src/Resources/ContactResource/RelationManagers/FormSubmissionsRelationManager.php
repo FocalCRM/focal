@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\ContactResource\RelationManagers;
+namespace Odden\Filament\Resources\ContactResource\RelationManagers;
 
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\KeyValue;

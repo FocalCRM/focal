@@ -486,7 +486,7 @@
 
                 <select wire:change="setPriorityFilter($event.target.value)" class="sc-input">
                     <option value="">All Priorities</option>
-                    @foreach (\Focal\Service\Enums\TicketPriority::cases() as $priority)
+                    @foreach (\Odden\Service\Enums\TicketPriority::cases() as $priority)
                         <option value="{{ $priority->value }}" @selected($priorityFilter === $priority->value)>
                             {{ $priority->getLabel() }}
                         </option>
@@ -495,7 +495,7 @@
 
                 <select wire:change="setSourceFilter($event.target.value)" class="sc-input">
                     <option value="">All Channels</option>
-                    @foreach (\Focal\Service\Enums\TicketSource::cases() as $src)
+                    @foreach (\Odden\Service\Enums\TicketSource::cases() as $src)
                         <option value="{{ $src->value }}" @selected($sourceFilter === $src->value)>
                             {{ $src->getLabel() }}
                         </option>
@@ -641,7 +641,7 @@
                                 <tr>
                                     <td>
                                         <div style="font-weight: 700; color: #0284c7;">
-                                            <a href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
+                                            <a href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
                                                 {{ $ticket->ticket_number }}
                                             </a>
                                         </div>
@@ -696,7 +696,7 @@
                                                 Claim
                                             </button>
                                             <a
-                                                href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
+                                                href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
                                                 class="sc-btn sc-btn-secondary"
                                             >
                                                 Open
@@ -737,7 +737,7 @@
                                 <tr>
                                     <td>
                                         <div style="font-weight: 700; color: #0284c7;">
-                                            <a href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
+                                            <a href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
                                                 {{ $ticket->ticket_number }}
                                             </a>
                                         </div>
@@ -793,7 +793,7 @@
                                                 Resolve
                                             </button>
                                             <a
-                                                href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
+                                                href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
                                                 class="sc-btn sc-btn-secondary"
                                             >
                                                 View
@@ -835,7 +835,7 @@
                                 <tr>
                                     <td>
                                         <div style="font-weight: 700; color: #0284c7;">
-                                            <a href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
+                                            <a href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
                                                 {{ $ticket->ticket_number }}
                                             </a>
                                         </div>
@@ -904,7 +904,7 @@
                                                 </button>
                                             @endif
                                             <a
-                                                href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
+                                                href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
                                                 class="sc-btn sc-btn-secondary"
                                             >
                                                 View
@@ -946,7 +946,7 @@
                             @foreach ($this->allTickets as $ticket)
                                 <tr>
                                     <td style="font-weight: 700; color: #0284c7;">
-                                        <a href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
+                                        <a href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}" class="hover:underline">
                                             {{ $ticket->ticket_number }}
                                         </a>
                                     </td>
@@ -982,7 +982,7 @@
                                     </td>
                                     <td style="text-align: right;">
                                         <a
-                                            href="{{ \Focal\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
+                                            href="{{ \Odden\Filament\Resources\TicketResource::getUrl('edit', ['record' => $ticket->id]) }}"
                                             class="sc-btn sc-btn-secondary"
                                         >
                                             View

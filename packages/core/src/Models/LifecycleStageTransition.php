@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Support\UserModel;
-use Focal\Core\Traits\BelongsToTeam;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Support\UserModel;
+use Odden\Core\Traits\BelongsToTeam;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -53,7 +53,7 @@ class LifecycleStageTransition extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.lifecycle_stage_transitions', 'focal_lifecycle_stage_transitions');
+        return config('odden-core.tables.lifecycle_stage_transitions', 'odden_lifecycle_stage_transitions');
     }
 
     /**

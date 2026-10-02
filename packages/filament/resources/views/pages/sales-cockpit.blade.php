@@ -752,19 +752,19 @@
                     Summary
                 </button>
                 <a
-                    href="{{ \Focal\Filament\Resources\ContactResource::getUrl('index') }}"
+                    href="{{ \Odden\Filament\Resources\ContactResource::getUrl('index') }}"
                     class="hub-subnav-item {{ $this->currentWorkspaceTab === 'prospecting' ? 'active' : '' }}"
                 >
                     Prospecting
                 </a>
                 <a
-                    href="{{ \Focal\Filament\Resources\DealResource::getUrl('board') }}"
+                    href="{{ \Odden\Filament\Resources\DealResource::getUrl('board') }}"
                     class="hub-subnav-item {{ $this->currentWorkspaceTab === 'deals' ? 'active' : '' }}"
                 >
                     Deals
                 </a>
                 <a
-                    href="{{ \Focal\Filament\Resources\ContactResource::getUrl('index') }}"
+                    href="{{ \Odden\Filament\Resources\ContactResource::getUrl('index') }}"
                     class="hub-subnav-item {{ $this->currentWorkspaceTab === 'tasks' ? 'active' : '' }}"
                 >
                     Tasks
@@ -777,7 +777,7 @@
                     Schedule
                 </button>
                 <a
-                    href="{{ \Focal\Filament\Resources\SalesQuotaResource::getUrl('index') }}"
+                    href="{{ \Odden\Filament\Resources\SalesQuotaResource::getUrl('index') }}"
                     class="hub-subnav-item {{ $this->currentWorkspaceTab === 'dashboards' ? 'active' : '' }}"
                 >
                     Dashboards
@@ -892,7 +892,7 @@
 
                                 <div style="margin-top: 0.25rem;">
                                     <a
-                                        href="{{ \Focal\Filament\Resources\ContactResource::getUrl('index') }}"
+                                        href="{{ \Odden\Filament\Resources\ContactResource::getUrl('index') }}"
                                         style="font-size: 0.75rem; font-weight: 700; color: #0d9488; text-decoration: none;"
                                     >
                                         All tasks in sequence &rarr;

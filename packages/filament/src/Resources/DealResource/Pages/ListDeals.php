@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\DealResource\Pages;
+namespace Odden\Filament\Resources\DealResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Resources\DealResource;
-use Focal\Filament\Widgets\DealPipelineForecastWidget;
+use Odden\Filament\Resources\DealResource;
+use Odden\Filament\Widgets\DealPipelineForecastWidget;
 
 class ListDeals extends ListRecords
 {

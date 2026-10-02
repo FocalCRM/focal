@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\AdAudienceSyncResource\Pages;
+namespace Odden\Filament\Resources\AdAudienceSyncResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\AdAudienceSyncResource;
+use Odden\Filament\Resources\AdAudienceSyncResource;
 
 class ListAdAudienceSyncs extends ListRecords
 {

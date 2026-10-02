@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Database\Factories\PropertyDefinitionFactory;
-use Focal\Core\Enums\PropertyType;
+use Odden\Core\Database\Factories\PropertyDefinitionFactory;
+use Odden\Core\Enums\PropertyType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -54,7 +54,7 @@ class PropertyDefinition extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.properties', 'focal_properties');
+        return config('odden-core.tables.properties', 'odden_properties');
     }
 
     /**

@@ -1,18 +1,18 @@
 ---
 title: Configuration and navigation
-description: How FocalPlugin decides what to register, the navigation groups it uses, and the URLs and route names of its resources and pages.
+description: How OddenPlugin decides what to register, the navigation groups it uses, and the URLs and route names of its resources and pages.
 ---
 
-`FocalPlugin` has no configuration of its own. It has no fluent options, no config file and no environment variables. What it registers depends only on which Focal packages are installed. You change the rest (the panel path, how navigation groups are ordered, colors and so on) on the Filament panel itself.
+`OddenPlugin` has no configuration of its own. It has no fluent options, no config file and no environment variables. What it registers depends only on which Odden packages are installed. You change the rest (the panel path, how navigation groups are ordered, colors and so on) on the Filament panel itself.
 
 ## Plugin API
 
-`Focal\Filament\FocalPlugin` implements `Filament\Contracts\Plugin` and exposes only:
+`Odden\Filament\OddenPlugin` implements `Filament\Contracts\Plugin` and exposes only:
 
 | Method | Description |
 | --- | --- |
-| `FocalPlugin::make(): static` | Resolves the plugin from the container. |
-| `getId(): string` | Returns `'focal'`. |
+| `OddenPlugin::make(): static` | Resolves the plugin from the container. |
+| `getId(): string` | Returns `'odden'`. |
 | `register(Panel $panel): void` | Adds the resources and pages described below to the panel. |
 | `boot(Panel $panel): void` | Does nothing. |
 
@@ -20,16 +20,16 @@ There are no methods for turning individual modules, resources or pages on or of
 
 ## How modules are detected
 
-When the panel is registered, `FocalPlugin::register()` checks whether one model class from each optional module exists:
+When the panel is registered, `OddenPlugin::register()` checks whether one model class from each optional module exists:
 
 | Module | Detected by | Registers |
 | --- | --- | --- |
 | Core (always) | — | `ContactResource`, `CompanyResource`, `CrmListResource`, `PropertyDefinitionResource`; pages `ExecutiveOverview`, `DataQuality` |
-| Sales | `class_exists(Focal\Sales\Models\Deal::class)` | `DealResource`, `PipelineResource`, `QuoteResource`, `SalesQuotaResource`, `SalesEmailTemplateResource`, `SalesSequenceResource`, `SalesPlaybookResource`, `SalesMeetingLinkResource`, `LeadRoutingRuleResource`; page `SalesCockpit` |
-| Service | `class_exists(Focal\Service\Models\Ticket::class)` | `TicketResource`, `SlaPolicyResource`, `KnowledgeArticleResource`, `CannedResponseResource`, `TicketRoutingRuleResource`; pages `ServiceCockpit`, `ServiceAnalytics` |
-| Marketing | `class_exists(Focal\Marketing\Models\Campaign::class)` | `CampaignResource`, `MarketingTemplateResource`, `MarketingFormResource`, `LandingPageResource`, `MarketingWorkflowResource`, `LeadScoringRuleResource`, `MarketingSubscriptionResource`, `NpsSurveyResource`, `MarketingAssetResource`, `MarketingEventResource`, `AdAudienceSyncResource`; pages `MarketingCockpit`, `AbmCockpit`, `MarketingAttribution`, `CampaignBenchmarking`, `MarketingCalendar`, `UtmLinkBuilder`, `SenderDomainHealth` |
+| Sales | `class_exists(Odden\Sales\Models\Deal::class)` | `DealResource`, `PipelineResource`, `QuoteResource`, `SalesQuotaResource`, `SalesEmailTemplateResource`, `SalesSequenceResource`, `SalesPlaybookResource`, `SalesMeetingLinkResource`, `LeadRoutingRuleResource`; page `SalesCockpit` |
+| Service | `class_exists(Odden\Service\Models\Ticket::class)` | `TicketResource`, `SlaPolicyResource`, `KnowledgeArticleResource`, `CannedResponseResource`, `TicketRoutingRuleResource`; pages `ServiceCockpit`, `ServiceAnalytics` |
+| Marketing | `class_exists(Odden\Marketing\Models\Campaign::class)` | `CampaignResource`, `MarketingTemplateResource`, `MarketingFormResource`, `LandingPageResource`, `MarketingWorkflowResource`, `LeadScoringRuleResource`, `MarketingSubscriptionResource`, `NpsSurveyResource`, `MarketingAssetResource`, `MarketingEventResource`, `AdAudienceSyncResource`; pages `MarketingCockpit`, `AbmCockpit`, `MarketingAttribution`, `CampaignBenchmarking`, `MarketingCalendar`, `UtmLinkBuilder`, `SenderDomainHealth` |
 
-Resources live in `Focal\Filament\Resources` and pages in `Focal\Filament\Pages`.
+Resources live in `Odden\Filament\Resources` and pages in `Odden\Filament\Pages`.
 
 The check only asks whether the package's code is autoloadable. It doesn't check that the module's service provider booted or that its migrations ran, so run each module's migrations as soon as you install it. Otherwise its pages fail with missing-table errors.
 
@@ -62,12 +62,12 @@ Sales and Marketing each have an item labelled **Email Templates**. The Sales on
 To control the order of the groups in the sidebar, list them on the panel with Filament's `navigationGroups()`. The labels must match exactly:
 
 ```php
-use Focal\Filament\FocalPlugin;
+use Odden\Filament\OddenPlugin;
 
 return $panel
     // ...
     ->plugins([
-        FocalPlugin::make(),
+        OddenPlugin::make(),
     ])
     ->navigationGroups([
         'Executive',
@@ -139,8 +139,8 @@ Pages use `filament.admin.pages.{slug}`:
 To build URLs in code, use Filament's helpers rather than hard-coding paths:
 
 ```php
-use Focal\Filament\Pages\SalesCockpit;
-use Focal\Filament\Resources\DealResource;
+use Odden\Filament\Pages\SalesCockpit;
+use Odden\Filament\Resources\DealResource;
 
 $board = DealResource::getUrl('board');
 $deal = DealResource::getUrl('view', ['record' => $deal]);
@@ -149,4 +149,4 @@ $cockpit = SalesCockpit::getUrl();
 
 ## Using more than one panel
 
-You can register `FocalPlugin::make()` on several panels. Each panel gets its own copy of the resources and pages under its own path and route prefix (`filament.{panel-id}.…`).
+You can register `OddenPlugin::make()` on several panels. Each panel gets its own copy of the resources and pages under its own path and route prefix (`filament.{panel-id}.…`).

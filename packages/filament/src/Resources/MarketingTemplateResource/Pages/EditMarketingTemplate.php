@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\MarketingTemplateResource\Pages;
+namespace Odden\Filament\Resources\MarketingTemplateResource\Pages;
 
-use DoPHP\MailBuilder\Filament\Components\EmailSlotBuilder;
-use DoPHP\MailBuilder\MailBuilder;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\MailBuilder\MailBuilder;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\Textarea;
@@ -13,9 +13,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Resources\MarketingTemplateResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Filament\Resources\MarketingTemplateResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Mail;
 
@@ -34,13 +34,13 @@ class EditMarketingTemplate extends EditRecord
                 ->modalDescription(fn (MarketingTemplate $record): string => "Subject: {$record->subject}")
                 ->modalSubmitAction(false)
                 ->modalCancelActionLabel('Close')
-                ->modalContent(fn (MarketingTemplate $record): View => view('focal-marketing::template-preview', [
+                ->modalContent(fn (MarketingTemplate $record): View => view('odden-marketing::template-preview', [
                     'renderedHtml' => MarketingTemplateResource::renderSampleHtml($record),
                     'template' => $record,
                 ])),
 
             Action::make('sendTest')
-                ->authorize(FocalAuthorization::forRecord('update', MarketingTemplateResource::class))
+                ->authorize(OddenAuthorization::forRecord('update', MarketingTemplateResource::class))
                 ->label('Send Test Email')
                 ->icon(Heroicon::PaperAirplane)
                 ->color('success')
@@ -50,7 +50,7 @@ class EditMarketingTemplate extends EditRecord
                     TextInput::make('recipient_email')
                         ->label('Recipient Email')
                         ->email()
-                        ->default(fn (): string => auth()->user() !== null ? auth()->user()->email : 'admin@focal.test')
+                        ->default(fn (): string => auth()->user() !== null ? auth()->user()->email : 'admin@odden.test')
                         ->required(),
                 ])
                 ->action(function (MarketingTemplate $record, array $data): void {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support;
+namespace Odden\Core\Support;
 
 class FreemailDomains
 {
@@ -84,7 +84,7 @@ class FreemailDomains
         $normalized = strtolower(trim($domain));
 
         /** @var list<string> $configured */
-        $configured = config('focal-core.freemail_domains', []);
+        $configured = config('odden-core.freemail_domains', []);
 
         if (in_array($normalized, $configured, true)) {
             return true;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Support;
+namespace Odden\Filament\Support;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -12,8 +12,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
-use Focal\Core\Enums\PropertyType;
-use Focal\Core\Models\PropertyDefinition;
+use Odden\Core\Enums\PropertyType;
+use Odden\Core\Models\PropertyDefinition;
 use Illuminate\Support\Facades\Schema as DbSchema;
 
 class CustomPropertyFieldBuilder
@@ -26,7 +26,7 @@ class CustomPropertyFieldBuilder
     public static function makeSection(string $entityType): array
     {
         // Guard against running before migrations have executed
-        if (! DbSchema::hasTable(config('focal-core.tables.properties', 'focal_properties'))) {
+        if (! DbSchema::hasTable(config('odden-core.tables.properties', 'odden_properties'))) {
             return [];
         }
 

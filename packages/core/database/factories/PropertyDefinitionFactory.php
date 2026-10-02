@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Database\Factories;
+namespace Odden\Core\Database\Factories;
 
-use Focal\Core\Enums\PropertyType;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\PropertyDefinition;
+use Odden\Core\Enums\PropertyType;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\PropertyDefinition;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

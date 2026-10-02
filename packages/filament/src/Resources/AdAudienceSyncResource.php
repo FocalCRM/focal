@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -21,13 +21,13 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Resources\AdAudienceSyncResource\Pages\CreateAdAudienceSync;
-use Focal\Filament\Resources\AdAudienceSyncResource\Pages\EditAdAudienceSync;
-use Focal\Filament\Resources\AdAudienceSyncResource\Pages\ListAdAudienceSyncs;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\SyncAdAudienceAction;
-use Focal\Marketing\Models\AdAudienceSync;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Resources\AdAudienceSyncResource\Pages\CreateAdAudienceSync;
+use Odden\Filament\Resources\AdAudienceSyncResource\Pages\EditAdAudienceSync;
+use Odden\Filament\Resources\AdAudienceSyncResource\Pages\ListAdAudienceSyncs;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\SyncAdAudienceAction;
+use Odden\Marketing\Models\AdAudienceSync;
 use UnitEnum;
 
 class AdAudienceSyncResource extends Resource
@@ -125,7 +125,7 @@ class AdAudienceSyncResource extends Resource
             ->actions([
                 Action::make('syncNow')
                     ->label('Sync Now')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::ArrowPath)
                     ->color('success')
                     ->action(function (AdAudienceSync $record): void {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -20,10 +20,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\SalesEmailTemplateResource\Pages\CreateSalesEmailTemplate;
-use Focal\Filament\Resources\SalesEmailTemplateResource\Pages\EditSalesEmailTemplate;
-use Focal\Filament\Resources\SalesEmailTemplateResource\Pages\ListSalesEmailTemplates;
-use Focal\Sales\Models\SalesEmailTemplate;
+use Odden\Filament\Resources\SalesEmailTemplateResource\Pages\CreateSalesEmailTemplate;
+use Odden\Filament\Resources\SalesEmailTemplateResource\Pages\EditSalesEmailTemplate;
+use Odden\Filament\Resources\SalesEmailTemplateResource\Pages\ListSalesEmailTemplates;
+use Odden\Sales\Models\SalesEmailTemplate;
 use UnitEnum;
 
 class SalesEmailTemplateResource extends Resource

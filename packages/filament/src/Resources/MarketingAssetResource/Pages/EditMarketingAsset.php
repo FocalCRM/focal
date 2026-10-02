@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\MarketingAssetResource\Pages;
+namespace Odden\Filament\Resources\MarketingAssetResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\MarketingAssetResource;
+use Odden\Filament\Resources\MarketingAssetResource;
 
 class EditMarketingAsset extends EditRecord
 {

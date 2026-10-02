@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Actions\EvaluateActiveListAction;
-use Focal\Core\Database\Factories\CrmListFactory;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Support\UserModel;
+use Odden\Core\Actions\EvaluateActiveListAction;
+use Odden\Core\Database\Factories\CrmListFactory;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,7 +51,7 @@ class CrmList extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.lists', 'focal_lists');
+        return config('odden-core.tables.lists', 'odden_lists');
     }
 
     /**
@@ -86,7 +86,7 @@ class CrmList extends Model
     {
         return $this->belongsToMany(
             Contact::class,
-            config('focal-core.tables.list_memberships', 'focal_list_memberships'),
+            config('odden-core.tables.list_memberships', 'odden_list_memberships'),
             'list_id',
             'member_id'
         )
@@ -103,7 +103,7 @@ class CrmList extends Model
     {
         return $this->belongsToMany(
             Company::class,
-            config('focal-core.tables.list_memberships', 'focal_list_memberships'),
+            config('odden-core.tables.list_memberships', 'odden_list_memberships'),
             'list_id',
             'member_id'
         )

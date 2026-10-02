@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\CrmListResource\Pages;
+namespace Odden\Filament\Resources\CrmListResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Resources\CrmListResource;
-use Focal\Filament\Support\FocalAuthorization;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Resources\CrmListResource;
+use Odden\Filament\Support\OddenAuthorization;
 
 class ViewCrmList extends ViewRecord
 {
@@ -26,7 +26,7 @@ class ViewCrmList extends ViewRecord
                 ->icon(Heroicon::ArrowPath)
                 ->color('primary')
                 ->visible(fn (): bool => $this->getRecord() instanceof CrmList && $this->getRecord()->type === ListType::Active)
-                ->authorize(FocalAuthorization::forRecord('update', CrmListResource::class))
+                ->authorize(OddenAuthorization::forRecord('update', CrmListResource::class))
                 ->action(function (): void {
                     /** @var CrmList $record */
                     $record = $this->getRecord();

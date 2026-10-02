@@ -3,7 +3,7 @@ title: Quotes
 description: Generate quotes from deals, manage quote totals, and let customers view and accept quotes online.
 ---
 
-A `Focal\Sales\Models\Quote` is a proposal attached to a deal. Each quote gets a random public token, and the package serves a public page where the customer can review the quote and accept it by typing their name and email. Acceptance closes the deal as won.
+An `Odden\Sales\Models\Quote` is a proposal attached to a deal. Each quote gets a random public token, and the package serves a public page where the customer can review the quote and accept it by typing their name and email. Acceptance closes the deal as won.
 
 ## Quote attributes
 
@@ -24,11 +24,11 @@ A `Focal\Sales\Models\Quote` is a proposal attached to a deal. Each quote gets a
 
 Quotes are soft-deletable. Relations: `deal()`, `items()` (ordered by `sort_order`), and `user()`. `$deal->quotes` returns a deal's quotes, newest first.
 
-`Focal\Sales\Enums\QuoteStatus` has `Draft`, `Sent`, `Approved`, `Accepted`, `Declined`, and `Expired`, with `label()`, `color()`, `isAccepted()`, and `isTerminal()` (true for accepted, declined, and expired). The package sets `sent`, `accepted`, and `expired` itself; `approved` and `declined` are only set by your code.
+`Odden\Sales\Enums\QuoteStatus` has `Draft`, `Sent`, `Approved`, `Accepted`, `Declined`, and `Expired`, with `label()`, `color()`, `isAccepted()`, and `isTerminal()` (true for accepted, declined, and expired). The package sets `sent`, `accepted`, and `expired` itself; `approved` and `declined` are only set by your code.
 
 ## Generating a quote from a deal
 
-`Focal\Sales\Actions\GenerateQuoteFromDealAction` creates a draft quote and copies the deal's [products](deals.md#products) into quote items:
+`Odden\Sales\Actions\GenerateQuoteFromDealAction` creates a draft quote and copies the deal's [products](deals.md#products) into quote items:
 
 ```php
 public function execute(
@@ -42,7 +42,7 @@ public function execute(
 ```
 
 ```php
-use Focal\Sales\Actions\GenerateQuoteFromDealAction;
+use Odden\Sales\Actions\GenerateQuoteFromDealAction;
 
 $quote = app(GenerateQuoteFromDealAction::class)->execute(
     deal: $deal,
@@ -63,7 +63,7 @@ If the deal has no products but a positive `amount`, the quote gets a single ite
 
 ## Quote items and totals
 
-`Focal\Sales\Models\QuoteItem` has the same fields as a deal product: `name`, `sku`, `description`, `unit_price`, `quantity`, `discount_percent`, and `sort_order`. Its `total_price` is calculated on save the same way, so pass `quantity` explicitly here too.
+`Odden\Sales\Models\QuoteItem` has the same fields as a deal product: `name`, `sku`, `description`, `unit_price`, `quantity`, `discount_percent`, and `sort_order`. Its `total_price` is calculated on save the same way, so pass `quantity` explicitly here too.
 
 Saving or deleting an item calls `$quote->recalculateTotals()`, which sets:
 
@@ -73,7 +73,7 @@ Saving or deleting an item calls `$quote->recalculateTotals()`, which sets:
 `discount_amount` and `tax_amount` are amounts you set; the package does not calculate tax. Call `recalculateTotals()` after changing them:
 
 ```php
-use Focal\Sales\Models\QuoteItem;
+use Odden\Sales\Models\QuoteItem;
 
 $quote->update(['discount_amount' => 500, 'tax_amount' => 640]);
 $quote->recalculateTotals();
@@ -90,10 +90,10 @@ Quote items are a snapshot. Changing the deal's products later does not change e
 
 ## Sharing the quote
 
-Send the customer the URL of the `focal.quotes.show` route:
+Send the customer the URL of the `odden.quotes.show` route:
 
 ```php
-$url = route('focal.quotes.show', ['token' => $quote->public_token]);
+$url = route('odden.quotes.show', ['token' => $quote->public_token]);
 ```
 
 The package does not email quotes; send the link with your own mail or notification.
@@ -104,11 +104,11 @@ When the page is opened (`GET /quotes/{token}`):
 - A note activity titled `Proposal Viewed by Customer` is logged on the deal, with the quote ID and visitor IP in its metadata. Only one view note is logged per quote every two hours.
 - The page shows the line items, totals, terms, and notes. If the quote is accepted it shows the signature. If the quote can't be accepted (see [Which quotes can be accepted](#which-quotes-can-be-accepted)) it shows a "Proposal Declined" or "Proposal Expired" notice saying the quote is no longer available for acceptance, and no form. Otherwise it shows an acceptance form.
 
-The page is the Blade view `focal-sales::quotes.public-portal`. Override it by creating `resources/views/vendor/focal-sales/quotes/public-portal.blade.php` in your app.
+The page is the Blade view `odden-sales::quotes.public-portal`. Override it by creating `resources/views/vendor/odden-sales/quotes/public-portal.blade.php` in your app.
 
 ## Accepting a quote
 
-The form posts to `focal.quotes.accept` (`POST /quotes/{token}/accept`), which is rate limited by Core's `focal-public` limiter. It validates:
+The form posts to `odden.quotes.accept` (`POST /quotes/{token}/accept`), which is rate limited by Core's `odden-public` limiter. It validates:
 
 | Field | Rules |
 | --- | --- |
@@ -116,7 +116,7 @@ The form posts to `focal.quotes.accept` (`POST /quotes/{token}/accept`), which i
 | `signed_email` | required, email, max 255 |
 | `agree_terms` | accepted |
 
-It then calls `Focal\Sales\Actions\AcceptQuoteAction` and redirects back to the quote page:
+It then calls `Odden\Sales\Actions\AcceptQuoteAction` and redirects back to the quote page:
 
 - On success, with a `status` flash message.
 - If the quote can't be accepted, with an `error` validation error holding the `QuoteNotAcceptableException` message, such as "This quote proposal has expired."
@@ -125,7 +125,7 @@ It then calls `Focal\Sales\Actions\AcceptQuoteAction` and redirects back to the 
 You can call the action directly, for example to record a signature captured elsewhere:
 
 ```php
-use Focal\Sales\Actions\AcceptQuoteAction;
+use Odden\Sales\Actions\AcceptQuoteAction;
 
 $quote = app(AcceptQuoteAction::class)->execute(
     $quote->public_token,
@@ -134,7 +134,7 @@ $quote = app(AcceptQuoteAction::class)->execute(
 );
 ```
 
-It throws `Focal\Sales\Exceptions\QuoteNotAcceptableException` (a subclass of `InvalidArgumentException`) if no quote has the token or the quote can't be accepted. Its messages are safe to show to the customer.
+It throws `Odden\Sales\Exceptions\QuoteNotAcceptableException` (a subclass of `InvalidArgumentException`) if no quote has the token or the quote can't be accepted. Its messages are safe to show to the customer.
 
 ### Which quotes can be accepted
 

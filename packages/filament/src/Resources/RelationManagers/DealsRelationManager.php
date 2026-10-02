@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\RelationManagers;
+namespace Odden\Filament\Resources\RelationManagers;
 
 use Filament\Actions\AttachAction;
 use Filament\Actions\DetachAction;
@@ -12,8 +12,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
 
 class DealsRelationManager extends RelationManager
 {

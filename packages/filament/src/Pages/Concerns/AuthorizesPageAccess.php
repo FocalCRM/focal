@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages\Concerns;
+namespace Odden\Filament\Pages\Concerns;
 
 use Filament\Resources\Resource as FilamentResource;
-use Focal\Filament\Support\FocalAuthorization;
+use Odden\Filament\Support\OddenAuthorization;
 
 /**
  * Gates a custom page on `viewAny` for every resource whose data it shows.
@@ -22,6 +22,6 @@ trait AuthorizesPageAccess
 
     public static function canAccess(): bool
     {
-        return FocalAuthorization::canViewAny(static::getAuthorizationResources());
+        return OddenAuthorization::canViewAny(static::getAuthorizationResources());
     }
 }

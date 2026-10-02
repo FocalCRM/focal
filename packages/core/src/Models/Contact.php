@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Database\Factories\ContactFactory;
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Support\UserModel;
-use Focal\Core\Traits\AuditsProperties;
-use Focal\Core\Traits\BelongsToTeam;
-use Focal\Core\Traits\HasActivities;
-use Focal\Core\Traits\HasAssociations;
-use Focal\Core\Traits\HasCustomProperties;
-use Focal\Core\Traits\HasLifecycleStageTransitions;
+use Odden\Core\Database\Factories\ContactFactory;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Support\UserModel;
+use Odden\Core\Traits\AuditsProperties;
+use Odden\Core\Traits\BelongsToTeam;
+use Odden\Core\Traits\HasActivities;
+use Odden\Core\Traits\HasAssociations;
+use Odden\Core\Traits\HasCustomProperties;
+use Odden\Core\Traits\HasLifecycleStageTransitions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -126,7 +126,7 @@ class Contact extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.contacts', 'focal_contacts');
+        return config('odden-core.tables.contacts', 'odden_contacts');
     }
 
     /**
@@ -221,9 +221,9 @@ class Contact extends Model
             $this->updateQuietly(['marketing_verification_token' => $token]);
         }
 
-        // The preference center is served by focalcrm/marketing when it is installed.
-        return Route::has('focal.marketing.preferences.show')
-            ? route('focal.marketing.preferences.show', $token)
+        // The preference center is served by getodden/crm-marketing when it is installed.
+        return Route::has('odden.marketing.preferences.show')
+            ? route('odden.marketing.preferences.show', $token)
             : url('/marketing/preferences/'.$token);
     }
 
@@ -248,7 +248,7 @@ class Contact extends Model
     {
         return $this->belongsToMany(
             Company::class,
-            config('focal-core.tables.associations', 'focal_associations'),
+            config('odden-core.tables.associations', 'odden_associations'),
             'parent_id',
             'child_id'
         )

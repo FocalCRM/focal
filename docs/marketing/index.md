@@ -1,16 +1,16 @@
 ---
 title: Marketing
-description: What the focalcrm/marketing package adds, its models, scheduled commands, configuration, and routes.
+description: What the getodden/crm-marketing package adds, its models, scheduled commands, configuration, and routes.
 ---
 
-`focalcrm/marketing` adds email marketing and lead capture to Focal. It stores everything in your database, links every record to Core's contacts, companies, and lists, and builds its emails with [`dophp/laravel-mail-builder`](email-templates.md).
+`getodden/crm-marketing` adds email marketing and lead capture to Odden. It stores everything in your database, links every record to Core's contacts, companies, and lists, and builds its emails with [`getodden/mail`](email-templates.md).
 
 ```bash
-composer require focalcrm/marketing
+composer require getodden/crm-marketing
 php artisan migrate
 ```
 
-The package registers `Focal\Marketing\MarketingServiceProvider` through package discovery. See [Installation](../installation.md) for the full setup, and [Core concepts](../core/index.md) for contacts, companies, and lists.
+The package registers `Odden\Marketing\MarketingServiceProvider` through package discovery. See [Installation](../installation.md) for the full setup, and [Core concepts](../core/index.md) for contacts, companies, and lists.
 
 ## The two halves
 
@@ -36,21 +36,21 @@ The module has an email side and a lead side.
 
 ## Models
 
-All models live in `Focal\Marketing\Models`. The email side uses these:
+All models live in `Odden\Marketing\Models`. The email side uses these:
 
 | Model | Table (config key) | What it holds |
 | :--- | :--- | :--- |
-| `Campaign` | `focal_marketing_campaigns` (`tables.campaigns`) | A broadcast email: subject, sender, template, audience, schedule, A/B settings, counters |
-| `CampaignRecipient` | `focal_marketing_campaign_recipients` (`tables.recipients`) | One row per contact a campaign was sent or staged for, with its tracking and unsubscribe tokens |
-| `MarketingTemplate` | `focal_marketing_templates` (`tables.templates`) | Reusable email content: mail builder slots, compiled HTML and text, variant B |
-| `MarketingTemplateRevision` | `focal_marketing_template_revisions` | A snapshot of a template, taken on every save |
-| `MarketingTemplateTranslation` | `focal_marketing_template_translations` | Per-locale subject, preview text, and body for a template |
-| `MarketingSavedBlock` | `focal_marketing_saved_blocks` | A reusable slot saved for the template editor |
-| `MarketingSubscription` | `focal_marketing_subscriptions` (`tables.subscriptions`) | Global subscription status per email address |
-| `MarketingSubscriptionTopic` | `focal_marketing_subscription_topics` (`tables.subscription_topics`) | A communication topic shown in the preference center |
-| `MarketingContactTopic` | `focal_marketing_contact_topics` (`tables.contact_topics`) | An email address's opt-in or opt-out for one topic |
-| `EmailSuppression` | `focal_marketing_suppressions` (`tables.suppressions`) | The global do-not-send list |
-| `EspEvent` | `focal_marketing_esp_events` (`tables.esp_events`) | Every event received from an email provider webhook |
+| `Campaign` | `odden_marketing_campaigns` (`tables.campaigns`) | A broadcast email: subject, sender, template, audience, schedule, A/B settings, counters |
+| `CampaignRecipient` | `odden_marketing_campaign_recipients` (`tables.recipients`) | One row per contact a campaign was sent or staged for, with its tracking and unsubscribe tokens |
+| `MarketingTemplate` | `odden_marketing_templates` (`tables.templates`) | Reusable email content: mail builder slots, compiled HTML and text, variant B |
+| `MarketingTemplateRevision` | `odden_marketing_template_revisions` | A snapshot of a template, taken on every save |
+| `MarketingTemplateTranslation` | `odden_marketing_template_translations` | Per-locale subject, preview text, and body for a template |
+| `MarketingSavedBlock` | `odden_marketing_saved_blocks` | A reusable slot saved for the template editor |
+| `MarketingSubscription` | `odden_marketing_subscriptions` (`tables.subscriptions`) | Global subscription status per email address |
+| `MarketingSubscriptionTopic` | `odden_marketing_subscription_topics` (`tables.subscription_topics`) | A communication topic shown in the preference center |
+| `MarketingContactTopic` | `odden_marketing_contact_topics` (`tables.contact_topics`) | An email address's opt-in or opt-out for one topic |
+| `EmailSuppression` | `odden_marketing_suppressions` (`tables.suppressions`) | The global do-not-send list |
+| `EspEvent` | `odden_marketing_esp_events` (`tables.esp_events`) | Every event received from an email provider webhook |
 
 The lead side adds forms, landing pages, visitor sessions, scoring rules, workflows, events, assets, NPS surveys, and SMS messages. Their pages document them.
 
@@ -69,7 +69,7 @@ Each enum has `getLabel()`, and all but `CampaignType` have `getColor()` (a Fila
 
 ### Relations added to Contact
 
-When the package boots, it adds these relations to `Focal\Core\Models\Contact`:
+When the package boots, it adds these relations to `Odden\Core\Models\Contact`:
 
 | Relation | Returns |
 | :--- | :--- |
@@ -93,11 +93,11 @@ Every email the package sends is queued, never sent during the request or comman
 - campaign proofs (`SendCampaignProofAction`)
 - the [transactional API](transactional-email.md)
 
-**Run a queue worker**, or nothing is delivered. Every marketing mailable (`MarketingMessageMailable`, `CampaignProofMailable`, and `TransactionalTemplateMailable`) is pushed to the queue only after the surrounding database transaction commits, like Sales and Service mail, so mail queued inside a transaction that rolls back is never sent. The mail goes on your default queue connection and queue unless you set `FOCAL_MARKETING_MAIL_CONNECTION` and `FOCAL_MARKETING_MAIL_QUEUE`, and through your default mailer unless you set `FOCAL_MARKETING_MAILER`:
+**Run a queue worker**, or nothing is delivered. Every marketing mailable (`MarketingMessageMailable`, `CampaignProofMailable`, and `TransactionalTemplateMailable`) is pushed to the queue only after the surrounding database transaction commits, like Sales and Service mail, so mail queued inside a transaction that rolls back is never sent. The mail goes on your default queue connection and queue unless you set `ODDEN_MARKETING_MAIL_CONNECTION` and `ODDEN_MARKETING_MAIL_QUEUE`, and through your default mailer unless you set `ODDEN_MARKETING_MAILER`:
 
 ```env
-FOCAL_MARKETING_MAIL_QUEUE=marketing-mail
-FOCAL_MARKETING_MAILER=ses
+ODDEN_MARKETING_MAIL_QUEUE=marketing-mail
+ODDEN_MARKETING_MAILER=ses
 ```
 
 ```bash
@@ -123,43 +123,43 @@ The package registers five Artisan commands but doesn't schedule them. Add them 
 Publish the config file to change any of these:
 
 ```bash
-php artisan vendor:publish --tag=focal-marketing-config
+php artisan vendor:publish --tag=odden-marketing-config
 ```
 
 | Key | Default | Environment variable | What it does |
 | :--- | :--- | :--- | :--- |
-| `tables.*` | `focal_marketing_*` names | | Table names for the models listed above and the lead-side models |
-| `defaults.sender_name` | `Focal Marketing` | `MARKETING_FROM_NAME` | Sender name for campaign messages and proofs when the campaign has none, and for workflow emails |
-| `defaults.sender_email` | `newsletter@focal.test` | `MARKETING_FROM_EMAIL` | Sender address for campaign messages and proofs when the campaign has none, and for workflow emails |
-| `defaults.reply_to` | `support@focal.test` | `MARKETING_REPLY_TO` | Reply-to address for campaign proofs when the campaign has none, and for workflow emails |
-| `mail.mailer` | `null` | `FOCAL_MARKETING_MAILER` | Mailer (from `config/mail.php`) for all marketing mail. Empty uses the default mailer |
-| `mail.connection` | `null` | `FOCAL_MARKETING_MAIL_CONNECTION` | Queue connection for marketing mail. Empty uses the default connection |
-| `mail.queue` | `null` | `FOCAL_MARKETING_MAIL_QUEUE` | Queue name for marketing mail. Empty uses the connection's default queue |
+| `tables.*` | `odden_marketing_*` names | | Table names for the models listed above and the lead-side models |
+| `defaults.sender_name` | `Odden Marketing` | `MARKETING_FROM_NAME` | Sender name for campaign messages and proofs when the campaign has none, and for workflow emails |
+| `defaults.sender_email` | `newsletter@odden.test` | `MARKETING_FROM_EMAIL` | Sender address for campaign messages and proofs when the campaign has none, and for workflow emails |
+| `defaults.reply_to` | `support@odden.test` | `MARKETING_REPLY_TO` | Reply-to address for campaign proofs when the campaign has none, and for workflow emails |
+| `mail.mailer` | `null` | `ODDEN_MARKETING_MAILER` | Mailer (from `config/mail.php`) for all marketing mail. Empty uses the default mailer |
+| `mail.connection` | `null` | `ODDEN_MARKETING_MAIL_CONNECTION` | Queue connection for marketing mail. Empty uses the default connection |
+| `mail.queue` | `null` | `ODDEN_MARKETING_MAIL_QUEUE` | Queue name for marketing mail. Empty uses the connection's default queue |
 | `fatigue_protection.enabled` | `false` | `MARKETING_FATIGUE_PROTECTION_ENABLED` | Skip contacts who were emailed too recently during campaign dispatch |
 | `fatigue_protection.max_emails_per_7_days` | `2` | `MARKETING_MAX_EMAILS_7_DAYS` | Campaign emails a contact may receive in a rolling 7 days |
 | `fatigue_protection.min_hours_between_sends` | `24` | `MARKETING_MIN_HOURS_BETWEEN_SENDS` | Minimum hours between two campaign emails to one contact |
 | `sales_handoff.auto_handoff_on_sql` | `true` | `MARKETING_AUTO_HANDOFF_ON_SQL` | See [Lead scoring](lead-scoring.md) |
 | `sales_handoff.sql_score_threshold` | `100` | `MARKETING_SQL_THRESHOLD` | See [Lead scoring](lead-scoring.md) |
 | `sales_handoff.default_deal_amount` | `10000.00` | `MARKETING_HANDOFF_DEAL_AMOUNT` | See [Lead scoring](lead-scoring.md) |
-| `routes.enabled` | `true` | `FOCAL_MARKETING_ROUTES_ENABLED` | Register the package's routes |
-| `routes.web.domain` | `null` | `FOCAL_MARKETING_DOMAIN` | Domain for the `web` route group |
-| `routes.web.prefix` | `''` | `FOCAL_MARKETING_PREFIX` | Path prefix for the `web` route group |
+| `routes.enabled` | `true` | `ODDEN_MARKETING_ROUTES_ENABLED` | Register the package's routes |
+| `routes.web.domain` | `null` | `ODDEN_MARKETING_DOMAIN` | Domain for the `web` route group |
+| `routes.web.prefix` | `''` | `ODDEN_MARKETING_PREFIX` | Path prefix for the `web` route group |
 | `routes.web.middleware` | `['web']` | | Middleware for the `web` route group |
-| `routes.api.domain` | `null` | `FOCAL_MARKETING_DOMAIN` | Domain for the `api` route group |
-| `routes.api.prefix` | `api/marketing` | `FOCAL_MARKETING_API_PREFIX` | Path prefix for the `api` route group |
+| `routes.api.domain` | `null` | `ODDEN_MARKETING_DOMAIN` | Domain for the `api` route group |
+| `routes.api.prefix` | `api/marketing` | `ODDEN_MARKETING_API_PREFIX` | Path prefix for the `api` route group |
 | `routes.api.middleware` | `['web']` | | Middleware for the `api` route group |
-| `api.token` | `null` | `FOCAL_MARKETING_API_TOKEN` | Shared secret for the server-to-server endpoints |
-| `amp.allowed_origins` | `https://mail.google.com`, `https://outlook.live.com`, `https://mail.yahoo.com`, `https://mail.aol.com` | `FOCAL_MARKETING_AMP_ALLOWED_ORIGINS` (comma-separated) | Email client origins allowed to call the [AMP endpoints](email-templates.md#amp-for-email) |
-| `webhooks.outbound_url` | `null` | `FOCAL_MARKETING_WEBHOOK_URL` | Fallback URL for outbound webhook notifications when a request doesn't pass `webhook_url` |
-| `webhooks.secret` | `null` | `FOCAL_MARKETING_WEBHOOK_SECRET` | Fallback signing secret for outbound webhooks when a request doesn't pass `webhook_secret`. With no secret at all, the webhook isn't sent |
+| `api.token` | `null` | `ODDEN_MARKETING_API_TOKEN` | Shared secret for the server-to-server endpoints |
+| `amp.allowed_origins` | `https://mail.google.com`, `https://outlook.live.com`, `https://mail.yahoo.com`, `https://mail.aol.com` | `ODDEN_MARKETING_AMP_ALLOWED_ORIGINS` (comma-separated) | Email client origins allowed to call the [AMP endpoints](email-templates.md#amp-for-email) |
+| `webhooks.outbound_url` | `null` | `ODDEN_MARKETING_WEBHOOK_URL` | Fallback URL for outbound webhook notifications when a request doesn't pass `webhook_url` |
+| `webhooks.secret` | `null` | `ODDEN_MARKETING_WEBHOOK_SECRET` | Fallback signing secret for outbound webhooks when a request doesn't pass `webhook_secret`. With no secret at all, the webhook isn't sent |
 
 See [Transactional email](transactional-email.md#webhook-notifications) for how the `webhooks.*` keys are used.
 
 ## Routes
 
-Routes are registered in two groups whose attributes come from `focal-marketing.routes.web` and `focal-marketing.routes.api`. Empty values are dropped, so the default `web` group has no prefix and no domain. [Configuration](../configuration.md#public-routes) explains the shared route options.
+Routes are registered in two groups whose attributes come from `odden-marketing.routes.web` and `odden-marketing.routes.api`. Empty values are dropped, so the default `web` group has no prefix and no domain. [Configuration](../configuration.md#public-routes) explains the shared route options.
 
-If you set `routes.enabled` to `false`, register your own routes with the same names: models and emails build their links with `route('focal.marketing.…')`.
+If you set `routes.enabled` to `false`, register your own routes with the same names: models and emails build their links with `route('odden.marketing.…')`.
 
 ### `web` group
 
@@ -167,16 +167,16 @@ These are the routes for the email side. The group also holds the hosted form, l
 
 | Method | URI | Name | Notes |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/marketing/track/open/{token}` | `focal.marketing.track.open` | Open-tracking pixel |
-| `GET` | `/marketing/track/click/{token}` | `focal.marketing.track.click` | Click redirect, destination in `?url=`, signed with `?sig=`. Unsigned links return `404` |
-| `GET` | `/marketing/unsubscribe/{token}` | `focal.marketing.unsubscribe.show` | Unsubscribe confirmation page |
-| `POST` | `/marketing/unsubscribe/{token}` | `focal.marketing.unsubscribe.process` | `throttle:focal-public`, CSRF protected |
-| `GET` | `/marketing/preferences/{token}` | `focal.marketing.preferences.show` | Preference center |
-| `POST` | `/marketing/preferences/{token}` | `focal.marketing.preferences.update` | `throttle:focal-public`, CSRF protected |
-| `GET` | `/marketing/confirm/{token}` | `focal.marketing.confirm` | Double opt-in confirmation |
-| `POST` | `/marketing/webhooks/esp/{provider}` | `focal.marketing.webhooks.esp` | API token, `throttle:focal-api`, CSRF exempt |
-| `GET` | `/marketing/images/countdown-timer.svg` | `focal.marketing.images.countdown-timer` | Dynamic SVG image |
-| `GET` | `/marketing/images/badge.svg` | `focal.marketing.images.badge` | Dynamic SVG image |
+| `GET` | `/marketing/track/open/{token}` | `odden.marketing.track.open` | Open-tracking pixel |
+| `GET` | `/marketing/track/click/{token}` | `odden.marketing.track.click` | Click redirect, destination in `?url=`, signed with `?sig=`. Unsigned links return `404` |
+| `GET` | `/marketing/unsubscribe/{token}` | `odden.marketing.unsubscribe.show` | Unsubscribe confirmation page |
+| `POST` | `/marketing/unsubscribe/{token}` | `odden.marketing.unsubscribe.process` | `throttle:odden-public`, CSRF protected |
+| `GET` | `/marketing/preferences/{token}` | `odden.marketing.preferences.show` | Preference center |
+| `POST` | `/marketing/preferences/{token}` | `odden.marketing.preferences.update` | `throttle:odden-public`, CSRF protected |
+| `GET` | `/marketing/confirm/{token}` | `odden.marketing.confirm` | Double opt-in confirmation |
+| `POST` | `/marketing/webhooks/esp/{provider}` | `odden.marketing.webhooks.esp` | API token, `throttle:odden-api`, CSRF exempt |
+| `GET` | `/marketing/images/countdown-timer.svg` | `odden.marketing.images.countdown-timer` | Dynamic SVG image |
+| `GET` | `/marketing/images/badge.svg` | `odden.marketing.images.badge` | Dynamic SVG image |
 
 ### `api` group
 
@@ -184,29 +184,29 @@ Every route in this group is exempt from CSRF verification. The default prefix i
 
 | Method | URI | Name | Protection |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/templates/{template}/send` | `focal.marketing.templates.send` | API token, `throttle:focal-api` |
-| `POST` | `/templates/{template}/send-batch` | `focal.marketing.templates.send-batch` | API token, `throttle:focal-api` |
-| `POST` | `/webhooks/deliverability` | `focal.marketing.webhooks.deliverability` | API token, `throttle:focal-api` |
-| `POST` | `/amp/feedback` | `focal.marketing.amp.feedback` | `throttle:focal-public`, `amp.allowed_origins` |
-| `POST` | `/amp/rsvp` | `focal.marketing.amp.rsvp` | `throttle:focal-public`, `amp.allowed_origins`, signed RSVP token |
-| `POST` | `/forms/{slug}` | `focal.marketing.forms.api-submit` | `throttle:focal-public` |
-| `POST` | `/events/{slug}/register` | `focal.marketing.events.register` | `throttle:focal-public` |
-| `POST` | `/leads/webhook/{source?}` | `focal.marketing.leads.webhook` | API token, `throttle:focal-api` |
-| `POST` | `/events/{slug}/attendance-webhook` | `focal.marketing.events.attendance-webhook` | API token, `throttle:focal-api` |
-| `POST` | `/events/track` | `focal.marketing.events.track` | API token, `throttle:focal-api` |
-| `POST` | `/workflows/{workflow}/enroll` | `focal.marketing.workflows.enroll-webhook` | API token, `throttle:focal-api` |
+| `POST` | `/templates/{template}/send` | `odden.marketing.templates.send` | API token, `throttle:odden-api` |
+| `POST` | `/templates/{template}/send-batch` | `odden.marketing.templates.send-batch` | API token, `throttle:odden-api` |
+| `POST` | `/webhooks/deliverability` | `odden.marketing.webhooks.deliverability` | API token, `throttle:odden-api` |
+| `POST` | `/amp/feedback` | `odden.marketing.amp.feedback` | `throttle:odden-public`, `amp.allowed_origins` |
+| `POST` | `/amp/rsvp` | `odden.marketing.amp.rsvp` | `throttle:odden-public`, `amp.allowed_origins`, signed RSVP token |
+| `POST` | `/forms/{slug}` | `odden.marketing.forms.api-submit` | `throttle:odden-public` |
+| `POST` | `/events/{slug}/register` | `odden.marketing.events.register` | `throttle:odden-public` |
+| `POST` | `/leads/webhook/{source?}` | `odden.marketing.leads.webhook` | API token, `throttle:odden-api` |
+| `POST` | `/events/{slug}/attendance-webhook` | `odden.marketing.events.attendance-webhook` | API token, `throttle:odden-api` |
+| `POST` | `/events/track` | `odden.marketing.events.track` | API token, `throttle:odden-api` |
+| `POST` | `/workflows/{workflow}/enroll` | `odden.marketing.workflows.enroll-webhook` | API token, `throttle:odden-api` |
 
 ### The API token
 
-Every route marked "API token" requires `FOCAL_MARKETING_API_TOKEN`:
+Every route marked "API token" requires `ODDEN_MARKETING_API_TOKEN`:
 
 ```env
-FOCAL_MARKETING_API_TOKEN=a-long-random-string
+ODDEN_MARKETING_API_TOKEN=a-long-random-string
 ```
 
-Generate one with `php -r 'echo bin2hex(random_bytes(32));'`. Send it as `Authorization: Bearer <token>`, an `X-Focal-Token` header, or a `?token=` query parameter.
+Generate one with `php -r 'echo bin2hex(random_bytes(32));'`. Send it as `Authorization: Bearer <token>`, an `X-Odden-Token` header, or a `?token=` query parameter.
 
-The endpoints fail closed: while the token is empty they return `403`, and a missing or wrong token returns `401`. [Configuration](../configuration.md#api-tokens) covers the token and the `focal-public` and `focal-api` rate limiters in detail.
+The endpoints fail closed: while the token is empty they return `403`, and a missing or wrong token returns `401`. [Configuration](../configuration.md#api-tokens) covers the token and the `odden-public` and `odden-api` rate limiters in detail.
 
 ## Admin screens
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Events\ContactCreated;
-use Focal\Core\Models\Contact;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Events\ContactCreated;
+use Odden\Core\Models\Contact;
 
 class CreateContactAction
 {
@@ -32,7 +32,7 @@ class CreateContactAction
 
         event(new ContactCreated($contact));
 
-        if ($autoAssociateCompany || (bool) config('focal-core.auto_associate_companies', false)) {
+        if ($autoAssociateCompany || (bool) config('odden-core.auto_associate_companies', false)) {
             app(AutoAssociateContactCompanyAction::class)->execute($contact, $createCompanyIfMissing);
         }
 

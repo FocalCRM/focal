@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -21,22 +21,22 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Filament\Resources\CampaignResource\Pages\CreateCampaign;
-use Focal\Filament\Resources\CampaignResource\Pages\EditCampaign;
-use Focal\Filament\Resources\CampaignResource\Pages\ListCampaigns;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\AuditCampaignDeliverabilityAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\EvaluateAbTestWinnerAction;
-use Focal\Marketing\Actions\GenerateAiSubjectLinesAction;
-use Focal\Marketing\Actions\SendCampaignProofAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Exceptions\CampaignHasNoAudienceException;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingSubscriptionTopic;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Filament\Resources\CampaignResource\Pages\CreateCampaign;
+use Odden\Filament\Resources\CampaignResource\Pages\EditCampaign;
+use Odden\Filament\Resources\CampaignResource\Pages\ListCampaigns;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\AuditCampaignDeliverabilityAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\EvaluateAbTestWinnerAction;
+use Odden\Marketing\Actions\GenerateAiSubjectLinesAction;
+use Odden\Marketing\Actions\SendCampaignProofAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Exceptions\CampaignHasNoAudienceException;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingSubscriptionTopic;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Contracts\View\View;
 use UnitEnum;
 
@@ -137,17 +137,17 @@ class CampaignResource extends Resource
                     ->schema([
                         TextInput::make('sender_name')
                             ->label('From Name')
-                            ->default(config('focal-marketing.defaults.sender_name', 'Focal Marketing'))
+                            ->default(config('odden-marketing.defaults.sender_name', 'Odden Marketing'))
                             ->required(),
                         TextInput::make('sender_email')
                             ->label('From Email')
                             ->email()
-                            ->default(config('focal-marketing.defaults.sender_email', 'newsletter@focal.test'))
+                            ->default(config('odden-marketing.defaults.sender_email', 'newsletter@odden.test'))
                             ->required(),
                         TextInput::make('reply_to_email')
                             ->label('Reply-To Email')
                             ->email()
-                            ->placeholder('support@focal.test'),
+                            ->placeholder('support@odden.test'),
                         Select::make('list_id')
                             ->label('Target Audience List')
                             ->options(fn (): array => CrmList::query()->pluck('name', 'id')->all())
@@ -262,26 +262,26 @@ class CampaignResource extends Resource
             ->actions([
                 Action::make('preview')
                     ->label('Preview')
-                    ->authorize(FocalAuthorization::forRecord('view', self::class))
+                    ->authorize(OddenAuthorization::forRecord('view', self::class))
                     ->icon(Heroicon::Eye)
                     ->color('info')
                     ->modalHeading(fn (Campaign $record): string => "Email Preview: {$record->name}")
                     ->modalDescription(fn (Campaign $record): string => "Subject: {$record->subject}")
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
-                    ->modalContent(fn (Campaign $record): View => view('focal-marketing::template-preview', [
+                    ->modalContent(fn (Campaign $record): View => view('odden-marketing::template-preview', [
                         'renderedHtml' => self::renderSampleHtml($record),
                         'template' => $record,
                     ])),
                 Action::make('deliverabilityAudit')
                     ->label('Spam Audit')
-                    ->authorize(FocalAuthorization::forRecord('view', self::class))
+                    ->authorize(OddenAuthorization::forRecord('view', self::class))
                     ->icon(Heroicon::ShieldCheck)
                     ->color('warning')
                     ->modalHeading(fn (Campaign $record): string => "Pre-Flight Deliverability Audit: {$record->name}")
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
-                    ->modalContent(fn (Campaign $record): View => view('focal-marketing::campaign-deliverability-audit', [
+                    ->modalContent(fn (Campaign $record): View => view('odden-marketing::campaign-deliverability-audit', [
                         'audit' => app(AuditCampaignDeliverabilityAction::class)->execute($record),
                         'campaign' => $record,
                     ])),
@@ -290,7 +290,7 @@ class CampaignResource extends Resource
                     ->icon(Heroicon::PaperAirplane)
                     ->color('success')
                     ->visible(fn (Campaign $record): bool => in_array($record->status, [CampaignStatus::Draft, CampaignStatus::Scheduled], true))
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->requiresConfirmation()
                     ->modalHeading('Send Broadcast Campaign')
                     ->modalDescription('Are you sure you want to broadcast this campaign immediately to all targeted list recipients?')
@@ -318,7 +318,7 @@ class CampaignResource extends Resource
                     ->icon(Heroicon::Trophy)
                     ->color('warning')
                     ->visible(fn (Campaign $record): bool => $record->is_ab_test && $record->status === CampaignStatus::Sending && $record->ab_winner_variant === null)
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->requiresConfirmation()
                     ->modalHeading('Conclude A/B Test Experiment')
                     ->modalDescription('Calculate current engagement metrics, determine the winning variant, and immediately dispatch it to the remaining audience.')
@@ -336,7 +336,7 @@ class CampaignResource extends Resource
                     ->icon(Heroicon::Sparkles)
                     ->color('info')
                     ->visible(fn (Campaign $record): bool => in_array($record->status, [CampaignStatus::Draft, CampaignStatus::Scheduled], true))
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->modalHeading('AI Campaign Subject & Copy Assistant')
                     ->modalDescription('Generate high-converting subject lines and A/B test variants optimized for your campaign topic and tone.')
                     ->form([
@@ -400,7 +400,7 @@ class CampaignResource extends Resource
                     }),
                 Action::make('sendTestEmail')
                     ->label('Send Test')
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->icon(Heroicon::PaperAirplane)
                     ->color('info')
                     ->modalHeading(fn (Campaign $record): string => "Send Proof / Test Email: {$record->name}")
@@ -410,11 +410,11 @@ class CampaignResource extends Resource
                             ->label('Reviewer Email Address(es)')
                             ->placeholder('reviewer@example.com, marketing-team@example.com')
                             ->helperText('Comma-separated list of email addresses to receive the test broadcast.')
-                            ->default(fn (): string => auth()->user()->email ?? 'test@focal.test')
+                            ->default(fn (): string => auth()->user()->email ?? 'test@odden.test')
                             ->required(),
                         Select::make('sample_contact_id')
                             ->label('Simulate Merge Tags As Contact (Optional)')
-                            ->options(fn (): array => FocalAuthorization::query(ContactResource::class, Contact::class)->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
+                            ->options(fn (): array => OddenAuthorization::query(ContactResource::class, Contact::class)->limit(50)->pluck('first_name', 'id')->map(function ($name, $id): string {
                                 $contact = Contact::find($id);
 
                                 return "{$name} {$contact?->last_name} ({$contact?->email})";
@@ -424,7 +424,7 @@ class CampaignResource extends Resource
                     ])
                     ->action(function (Campaign $record, array $data): void {
                         /** @var Contact|null $sampleContact */
-                        $sampleContact = ! empty($data['sample_contact_id']) ? FocalAuthorization::query(ContactResource::class, Contact::class)->find($data['sample_contact_id']) : null;
+                        $sampleContact = ! empty($data['sample_contact_id']) ? OddenAuthorization::query(ContactResource::class, Contact::class)->find($data['sample_contact_id']) : null;
                         $result = app(SendCampaignProofAction::class)->execute($record, (string) $data['recipient_emails'], $sampleContact);
 
                         if ($result['success']) {
@@ -443,7 +443,7 @@ class CampaignResource extends Resource
                     }),
                 Action::make('duplicate')
                     ->label('Duplicate')
-                    ->authorize(fn (Campaign $record): bool => FocalAuthorization::allows('view', $record, self::class) && FocalAuthorization::allows('create', Campaign::class, self::class))
+                    ->authorize(fn (Campaign $record): bool => OddenAuthorization::allows('view', $record, self::class) && OddenAuthorization::allows('create', Campaign::class, self::class))
                     ->icon(Heroicon::DocumentDuplicate)
                     ->color('gray')
                     ->requiresConfirmation()
@@ -502,7 +502,7 @@ class CampaignResource extends Resource
             '{{contact.last_name}}' => 'Morgan',
             '{{contact.email}}' => 'alex.morgan@acme.com',
             '{{company.name}}' => 'Acme Corporation',
-            '{{unsubscribe_url}}' => route('focal.marketing.preferences.show', 'preview-sample'),
+            '{{unsubscribe_url}}' => route('odden.marketing.preferences.show', 'preview-sample'),
             '{{campaign.name}}' => $campaign->name,
             '{{campaign.subject}}' => $campaign->subject,
         ];

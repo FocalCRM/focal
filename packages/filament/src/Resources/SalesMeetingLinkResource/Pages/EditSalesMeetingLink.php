@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SalesMeetingLinkResource\Pages;
+namespace Odden\Filament\Resources\SalesMeetingLinkResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\SalesMeetingLinkResource;
+use Odden\Filament\Resources\SalesMeetingLinkResource;
 
 class EditSalesMeetingLink extends EditRecord
 {

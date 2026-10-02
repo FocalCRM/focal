@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -21,12 +21,12 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\MarketingWorkflowResource\Pages\CreateMarketingWorkflow;
-use Focal\Filament\Resources\MarketingWorkflowResource\Pages\EditMarketingWorkflow;
-use Focal\Filament\Resources\MarketingWorkflowResource\Pages\ListMarketingWorkflows;
-use Focal\Filament\Resources\MarketingWorkflowResource\RelationManagers\StepsRelationManager;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Filament\Resources\MarketingWorkflowResource\Pages\CreateMarketingWorkflow;
+use Odden\Filament\Resources\MarketingWorkflowResource\Pages\EditMarketingWorkflow;
+use Odden\Filament\Resources\MarketingWorkflowResource\Pages\ListMarketingWorkflows;
+use Odden\Filament\Resources\MarketingWorkflowResource\RelationManagers\StepsRelationManager;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\MarketingWorkflow;
 use Illuminate\Contracts\View\View;
 use UnitEnum;
 
@@ -107,7 +107,7 @@ class MarketingWorkflowResource extends Resource
                     ->modalHeading(fn (MarketingWorkflow $record): string => "Workflow Journey: {$record->name}")
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
-                    ->modalContent(fn (MarketingWorkflow $record): View => view('focal-marketing::workflow-journey', [
+                    ->modalContent(fn (MarketingWorkflow $record): View => view('odden-marketing::workflow-journey', [
                         'workflow' => $record->load('steps'),
                     ])),
                 EditAction::make(),

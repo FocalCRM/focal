@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\TicketResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Service\Actions\DeflectTicketAction;
-use Focal\Service\Enums\MessageSenderType;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\CannedResponse;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\TicketResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Service\Actions\DeflectTicketAction;
+use Odden\Service\Enums\MessageSenderType;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\CannedResponse;
+use Odden\Service\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -37,7 +37,7 @@ class ServiceCockpit extends Page
 
     protected static ?string $title = 'Support Agent Workspace';
 
-    protected string $view = 'focal-filament::pages.service-cockpit';
+    protected string $view = 'odden-filament::pages.service-cockpit';
 
     public string $activeTab = 'triage';
 
@@ -79,7 +79,7 @@ class ServiceCockpit extends Page
 
     public function mount(): void
     {
-        $this->selectedUserId = (int) FocalAuthorization::userId();
+        $this->selectedUserId = (int) OddenAuthorization::userId();
     }
 
     public function setActiveTab(string $tab): void
@@ -106,14 +106,14 @@ class ServiceCockpit extends Page
 
     public function getOpenTicketsCountProperty(): int
     {
-        return FocalAuthorization::query(TicketResource::class, Ticket::class)
+        return OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value])
             ->count();
     }
 
     public function getUnassignedTicketsCountProperty(): int
     {
-        return FocalAuthorization::query(TicketResource::class, Ticket::class)
+        return OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value])
             ->whereNull('owner_id')
             ->count();
@@ -121,9 +121,9 @@ class ServiceCockpit extends Page
 
     public function getMyActiveCountProperty(): int
     {
-        $userId = $this->selectedUserId ?? FocalAuthorization::userId();
+        $userId = $this->selectedUserId ?? OddenAuthorization::userId();
 
-        return FocalAuthorization::query(TicketResource::class, Ticket::class)
+        return OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value, TicketStatus::WaitingOnCustomer->value])
             ->where('owner_id', $userId)
             ->count();
@@ -133,7 +133,7 @@ class ServiceCockpit extends Page
     {
         $oneHourFromNow = now()->addHour();
 
-        return FocalAuthorization::query(TicketResource::class, Ticket::class)
+        return OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])
             ->where(function (Builder $query) use ($oneHourFromNow): void {
                 $query->where('is_sla_response_breached', true)
@@ -154,7 +154,7 @@ class ServiceCockpit extends Page
 
     public function getAverageCsatRatingProperty(): ?float
     {
-        $avg = FocalAuthorization::query(TicketResource::class, Ticket::class)->whereNotNull('csat_rating')->avg('csat_rating');
+        $avg = OddenAuthorization::query(TicketResource::class, Ticket::class)->whereNotNull('csat_rating')->avg('csat_rating');
 
         return $avg !== null ? round((float) $avg, 1) : null;
     }
@@ -164,7 +164,7 @@ class ServiceCockpit extends Page
      */
     public function getTriageTicketsProperty(): Collection
     {
-        $query = FocalAuthorization::query(TicketResource::class, Ticket::class)
+        $query = OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value])
             ->whereNull('owner_id')
             ->with(['contact', 'company', 'slaPolicy'])
@@ -181,9 +181,9 @@ class ServiceCockpit extends Page
      */
     public function getMyTicketsProperty(): Collection
     {
-        $userId = $this->selectedUserId ?? FocalAuthorization::userId();
+        $userId = $this->selectedUserId ?? OddenAuthorization::userId();
 
-        $query = FocalAuthorization::query(TicketResource::class, Ticket::class)
+        $query = OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereIn('status', [TicketStatus::New->value, TicketStatus::Open->value, TicketStatus::WaitingOnAgent->value, TicketStatus::WaitingOnCustomer->value])
             ->where('owner_id', $userId)
             ->with(['contact', 'company', 'slaPolicy'])
@@ -202,7 +202,7 @@ class ServiceCockpit extends Page
     {
         $twoHoursFromNow = now()->addHours(2);
 
-        $query = FocalAuthorization::query(TicketResource::class, Ticket::class)
+        $query = OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereNotIn('status', [TicketStatus::Resolved->value, TicketStatus::Closed->value])
             ->where(function (Builder $q) use ($twoHoursFromNow): void {
                 $q->where('is_sla_response_breached', true)
@@ -232,7 +232,7 @@ class ServiceCockpit extends Page
      */
     public function getAllTicketsProperty(): Collection
     {
-        $query = FocalAuthorization::query(TicketResource::class, Ticket::class)
+        $query = OddenAuthorization::query(TicketResource::class, Ticket::class)
             ->whereNotIn('status', [TicketStatus::Closed->value])
             ->with(['contact', 'company', 'owner', 'slaPolicy'])
             ->orderByRaw("CASE priority WHEN 'urgent' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END")
@@ -265,7 +265,7 @@ class ServiceCockpit extends Page
     {
         $ticket = $this->findTicketForUpdate($ticketId);
 
-        $userId = FocalAuthorization::userId();
+        $userId = OddenAuthorization::userId();
 
         $updates = ['owner_id' => $userId];
         if ($ticket->status === TicketStatus::New) {
@@ -329,7 +329,7 @@ class ServiceCockpit extends Page
         }
 
         /** @var Ticket|null $ticket */
-        $ticket = FocalAuthorization::query(TicketResource::class, Ticket::class)->find($this->replyTicketId);
+        $ticket = OddenAuthorization::query(TicketResource::class, Ticket::class)->find($this->replyTicketId);
         if ($ticket === null) {
             return collect();
         }
@@ -355,7 +355,7 @@ class ServiceCockpit extends Page
 
         $ticket = $this->findTicketForUpdate($this->replyTicketId);
 
-        $userId = (int) FocalAuthorization::userId();
+        $userId = (int) OddenAuthorization::userId();
 
         $ticket->addMessage(
             body: $this->replyBody,
@@ -431,7 +431,7 @@ class ServiceCockpit extends Page
             return null;
         }
 
-        return FocalAuthorization::query(TicketResource::class, Ticket::class)->with(['contact', 'company'])->find($this->replyTicketId);
+        return OddenAuthorization::query(TicketResource::class, Ticket::class)->with(['contact', 'company'])->find($this->replyTicketId);
     }
 
     public function getActiveTicketForResolve(): ?Ticket
@@ -440,7 +440,7 @@ class ServiceCockpit extends Page
             return null;
         }
 
-        return FocalAuthorization::query(TicketResource::class, Ticket::class)->with(['contact', 'company'])->find($this->resolveTicketId);
+        return OddenAuthorization::query(TicketResource::class, Ticket::class)->with(['contact', 'company'])->find($this->resolveTicketId);
     }
 
     /**
@@ -450,7 +450,7 @@ class ServiceCockpit extends Page
      */
     protected function cannedResponsesQuery(): Builder
     {
-        $userId = FocalAuthorization::userId();
+        $userId = OddenAuthorization::userId();
 
         return CannedResponse::query()
             ->where(function (Builder $query) use ($userId): void {
@@ -464,7 +464,7 @@ class ServiceCockpit extends Page
      */
     protected function findTicketForUpdate(int $ticketId): Ticket
     {
-        return FocalAuthorization::findAndAuthorize(TicketResource::class, Ticket::class, $ticketId, 'update');
+        return OddenAuthorization::findAndAuthorize(TicketResource::class, Ticket::class, $ticketId, 'update');
     }
 
     /**

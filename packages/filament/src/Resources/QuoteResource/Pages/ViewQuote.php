@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\QuoteResource\Pages;
+namespace Odden\Filament\Resources\QuoteResource\Pages;
 
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
-use Focal\Filament\Resources\QuoteResource;
+use Odden\Filament\Resources\QuoteResource;
 
 class ViewQuote extends ViewRecord
 {

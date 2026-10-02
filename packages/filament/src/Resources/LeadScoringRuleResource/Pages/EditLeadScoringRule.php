@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\LeadScoringRuleResource\Pages;
+namespace Odden\Filament\Resources\LeadScoringRuleResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\LeadScoringRuleResource;
+use Odden\Filament\Resources\LeadScoringRuleResource;
 
 class EditLeadScoringRule extends EditRecord
 {

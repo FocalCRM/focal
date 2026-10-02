@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests;
+namespace Odden\Core\Tests;
 
-use Focal\Core\Actions\CreateCompanyAction;
-use Focal\Core\Actions\EnrichCompanyAction;
-use Focal\Core\Contracts\EnrichmentDriver;
-use Focal\Core\Events\CompanyEnriched;
-use Focal\Core\Models\Company;
-use Focal\Core\Support\Enrichment\EnrichmentManager;
-use Focal\Core\Support\Enrichment\HeuristicEnrichmentDriver;
+use Odden\Core\Actions\CreateCompanyAction;
+use Odden\Core\Actions\EnrichCompanyAction;
+use Odden\Core\Contracts\EnrichmentDriver;
+use Odden\Core\Events\CompanyEnriched;
+use Odden\Core\Models\Company;
+use Odden\Core\Support\Enrichment\EnrichmentManager;
+use Odden\Core\Support\Enrichment\HeuristicEnrichmentDriver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 

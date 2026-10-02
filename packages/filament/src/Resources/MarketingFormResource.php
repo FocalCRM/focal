@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -21,10 +21,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\MarketingFormResource\Pages\CreateMarketingForm;
-use Focal\Filament\Resources\MarketingFormResource\Pages\EditMarketingForm;
-use Focal\Filament\Resources\MarketingFormResource\Pages\ListMarketingForms;
-use Focal\Marketing\Models\MarketingForm;
+use Odden\Filament\Resources\MarketingFormResource\Pages\CreateMarketingForm;
+use Odden\Filament\Resources\MarketingFormResource\Pages\EditMarketingForm;
+use Odden\Filament\Resources\MarketingFormResource\Pages\ListMarketingForms;
+use Odden\Marketing\Models\MarketingForm;
 use UnitEnum;
 
 class MarketingFormResource extends Resource
@@ -118,7 +118,7 @@ class MarketingFormResource extends Resource
                     ->sortable(),
                 TextColumn::make('slug')
                     ->label('Public URL')
-                    ->formatStateUsing(fn (MarketingForm $record): string => route('focal.marketing.forms.show', $record->slug, false))
+                    ->formatStateUsing(fn (MarketingForm $record): string => route('odden.marketing.forms.show', $record->slug, false))
                     ->color('info')
                     ->url(fn (MarketingForm $record): string => $record->getPublicUrl(), shouldOpenInNewTab: true),
                 TextColumn::make('submissions_count')

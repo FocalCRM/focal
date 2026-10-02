@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\TicketRoutingRuleResource\Pages;
+namespace Odden\Filament\Resources\TicketRoutingRuleResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
-use Focal\Filament\Resources\TicketRoutingRuleResource;
+use Odden\Filament\Resources\TicketRoutingRuleResource;
 
 class EditTicketRoutingRule extends EditRecord
 {

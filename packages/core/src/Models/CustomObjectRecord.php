@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Models;
+namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Support\UserModel;
-use Focal\Core\Traits\AuditsProperties;
-use Focal\Core\Traits\BelongsToTeam;
-use Focal\Core\Traits\HasActivities;
-use Focal\Core\Traits\HasAssociations;
-use Focal\Core\Traits\HasCustomProperties;
+use Odden\Core\Support\UserModel;
+use Odden\Core\Traits\AuditsProperties;
+use Odden\Core\Traits\BelongsToTeam;
+use Odden\Core\Traits\HasActivities;
+use Odden\Core\Traits\HasAssociations;
+use Odden\Core\Traits\HasCustomProperties;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -54,7 +54,7 @@ class CustomObjectRecord extends Model
      */
     public function getTable(): string
     {
-        return config('focal-core.tables.custom_object_records', 'focal_custom_object_records');
+        return config('odden-core.tables.custom_object_records', 'odden_custom_object_records');
     }
 
     /**

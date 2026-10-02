@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\SlaPolicyResource\Pages;
+namespace Odden\Filament\Resources\SlaPolicyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Focal\Filament\Resources\SlaPolicyResource;
+use Odden\Filament\Resources\SlaPolicyResource;
 
 class ListSlaPolicies extends ListRecords
 {

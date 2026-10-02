@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\TicketResource\Pages;
+namespace Odden\Filament\Resources\TicketResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\TicketResource;
+use Odden\Filament\Resources\TicketResource;
 
 class CreateTicket extends CreateRecord
 {

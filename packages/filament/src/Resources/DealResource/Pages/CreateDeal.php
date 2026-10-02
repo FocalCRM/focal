@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\DealResource\Pages;
+namespace Odden\Filament\Resources\DealResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
-use Focal\Filament\Resources\DealResource;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\DealStageHistory;
+use Odden\Filament\Resources\DealResource;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\DealStageHistory;
 
 class CreateDeal extends CreateRecord
 {

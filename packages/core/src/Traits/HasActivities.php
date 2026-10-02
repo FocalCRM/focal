@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Traits;
+namespace Odden\Core\Traits;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Models\Activity;
-use Focal\Core\Models\Association;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Models\Activity;
+use Odden\Core\Models\Association;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 

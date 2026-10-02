@@ -1,9 +1,9 @@
 ---
 title: Cockpits, pages and widgets
-description: The dashboards, cockpits and tool pages FocalPlugin adds to your panel, what each one reads and writes, and the reusable pipeline forecast widget.
+description: The dashboards, cockpits and tool pages OddenPlugin adds to your panel, what each one reads and writes, and the reusable pipeline forecast widget.
 ---
 
-Besides resources, `FocalPlugin` registers a set of custom Filament pages in `Focal\Filament\Pages`. Each one is a Livewire component with its own Blade view in the `focal-filament::pages.*` namespace. Like the resources, a page is only registered when the module it needs is installed (see [How modules are detected](configuration.md#how-modules-are-detected)).
+Besides resources, `OddenPlugin` registers a set of custom Filament pages in `Odden\Filament\Pages`. Each one is a Livewire component with its own Blade view in the `odden-filament::pages.*` namespace. Like the resources, a page is only registered when the module it needs is installed (see [How modules are detected](configuration.md#how-modules-are-detected)).
 
 The URLs below assume a panel at `/admin`.
 
@@ -31,11 +31,11 @@ The timeframe switcher accepts `month`, `quarter` (the default), `year` and `all
 
 `DataQuality`, at `/admin/data-quality` in the **CRM** group.
 
-This page finds duplicate contacts and companies with `Focal\Core\Actions\FindDuplicateContactsAction` and `FindDuplicateCompaniesAction`, and shows a data cleanliness score. Each duplicate pair can be merged from the page with `MergeContactsAction` or `MergeCompaniesAction`. A merge moves the secondary record's activities, associations, deals and tickets (or contacts, for companies) onto the primary record, merges custom properties, and soft-deletes the secondary.
+This page finds duplicate contacts and companies with `Odden\Core\Actions\FindDuplicateContactsAction` and `FindDuplicateCompaniesAction`, and shows a data cleanliness score. Each duplicate pair can be merged from the page with `MergeContactsAction` or `MergeCompaniesAction`. A merge moves the secondary record's activities, associations, deals and tickets (or contacts, for companies) onto the primary record, merges custom properties, and soft-deletes the secondary.
 
 ## Sales pages
 
-Registered when `focalcrm/sales` is installed.
+Registered when `getodden/crm-sales` is installed.
 
 ### Sales Cockpit
 
@@ -52,7 +52,7 @@ These actions write data:
 
 ## Service pages
 
-Registered when `focalcrm/service` is installed.
+Registered when `getodden/crm-service` is installed.
 
 ### Support Cockpit
 
@@ -76,7 +76,7 @@ A read-only report of ticket volume, resolution rate, first response time, mean 
 
 ## Marketing pages
 
-Registered when `focalcrm/marketing` is installed. All are in the **Marketing** group.
+Registered when `getodden/crm-marketing` is installed. All are in the **Marketing** group.
 
 | Page | URL | What it does |
 | --- | --- | --- |
@@ -86,26 +86,26 @@ Registered when `focalcrm/marketing` is installed. All are in the **Marketing** 
 | `CampaignBenchmarking` (Campaign Benchmarking) | `/admin/campaign-benchmarking` | Side-by-side comparison of selected campaigns against averages. It starts with the four most recently sent campaigns. |
 | `MarketingCalendar` (Campaign Calendar) | `/admin/marketing-calendar` | A month view of campaign sends, with previous, next and current month navigation. |
 | `UtmLinkBuilder` (UTM Link Builder) | `/admin/utm-link-builder` | Builds a tracked URL from a base URL (it defaults to `url('/')`, or to a landing page or campaign you select) and UTM source, medium, campaign, term and content. Nothing is saved. |
-| `SenderDomainHealth` (Domain Health (SPF/DKIM)) | `/admin/sender-domain-health` | Checks SPF, DKIM, DMARC and MX for a domain with `DomainHealthCheckService`. The domain defaults to the domain of `focal-marketing.defaults.sender_email`, and the DKIM selector defaults to `focal`. |
+| `SenderDomainHealth` (Domain Health (SPF/DKIM)) | `/admin/sender-domain-health` | Checks SPF, DKIM, DMARC and MX for a domain with `DomainHealthCheckService`. The domain defaults to the domain of `odden-marketing.defaults.sender_email`, and the DKIM selector defaults to `odden`. |
 
 > `SenderDomainHealth` makes live DNS lookups (`dns_get_record()`) each time it renders.
 
 ## Pipeline forecast widget
 
-`Focal\Filament\Widgets\DealPipelineForecastWidget` is a stats overview widget. It shows four stats from `Focal\Sales\Actions\CalculatePipelineForecastAction`: **Open Pipeline**, **Weighted Forecast**, **Closed Won** and **Win Rate**, with average deal size.
+`Odden\Filament\Widgets\DealPipelineForecastWidget` is a stats overview widget. It shows four stats from `Odden\Sales\Actions\CalculatePipelineForecastAction`: **Open Pipeline**, **Weighted Forecast**, **Closed Won** and **Win Rate**, with average deal size.
 
-It appears at the top of the deals list page. The plugin doesn't add it to your dashboard, but you can register it on your panel yourself (this requires `focalcrm/sales`):
+It appears at the top of the deals list page. The plugin doesn't add it to your dashboard, but you can register it on your panel yourself (this requires `getodden/crm-sales`):
 
 ```php
 use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
-use Focal\Filament\FocalPlugin;
-use Focal\Filament\Widgets\DealPipelineForecastWidget;
+use Odden\Filament\OddenPlugin;
+use Odden\Filament\Widgets\DealPipelineForecastWidget;
 
 return $panel
     // ...
     ->plugins([
-        FocalPlugin::make(),
+        OddenPlugin::make(),
     ])
     ->pages([
         Dashboard::class,

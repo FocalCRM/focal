@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Events\ActivityLogged;
-use Focal\Core\Models\Activity;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Events\ActivityLogged;
+use Odden\Core\Models\Activity;
 use Illuminate\Database\Eloquent\Model;
 
 class LogActivityAction

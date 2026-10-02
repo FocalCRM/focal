@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 
 it('rolls up activities from associated contacts into company timeline', function (): void {
     $company = Company::factory()->create(['name' => 'Initech']);

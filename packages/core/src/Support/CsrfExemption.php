@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Support;
+namespace Odden\Core\Support;
 
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 
 /**
- * CSRF middleware to exclude from Focal's cross-site and server-to-server routes.
+ * CSRF middleware to exclude from Odden's cross-site and server-to-server routes.
  *
  * Laravel 13 renamed the CSRF middleware to PreventRequestForgery and keeps
  * ValidateCsrfToken only as a deprecated subclass. withoutMiddleware() matches

@@ -1,9 +1,9 @@
 ---
 title: Authorization
-description: What the Focal Filament plugin checks before showing or changing data, and how to restrict access with panel access and Laravel policies.
+description: What the Odden Filament plugin checks before showing or changing data, and how to restrict access with panel access and Laravel policies.
 ---
 
-The plugin ships no policies, gates, permissions or roles. It checks your Laravel policies the same way Filament resources do: when a policy is registered for a Focal model, the plugin's resources, custom pages, boards and actions respect it. When there is no policy, everything is allowed, so an app without policies works out of the box and any user who can get into the panel can see and change every Focal record.
+The plugin ships no policies, gates, permissions or roles. It checks your Laravel policies the same way Filament resources do: when a policy is registered for an Odden model, the plugin's resources, custom pages, boards and actions respect it. When there is no policy, everything is allowed, so an app without policies works out of the box and any user who can get into the panel can see and change every Odden record.
 
 ## Panel access
 
@@ -27,15 +27,15 @@ class User extends Authenticatable implements FilamentUser
 }
 ```
 
-## Policies on Focal models
+## Policies on Odden models
 
-Focal's resources are standard Filament resources. When a Laravel policy is registered for a resource's model, Filament checks it for that resource's navigation item, list, create, view, edit and delete pages, and for the built-in create, edit, view, delete, restore and force-delete actions. The plugin uses the same policies for its custom pages, boards and actions (see below).
+Odden's resources are standard Filament resources. When a Laravel policy is registered for a resource's model, Filament checks it for that resource's navigation item, list, create, view, edit and delete pages, and for the built-in create, edit, view, delete, restore and force-delete actions. The plugin uses the same policies for its custom pages, boards and actions (see below).
 
-Focal models live in the packages, so register policies for them explicitly, for example in `AppServiceProvider::boot()`:
+Odden models live in the packages, so register policies for them explicitly, for example in `AppServiceProvider::boot()`:
 
 ```php
 use App\Policies\ContactPolicy;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Support\Facades\Gate;
 
 public function boot(): void
@@ -50,7 +50,7 @@ public function boot(): void
 namespace App\Policies;
 
 use App\Models\User;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 
 class ContactPolicy
 {
@@ -87,36 +87,36 @@ If `viewAny()` returns `false`, **Contacts** disappears from the navigation and 
 
 Policies don't filter the table. With the policy above, users still see every contact in the list. To scope the query, you need your own resource subclass that overrides `getEloquentQuery()` (see [Customizing and extending](customizing.md)).
 
-If you want Filament to fail loudly when a model has no policy, enable Filament's `->strictAuthorization()` on the panel. You then need a policy for every Focal model the plugin registers, and for `Focal\Core\Models\Activity` and `Focal\Sales\Models\SalesSequenceEnrollment`, which the Sales Cockpit and the contact relation managers check.
+If you want Filament to fail loudly when a model has no policy, enable Filament's `->strictAuthorization()` on the panel. You then need a policy for every Odden model the plugin registers, and for `Odden\Core\Models\Activity` and `Odden\Sales\Models\SalesSequenceEnrollment`, which the Sales Cockpit and the contact relation managers check.
 
 Each resource's model is listed in [Resources](resources.md).
 
 ## How the plugin checks policies
 
-Outside Filament's built-in actions, the plugin checks abilities with `Focal\Filament\Support\FocalAuthorization`, which follows Filament's rules for resources:
+Outside Filament's built-in actions, the plugin checks abilities with `Odden\Filament\Support\OddenAuthorization`, which follows Filament's rules for resources:
 
 - If a policy with a method for the ability is registered for the model, the policy decides.
 - If there is no policy, or the policy has no method for that ability, the ability is allowed. A `Gate::before()` callback that returns `false` still denies it, and strict authorization throws instead.
 - A user must be signed in. Nothing falls back to a default user: with no authenticated user, every check fails with a 403.
 
-Records that a page or action loads by ID (from a Livewire call or a form field) are looked up inside the plugin resource's `getEloquentQuery()`, which applies Filament's tenant scoping. An ID outside that query returns a 404. The lookups use the plugin's own resource classes in `Focal\Filament\Resources`, so a `getEloquentQuery()` override in your own resource subclass isn't applied to them.
+Records that a page or action loads by ID (from a Livewire call or a form field) are looked up inside the plugin resource's `getEloquentQuery()`, which applies Filament's tenant scoping. An ID outside that query returns a 404. The lookups use the plugin's own resource classes in `Odden\Filament\Resources`, so a `getEloquentQuery()` override in your own resource subclass isn't applied to them.
 
 You can use the same helper in your own pages and actions:
 
 ```php
 use Filament\Actions\Action;
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Models\Contact;
-use Focal\Filament\Resources\ContactResource;
-use Focal\Filament\Support\FocalAuthorization;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Models\Contact;
+use Odden\Filament\Resources\ContactResource;
+use Odden\Filament\Support\OddenAuthorization;
 
 // A row action that is hidden, and refused, unless the user may update the contact.
 Action::make('flag')
-    ->authorize(FocalAuthorization::forRecord('update', ContactResource::class))
+    ->authorize(OddenAuthorization::forRecord('update', ContactResource::class))
     ->action(fn (Contact $record) => $record->update(['lead_status' => LeadStatus::Unqualified]));
 
 // In a Livewire method: 404 outside the resource's query, 403 if the policy denies.
-$contact = FocalAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $id, 'update');
+$contact = OddenAuthorization::findAndAuthorize(ContactResource::class, Contact::class, $id, 'update');
 ```
 
 ## Custom pages
@@ -136,7 +136,7 @@ Each custom page requires `viewAny` on every resource whose data it shows. If an
 | Pipeline Board (`/admin/deals/board`) | `DealResource` |
 | Tickets Board (`/admin/tickets/board`) | `TicketResource` |
 
-The page classes implement this with the `Focal\Filament\Pages\Concerns\AuthorizesPageAccess` trait, which overrides `canAccess()`.
+The page classes implement this with the `Odden\Filament\Pages\Concerns\AuthorizesPageAccess` trait, which overrides `canAccess()`.
 
 ## Page and board actions
 
@@ -163,7 +163,7 @@ The custom row and header actions on the resources use Filament's `->authorize()
 
 | Resource or page | Actions | Checks |
 | --- | --- | --- |
-| Contacts | **Playbook**, **Auto-Route** | `update` on the contact. Hidden when `focalcrm/sales` isn't installed. |
+| Contacts | **Playbook**, **Auto-Route** | `update` on the contact. Hidden when `getodden/crm-sales` isn't installed. |
 | Contacts, Companies | **Merge** | `update` on the record; `delete` on the selected duplicate (403 if denied) |
 | Contacts, Companies | **AI Briefing** | `view` on the record |
 | Companies | **Recalculate Health**, **Recalculate Intent** | `update` on the company |
@@ -191,4 +191,4 @@ The custom row and header actions on the resources use Filament's `->authorize()
 - **Data visibility on cockpits and dashboards.** Policies decide who can open a page, not which records it shows. Once a user can open a cockpit or dashboard, its counts, charts and lists cover all records. For example, the Sales Cockpit lets any user who can open it switch to another rep's view. The Support Cockpit, the board columns and the lookups by ID are limited to the resource's `getEloquentQuery()`, but `view` isn't checked per record.
 - **Read-only and link actions**, such as **Portal**, the marketing template **Preview**, **Revisions**, **Export HTML**, **Export MJML** and **Download ZIP**, **Embed Code**, **Embed Snippet**, **Copy URL**, **Visual Journey** and the deal health analysis. They are available to anyone who can open the page they're on.
 
-If some panel users must not see everything, don't give them access to a panel that has `FocalPlugin` registered. Either limit who can access the panel with `canAccessPanel()`, or build a separate panel from only the resources you want, with your own subclasses. See [Customizing and extending](customizing.md).
+If some panel users must not see everything, don't give them access to a panel that has `OddenPlugin` registered. Either limit who can access the panel with `canAccessPanel()`, or build a separate panel from only the resources you want, with your own subclasses. See [Customizing and extending](customizing.md).

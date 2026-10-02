@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Core\Support\UserModel;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\TicketResource;
-use Focal\Service\Enums\TicketPriority;
-use Focal\Service\Enums\TicketSource;
-use Focal\Service\Enums\TicketStatus;
-use Focal\Service\Models\Ticket;
+use Odden\Core\Support\UserModel;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\TicketResource;
+use Odden\Service\Enums\TicketPriority;
+use Odden\Service\Enums\TicketSource;
+use Odden\Service\Enums\TicketStatus;
+use Odden\Service\Models\Ticket;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use UnitEnum;
@@ -32,7 +32,7 @@ class ServiceAnalytics extends Page
 
     protected static ?string $title = 'Support Operations & SLA Analytics';
 
-    protected string $view = 'focal-filament::pages.service-analytics';
+    protected string $view = 'odden-filament::pages.service-analytics';
 
     public string $dateRange = '30_days';
 

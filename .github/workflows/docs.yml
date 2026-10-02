@@ -25,7 +25,7 @@ jobs:
         run: php .github/scripts/check-docs.php docs
 
   publish:
-    # focalcrm.io/docs is built from main: redeploy the website when the docs change.
+    # odden.io/docs is built from main: redeploy the website when the docs change.
     needs: check
     if: github.event_name == 'push'
     runs-on: ubuntu-latest

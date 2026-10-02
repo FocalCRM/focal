@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\CalculateCustomerHealthScoreAction;
-use Focal\Core\Actions\SummarizeTimelineAction;
-use Focal\Core\Enums\ActivityStatus;
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\CustomerHealthStatus;
-use Focal\Core\Models\Company;
-use Focal\Core\Tests\Fixtures\CrossHubRelations;
-use Focal\Core\Tests\Fixtures\Deal;
-use Focal\Core\Tests\Fixtures\Ticket;
+use Odden\Core\Actions\CalculateCustomerHealthScoreAction;
+use Odden\Core\Actions\SummarizeTimelineAction;
+use Odden\Core\Enums\ActivityStatus;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\CustomerHealthStatus;
+use Odden\Core\Models\Company;
+use Odden\Core\Tests\Fixtures\CrossHubRelations;
+use Odden\Core\Tests\Fixtures\Deal;
+use Odden\Core\Tests\Fixtures\Ticket;
 
 beforeEach(fn () => CrossHubRelations::install());
 afterEach(fn () => CrossHubRelations::uninstall());

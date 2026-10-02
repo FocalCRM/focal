@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Events\CompaniesMerged;
-use Focal\Core\Models\Company;
-use Focal\Core\Support\RecordMerger;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Events\CompaniesMerged;
+use Odden\Core\Models\Company;
+use Odden\Core\Support\RecordMerger;
 use Illuminate\Support\Facades\DB;
 
 class MergeCompaniesAction

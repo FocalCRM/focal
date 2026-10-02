@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources\ContactResource\RelationManagers;
+namespace Odden\Filament\Resources\ContactResource\RelationManagers;
 
 use BackedEnum;
 use Filament\Actions\ViewAction;
@@ -14,7 +14,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Focal\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\RecipientStatus;
 
 class MarketingCampaignsRelationManager extends RelationManager
 {

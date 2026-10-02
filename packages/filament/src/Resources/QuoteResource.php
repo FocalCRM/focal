@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Resources;
+namespace Odden\Filament\Resources;
 
 use BackedEnum;
 use Filament\Actions\Action;
@@ -25,13 +25,13 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Focal\Filament\Resources\QuoteResource\Pages\CreateQuote;
-use Focal\Filament\Resources\QuoteResource\Pages\EditQuote;
-use Focal\Filament\Resources\QuoteResource\Pages\ListQuotes;
-use Focal\Filament\Resources\QuoteResource\Pages\ViewQuote;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Sales\Enums\QuoteStatus;
-use Focal\Sales\Models\Quote;
+use Odden\Filament\Resources\QuoteResource\Pages\CreateQuote;
+use Odden\Filament\Resources\QuoteResource\Pages\EditQuote;
+use Odden\Filament\Resources\QuoteResource\Pages\ListQuotes;
+use Odden\Filament\Resources\QuoteResource\Pages\ViewQuote;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Sales\Enums\QuoteStatus;
+use Odden\Sales\Models\Quote;
 use UnitEnum;
 
 class QuoteResource extends Resource
@@ -220,13 +220,13 @@ class QuoteResource extends Resource
                     ->label('Portal')
                     ->icon(Heroicon::ArrowTopRightOnSquare)
                     ->color('info')
-                    ->url(fn (Quote $record): string => route('focal.quotes.show', ['token' => $record->public_token]), shouldOpenInNewTab: true),
+                    ->url(fn (Quote $record): string => route('odden.quotes.show', ['token' => $record->public_token]), shouldOpenInNewTab: true),
                 Action::make('acceptQuote')
                     ->label('Accept & Sign')
                     ->icon(Heroicon::CheckBadge)
                     ->color('success')
                     ->visible(fn (Quote $record): bool => ! $record->status->isAccepted())
-                    ->authorize(FocalAuthorization::forRecord('update', self::class))
+                    ->authorize(OddenAuthorization::forRecord('update', self::class))
                     ->form([
                         TextInput::make('signed_by_name')
                             ->label('Signer Full Name')

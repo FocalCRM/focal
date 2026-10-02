@@ -1,9 +1,9 @@
 ---
 title: Service
-description: What the focalcrm/service help desk module adds on top of Core, its models, and where to read next.
+description: What the getodden/crm-service help desk module adds on top of Core, its models, and where to read next.
 ---
 
-`focalcrm/service` is Focal's help desk module. It adds support tickets with threaded conversations, SLA policies with business hours, automatic ticket routing, canned responses, ticket merging, a public knowledge base, a token-based customer portal with CSAT surveys, an embeddable chat widget, and an email-to-ticket webhook.
+`getodden/crm-service` is Odden's help desk module. It adds support tickets with threaded conversations, SLA policies with business hours, automatic ticket routing, canned responses, ticket merging, a public knowledge base, a token-based customer portal with CSAT surveys, an embeddable chat widget, and an email-to-ticket webhook.
 
 The package is headless: it ships models, actions, Artisan commands, notifications, and a small set of public Blade pages and JSON endpoints for customers. It has no agent-facing UI of its own. You build agent screens in your application (or use the Filament admin, see [Installation](../installation.md)) and call the package's actions from them.
 
@@ -11,14 +11,14 @@ The package is headless: it ships models, actions, Artisan commands, notificatio
 
 - PHP 8.3 or later
 - Laravel 12 or 13
-- `focalcrm/core`, which provides the `Contact` and `Company` models, the activity timeline, and the shared route, token, and rate limit helpers. See [Core](../core/index.md).
+- `getodden/crm-core`, which provides the `Contact` and `Company` models, the activity timeline, and the shared route, token, and rate limit helpers. See [Core](../core/index.md).
 
 ```bash
-composer require focalcrm/service
+composer require getodden/crm-service
 php artisan migrate
 ```
 
-The service provider, `Focal\Service\ServiceHubServiceProvider`, is auto-discovered. It loads the package migrations, registers the public routes, the `focal-service::` view namespace, and two Artisan commands. See [Installation](../installation.md) for publishing config and migrations and for scheduling the commands.
+The service provider, `Odden\Service\ServiceHubServiceProvider`, is auto-discovered. It loads the package migrations, registers the public routes, the `odden-service::` view namespace, and two Artisan commands. See [Installation](../installation.md) for publishing config and migrations and for scheduling the commands.
 
 ## What it adds to Core
 
@@ -33,20 +33,20 @@ Service works on Core's records rather than defining its own customers:
 
 ## Models
 
-All models are in the `Focal\Service\Models` namespace. Table names come from `focal-service.tables` (see [Configuration reference](configuration.md#tables)).
+All models are in the `Odden\Service\Models` namespace. Table names come from `odden-service.tables` (see [Configuration reference](configuration.md#tables)).
 
 | Model | Default table | Purpose |
 | :--- | :--- | :--- |
-| `Ticket` | `focal_service_tickets` | A support request: number, subject, status, priority, source, contact, company, owner, SLA deadlines, CSAT rating, portal token. Soft deletes. |
-| `TicketMessage` | `focal_service_ticket_messages` | One entry in a ticket's thread: a customer message, agent reply, system message, or internal note. |
-| `SlaPolicy` | `focal_service_sla_policies` | First response and resolution targets per priority, with optional business hours and holidays. |
-| `TicketRoutingRule` | `focal_service_routing_rules` | Criteria plus a pool of users for round-robin assignment. |
-| `CannedResponse` | `focal_service_canned_responses` | A reusable reply with a title, shortcut, and category. |
-| `KnowledgeArticle` | `focal_service_articles` | A help center article with view, vote, and deflection counters. |
+| `Ticket` | `odden_service_tickets` | A support request: number, subject, status, priority, source, contact, company, owner, SLA deadlines, CSAT rating, portal token. Soft deletes. |
+| `TicketMessage` | `odden_service_ticket_messages` | One entry in a ticket's thread: a customer message, agent reply, system message, or internal note. |
+| `SlaPolicy` | `odden_service_sla_policies` | First response and resolution targets per priority, with optional business hours and holidays. |
+| `TicketRoutingRule` | `odden_service_routing_rules` | Criteria plus a pool of users for round-robin assignment. |
+| `CannedResponse` | `odden_service_canned_responses` | A reusable reply with a title, shortcut, and category. |
+| `KnowledgeArticle` | `odden_service_articles` | A help center article with view, vote, and deflection counters. |
 
 ## Enums
 
-All enums are string-backed and live in `Focal\Service\Enums`.
+All enums are string-backed and live in `Odden\Service\Enums`.
 
 | Enum | Cases (value) |
 | :--- | :--- |
@@ -59,7 +59,7 @@ Each enum has a `label()` method. `TicketStatus` and `TicketPriority` also have 
 
 ## Actions
 
-Business logic lives in action classes in `Focal\Service\Actions`. Resolve them from the container with `app()` or inject them.
+Business logic lives in action classes in `Odden\Service\Actions`. Resolve them from the container with `app()` or inject them.
 
 | Action | What it does |
 | :--- | :--- |

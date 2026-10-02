@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Tests;
+namespace Odden\Core\Tests;
 
-use Focal\Core\Actions\CreateCustomObjectDefinitionAction;
-use Focal\Core\Actions\CreateCustomObjectRecordAction;
-use Focal\Core\Events\CustomObjectDefinitionCreated;
-use Focal\Core\Events\CustomObjectRecordCreated;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CustomObjectRecord;
+use Odden\Core\Actions\CreateCustomObjectDefinitionAction;
+use Odden\Core\Actions\CreateCustomObjectRecordAction;
+use Odden\Core\Events\CustomObjectDefinitionCreated;
+use Odden\Core\Events\CustomObjectRecordCreated;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CustomObjectRecord;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 
@@ -40,7 +40,7 @@ class CustomObjectsTest extends TestCase
         $this->assertSame('Subscription License', $definition->singular_label);
         $this->assertSame('Subscription Licenses', $definition->plural_label);
         $this->assertSame('license_key', $definition->primary_display_property);
-        $this->assertDatabaseHas('focal_custom_object_definitions', [
+        $this->assertDatabaseHas('odden_custom_object_definitions', [
             'id' => $definition->id,
             'name' => 'subscription_license',
         ]);

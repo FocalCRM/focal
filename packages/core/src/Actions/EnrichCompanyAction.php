@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Core\Actions;
+namespace Odden\Core\Actions;
 
-use Focal\Core\Events\CompanyEnriched;
-use Focal\Core\Models\Company;
-use Focal\Core\Support\Enrichment\EnrichmentManager;
+use Odden\Core\Events\CompanyEnriched;
+use Odden\Core\Models\Company;
+use Odden\Core\Support\Enrichment\EnrichmentManager;
 
 class EnrichCompanyAction
 {

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
 
         Schema::table($contactsTable, function (Blueprint $table): void {
             $table->string('job_title')->nullable()->after('last_name');
@@ -29,7 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
 
         Schema::table($contactsTable, function (Blueprint $table): void {
             $table->dropColumn([

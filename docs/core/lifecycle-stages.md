@@ -3,7 +3,7 @@ title: Lifecycle stages
 description: Move contacts and companies through lifecycle stages with the state machine, record transitions, add guards, and measure funnel velocity.
 ---
 
-Contacts and companies have a `lifecycle_stage` column cast to `Focal\Core\Enums\LifecycleStage`. Change it with `TransitionLifecycleStageAction`, which validates the change against `LifecycleStateMachine`, stamps a `became_<stage>_at` column, records a `LifecycleStageTransition`, and dispatches `LifecycleStageChanged`.
+Contacts and companies have a `lifecycle_stage` column cast to `Odden\Core\Enums\LifecycleStage`. Change it with `TransitionLifecycleStageAction`, which validates the change against `LifecycleStateMachine`, stamps a `became_<stage>_at` column, records a `LifecycleStageTransition`, and dispatches `LifecycleStageChanged`.
 
 ## Stages
 
@@ -23,8 +23,8 @@ New contacts and companies default to `lead` at the database level.
 ## Transitioning a record
 
 ```php
-use Focal\Core\Actions\TransitionLifecycleStageAction;
-use Focal\Core\Enums\LifecycleStage;
+use Odden\Core\Actions\TransitionLifecycleStageAction;
+use Odden\Core\Enums\LifecycleStage;
 
 $transition = app(TransitionLifecycleStageAction::class)->execute(
     $contact,
@@ -52,7 +52,7 @@ Setting `lifecycle_stage` directly with `update()` bypasses all of this: no vali
 
 ## Validation rules
 
-`LifecycleStateMachine::validateTransition()` throws `Focal\Core\Exceptions\InvalidLifecycleStageTransitionException` when a transition isn't allowed. It applies these rules in order:
+`LifecycleStateMachine::validateTransition()` throws `Odden\Core\Exceptions\InvalidLifecycleStageTransitionException` when a transition isn't allowed. It applies these rules in order:
 
 1. A record with no current stage, or a transition to its current stage, is always allowed.
 2. In strict mode, the transition must be in the allowed graph (below).
@@ -62,7 +62,7 @@ Setting `lifecycle_stage` directly with `update()` bypasses all of this: no vali
 Passing `force: true` skips all of them.
 
 ```php
-use Focal\Core\Exceptions\InvalidLifecycleStageTransitionException;
+use Odden\Core\Exceptions\InvalidLifecycleStageTransitionException;
 
 try {
     app(TransitionLifecycleStageAction::class)->execute($customer, LifecycleStage::Lead);
@@ -76,7 +76,7 @@ try {
 Strict mode is off by default, so any stage can move to any other stage, subject to the customer rule. Turn it on in config:
 
 ```php
-// config/focal-core.php
+// config/odden-core.php
 'lifecycle' => [
     'strict_transitions' => true,
 ],
@@ -104,8 +104,8 @@ In strict mode these transitions are allowed:
 `LifecycleStateMachine` is a container singleton. Configure it in a service provider's `boot()` method:
 
 ```php
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Support\LifecycleStateMachine;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Support\LifecycleStateMachine;
 use Illuminate\Database\Eloquent\Model;
 
 $machine = app(LifecycleStateMachine::class);
@@ -123,7 +123,7 @@ Other methods: `canTransition(LifecycleStage $from, LifecycleStage $to): bool`, 
 
 ## Transition history
 
-`Focal\Core\Models\LifecycleStageTransition` (table `focal_lifecycle_stage_transitions`) stores `record_type`, `record_id`, `from_stage`, `to_stage`, `duration_seconds`, `source`, `user_id`, `team_id` (copied from the record), and `transitioned_at`. It has `record()` and `user()` relations and these helpers:
+`Odden\Core\Models\LifecycleStageTransition` (table `odden_lifecycle_stage_transitions`) stores `record_type`, `record_id`, `from_stage`, `to_stage`, `duration_seconds`, `source`, `user_id`, `team_id` (copied from the record), and `transitioned_at`. It has `record()` and `user()` relations and these helpers:
 
 - `durationInDays(): ?float`, rounded to 2 decimals.
 - `durationInHours(): ?float`, rounded to 1 decimal.
@@ -146,9 +146,9 @@ Time in the current stage is measured from the latest transition, or from `creat
 `CalculateFunnelVelocityAction` aggregates transition durations for one model class:
 
 ```php
-use Focal\Core\Actions\CalculateFunnelVelocityAction;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
+use Odden\Core\Actions\CalculateFunnelVelocityAction;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
 
 $metrics = app(CalculateFunnelVelocityAction::class)->execute(
     Contact::class,

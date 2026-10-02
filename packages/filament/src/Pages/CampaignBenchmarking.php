@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Focal\Filament\Pages;
+namespace Odden\Filament\Pages;
 
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Focal\Filament\Pages\Concerns\AuthorizesPageAccess;
-use Focal\Filament\Resources\CampaignResource;
-use Focal\Filament\Support\FocalAuthorization;
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\AttributionModel;
-use Focal\Marketing\Models\Campaign;
+use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
+use Odden\Filament\Resources\CampaignResource;
+use Odden\Filament\Support\OddenAuthorization;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Models\Campaign;
 use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
@@ -35,7 +35,7 @@ class CampaignBenchmarking extends Page
 
     protected static ?string $title = 'Campaign Performance & Multi-Variant Benchmarking';
 
-    protected string $view = 'focal-filament::pages.campaign-benchmarking';
+    protected string $view = 'odden-filament::pages.campaign-benchmarking';
 
     /**
      * @var list<int|string>
@@ -55,7 +55,7 @@ class CampaignBenchmarking extends Page
     public function mount(): void
     {
         /** @var list<int> $recentIds */
-        $recentIds = FocalAuthorization::query(CampaignResource::class, Campaign::class)
+        $recentIds = OddenAuthorization::query(CampaignResource::class, Campaign::class)
             ->where('delivered_count', '>', 0)
             ->orderBy('sent_at', 'desc')
             ->take(4)
@@ -65,7 +65,7 @@ class CampaignBenchmarking extends Page
 
         if (empty($recentIds)) {
             /** @var list<int> $recentIds */
-            $recentIds = FocalAuthorization::query(CampaignResource::class, Campaign::class)->orderBy('created_at', 'desc')->take(3)->pluck('id')->map(fn ($id): int => (int) $id)->all();
+            $recentIds = OddenAuthorization::query(CampaignResource::class, Campaign::class)->orderBy('created_at', 'desc')->take(3)->pluck('id')->map(fn ($id): int => (int) $id)->all();
         }
 
         $this->selectedCampaignIds = $recentIds;
@@ -76,7 +76,7 @@ class CampaignBenchmarking extends Page
      */
     public function getAvailableCampaignsProperty(): Collection
     {
-        return FocalAuthorization::query(CampaignResource::class, Campaign::class)->orderBy('created_at', 'desc')->get();
+        return OddenAuthorization::query(CampaignResource::class, Campaign::class)->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -88,7 +88,7 @@ class CampaignBenchmarking extends Page
             return [];
         }
 
-        $campaigns = FocalAuthorization::query(CampaignResource::class, Campaign::class)
+        $campaigns = OddenAuthorization::query(CampaignResource::class, Campaign::class)
             ->whereIn('id', $this->selectedCampaignIds)
             ->get();
 
