@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Filament\Tests\Fixtures\User;
 use Odden\Sales\Models\Pipeline;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PipelineResourceTest extends TestCase
 {

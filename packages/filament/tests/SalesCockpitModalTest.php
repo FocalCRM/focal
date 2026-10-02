@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Enums\LeadStatus;
 use Odden\Core\Models\Contact;
 use Odden\Filament\Pages\SalesCockpit;
 use Odden\Filament\Tests\Fixtures\User;
 use Odden\Sales\Enums\CallDisposition;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class SalesCockpitModalTest extends TestCase
 {

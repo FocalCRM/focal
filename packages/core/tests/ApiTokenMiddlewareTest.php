@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Odden\Core\Http\Middleware\RequireApiToken;
 use Illuminate\Support\Facades\Route;
+use Odden\Core\Http\Middleware\RequireApiToken;
 
 beforeEach(function (): void {
     Route::post('/_test/protected', fn () => response()->json(['ok' => true]))

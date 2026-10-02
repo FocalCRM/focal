@@ -8,13 +8,13 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
 use Odden\Filament\Resources\DealResource;
 use Odden\Filament\Support\OddenAuthorization;
 use Odden\Sales\Actions\CalculatePipelineForecastAction;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\PipelineStage;
-use Illuminate\Database\Eloquent\Collection;
 
 class KanbanDeals extends Page
 {

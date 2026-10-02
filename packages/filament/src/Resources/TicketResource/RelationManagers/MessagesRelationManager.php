@@ -12,6 +12,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Odden\Core\Support\UserModel;
 use Odden\Filament\Resources\TicketResource;
 use Odden\Filament\Support\OddenAuthorization;
@@ -20,7 +21,6 @@ use Odden\Service\Enums\MessageSenderType;
 use Odden\Service\Models\CannedResponse;
 use Odden\Service\Models\Ticket;
 use Odden\Service\Models\TicketMessage;
-use Illuminate\Database\Eloquent\Builder;
 
 class MessagesRelationManager extends RelationManager
 {

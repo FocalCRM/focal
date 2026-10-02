@@ -9,6 +9,9 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Odden\Core\Enums\ActivityStatus;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Enums\LeadStatus;
@@ -30,9 +33,6 @@ use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Quote;
 use Odden\Sales\Models\SalesSequence;
 use Odden\Sales\Models\SalesSequenceEnrollment;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use UnitEnum;
 
 class SalesCockpit extends Page

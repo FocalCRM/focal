@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Odden\Core\Actions;
 
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Events\LifecycleStageChanged;
 use Odden\Core\Models\LifecycleStageTransition;
 use Odden\Core\Support\LifecycleStateMachine;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 class TransitionLifecycleStageAction
 {

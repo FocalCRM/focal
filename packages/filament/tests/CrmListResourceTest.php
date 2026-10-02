@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Enums\ListType;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Filament\Tests\Fixtures\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CrmListResourceTest extends TestCase
 {

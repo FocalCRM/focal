@@ -12,9 +12,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
+use Illuminate\Support\Facades\Schema as DbSchema;
 use Odden\Core\Enums\PropertyType;
 use Odden\Core\Models\PropertyDefinition;
-use Illuminate\Support\Facades\Schema as DbSchema;
 
 class CustomPropertyFieldBuilder
 {

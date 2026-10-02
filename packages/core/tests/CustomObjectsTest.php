@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Core\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Odden\Core\Actions\CreateCustomObjectDefinitionAction;
 use Odden\Core\Actions\CreateCustomObjectRecordAction;
 use Odden\Core\Events\CustomObjectDefinitionCreated;
@@ -11,8 +13,6 @@ use Odden\Core\Events\CustomObjectRecordCreated;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CustomObjectRecord;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
 
 class CustomObjectsTest extends TestCase
 {

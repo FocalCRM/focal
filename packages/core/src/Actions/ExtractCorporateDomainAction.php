@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
-use Odden\Core\Support\FreemailDomains;
 use Illuminate\Support\Str;
+use Odden\Core\Support\FreemailDomains;
 
 class ExtractCorporateDomainAction
 {

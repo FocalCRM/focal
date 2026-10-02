@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Core\Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\PropertyHistory;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<PropertyHistory>

@@ -27,6 +27,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Odden\Core\Actions\MergeContactsAction;
 use Odden\Core\Actions\SummarizeTimelineAction;
 use Odden\Core\Enums\LeadStatus;
@@ -54,8 +56,6 @@ use Odden\Sales\Actions\RouteLeadAction;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\SalesPlaybook;
 use Odden\Sales\Models\SalesSequence;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 
 class ContactResource extends Resource

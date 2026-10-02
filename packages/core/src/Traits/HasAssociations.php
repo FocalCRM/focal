@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Core\Traits;
 
-use Odden\Core\Actions\AssociateRecordsAction;
-use Odden\Core\Models\Association;
-use Odden\Core\Models\AssociationType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Odden\Core\Actions\AssociateRecordsAction;
+use Odden\Core\Models\Association;
+use Odden\Core\Models\AssociationType;
 
 trait HasAssociations
 {

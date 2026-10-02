@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Odden\Core\Tests\Fixtures;
 
 use Closure;
+use Illuminate\Database\Eloquent\Model;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Registers `deals` and `tickets` on Contact and Company with resolveRelationUsing(), the way

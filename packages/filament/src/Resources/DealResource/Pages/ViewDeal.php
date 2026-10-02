@@ -13,6 +13,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Group;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\View\View;
 use Odden\Filament\Resources\DealResource;
 use Odden\Filament\Support\OddenAuthorization;
 use Odden\Sales\Actions\ExecuteSalesPlaybookAction;
@@ -20,7 +21,6 @@ use Odden\Sales\Actions\GenerateQuoteFromDealAction;
 use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\SalesPlaybook;
-use Illuminate\Contracts\View\View;
 
 class ViewDeal extends ViewRecord
 {

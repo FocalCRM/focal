@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Filament\Resources\TicketResource\Pages\KanbanTickets;
 use Odden\Filament\Resources\TicketResource\Pages\ListTickets;
 use Odden\Filament\Tests\Fixtures\User;
@@ -15,8 +17,6 @@ use Odden\Service\Models\CannedResponse;
 use Odden\Service\Models\KnowledgeArticle;
 use Odden\Service\Models\SlaPolicy;
 use Odden\Service\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class ServiceResourcesTest extends TestCase
 {

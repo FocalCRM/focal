@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Odden\Core\Models\Activity;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Core\Support\OptionalRelation;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 class SummarizeTimelineAction
 {

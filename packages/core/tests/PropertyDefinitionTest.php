@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Core\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Enums\PropertyType;
 use Odden\Core\Models\PropertyDefinition;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PropertyDefinitionTest extends TestCase
 {

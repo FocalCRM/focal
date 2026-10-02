@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Odden\Core\Models\Contact;
-use Odden\Core\Support\ContactLookup;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\ContactLookup;
 
 it('finds a contact ignoring case and surrounding whitespace', function (): void {
     $contact = Contact::factory()->create(['email' => 'dana@example.com']);

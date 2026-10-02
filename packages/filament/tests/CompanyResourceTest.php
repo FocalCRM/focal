@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Filament\Tests\Fixtures\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CompanyResourceTest extends TestCase
 {

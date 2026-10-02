@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Core\Events;
 
-use Odden\Core\Models\Activity;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Odden\Core\Models\Activity;
 
 class ActivityLogged
 {

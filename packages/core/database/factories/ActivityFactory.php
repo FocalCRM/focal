@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Core\Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Odden\Core\Enums\ActivityStatus;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Models\Activity;
 use Odden\Core\Models\Contact;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<Activity>

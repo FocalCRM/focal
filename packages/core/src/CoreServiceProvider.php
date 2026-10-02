@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Core;
 
-use Odden\Core\Support\Enrichment\EnrichmentManager;
-use Odden\Core\Support\LifecycleStateMachine;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Odden\Core\Support\Enrichment\EnrichmentManager;
+use Odden\Core\Support\LifecycleStateMachine;
 
 class CoreServiceProvider extends ServiceProvider
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Core\Events;
 
-use Odden\Core\Models\Company;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Odden\Core\Models\Company;
 
 /**
  * Dispatched by MergeCompaniesAction inside its transaction, after Core has moved its own records

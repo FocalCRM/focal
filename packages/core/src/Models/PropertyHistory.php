@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Odden\Core\Database\Factories\PropertyHistoryFactory;
-use Odden\Core\Support\UserModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Odden\Core\Database\Factories\PropertyHistoryFactory;
+use Odden\Core\Support\UserModel;
 
 /**
  * @property int $id

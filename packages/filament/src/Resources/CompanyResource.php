@@ -23,6 +23,8 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Odden\Core\Actions\CalculateCustomerHealthScoreAction;
 use Odden\Core\Actions\MergeCompaniesAction;
 use Odden\Core\Actions\SummarizeTimelineAction;
@@ -40,8 +42,6 @@ use Odden\Filament\Support\CustomPropertyFieldBuilder;
 use Odden\Filament\Support\OddenAuthorization;
 use Odden\Marketing\Actions\CalculateCompanyIntentScoreAction;
 use Odden\Sales\Models\Deal;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use UnitEnum;
 
 class CompanyResource extends Resource

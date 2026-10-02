@@ -8,12 +8,12 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
 use Odden\Core\Models\Company;
 use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
 use Odden\Filament\Resources\CompanyResource;
 use Odden\Filament\Support\OddenAuthorization;
 use Odden\Marketing\Actions\CalculateCompanyIntentScoreAction;
-use Illuminate\Database\Eloquent\Collection;
 use UnitEnum;
 
 class AbmCockpit extends Page

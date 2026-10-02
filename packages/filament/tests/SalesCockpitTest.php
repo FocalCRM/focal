@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Filament\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Enums\LeadStatus;
 use Odden\Core\Models\Contact;
@@ -11,8 +13,6 @@ use Odden\Filament\Pages\SalesCockpit;
 use Odden\Filament\Tests\Fixtures\User;
 use Odden\Sales\Models\SalesSequence;
 use Odden\Sales\Models\SalesSequenceEnrollment;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 class SalesCockpitTest extends TestCase
 {

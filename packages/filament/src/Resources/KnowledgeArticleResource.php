@@ -20,12 +20,12 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Odden\Core\Support\UserModel;
 use Odden\Filament\Resources\KnowledgeArticleResource\Pages\CreateKnowledgeArticle;
 use Odden\Filament\Resources\KnowledgeArticleResource\Pages\EditKnowledgeArticle;
 use Odden\Filament\Resources\KnowledgeArticleResource\Pages\ListKnowledgeArticles;
 use Odden\Service\Models\KnowledgeArticle;
-use Illuminate\Support\Str;
 use UnitEnum;
 
 class KnowledgeArticleResource extends Resource

@@ -7,14 +7,14 @@ namespace Odden\Filament\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 use Odden\Filament\Pages\Concerns\AuthorizesPageAccess;
 use Odden\Filament\Resources\CampaignResource;
 use Odden\Filament\Resources\LandingPageResource;
 use Odden\Filament\Support\OddenAuthorization;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\LandingPage;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Str;
 use UnitEnum;
 
 class UtmLinkBuilder extends Page

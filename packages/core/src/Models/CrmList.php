@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Odden\Core\Actions\EvaluateActiveListAction;
-use Odden\Core\Database\Factories\CrmListFactory;
-use Odden\Core\Enums\ListType;
-use Odden\Core\Support\UserModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Odden\Core\Actions\EvaluateActiveListAction;
+use Odden\Core\Database\Factories\CrmListFactory;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Support\UserModel;
 
 /**
  * @property int $id

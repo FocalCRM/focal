@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Core\Actions;
 
+use Illuminate\Database\Eloquent\Model;
 use Odden\Core\Enums\AssociationCardinality;
 use Odden\Core\Events\RecordsAssociated;
 use Odden\Core\Exceptions\CardinalityViolationException;
 use Odden\Core\Models\Association;
 use Odden\Core\Models\AssociationType;
-use Illuminate\Database\Eloquent\Model;
 
 class AssociateRecordsAction
 {

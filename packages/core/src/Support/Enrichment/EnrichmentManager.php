@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Core\Support\Enrichment;
 
-use Odden\Core\Contracts\EnrichmentDriver;
 use InvalidArgumentException;
+use Odden\Core\Contracts\EnrichmentDriver;
 
 class EnrichmentManager
 {

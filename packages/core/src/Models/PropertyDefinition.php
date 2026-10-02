@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Odden\Core\Models;
 
 use Carbon\CarbonInterface;
-use Odden\Core\Database\Factories\PropertyDefinitionFactory;
-use Odden\Core\Enums\PropertyType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Odden\Core\Database\Factories\PropertyDefinitionFactory;
+use Odden\Core\Enums\PropertyType;
 
 /**
  * @property int $id

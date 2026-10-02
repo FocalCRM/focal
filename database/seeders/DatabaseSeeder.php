@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 use Odden\Core\Enums\ListType;
 use Odden\Core\Enums\PropertyType;
 use Odden\Core\Models\Company;
@@ -17,8 +19,6 @@ use Odden\Sales\Models\DealStageHistory;
 use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\PipelineStage;
 use Odden\Service\Database\Seeders\ServiceDatabaseSeeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
