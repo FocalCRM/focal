@@ -138,4 +138,4 @@ It returns a fresh copy of the primary ticket. Merging a ticket into itself thro
 
 Use `$ticket->mergedInto` and `$ticket->mergedTickets` to navigate merges.
 
-The secondary ticket keeps its number and portal token. Email replies that reference its number are still added to the secondary (closed) ticket, not the primary, and do not reopen it. See [Email to ticket](inbound-email.md#threading-replies).
+The secondary ticket keeps its number and portal token. Email replies that carry its portal token (its portal link, or the Message-ID of an email sent about it) are still added to the secondary (closed) ticket, not the primary, and do not reopen it. See [Email to ticket](inbound-email.md#threading-replies).

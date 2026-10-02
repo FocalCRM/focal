@@ -217,7 +217,7 @@ The package sends these notifications on the `mail` channel. None implements `Sh
 | `TicketResolvedCsatNotification` | Contact | `ResolveTicketAction` | `getCsatUrl()` |
 | `SlaBreachAlertNotification` | Ticket owner | `CheckSlaBreachesAction` | `/admin/tickets/{id}/edit` |
 
-Customer email subjects start with `[#{ticket_number}]`, which the [email webhook](inbound-email.md#threading-replies) uses to thread replies from the ticket's contact back into the ticket.
+Customer email subjects start with `[#{ticket_number}]` for the customer's reference. The three customer emails also set a `Message-ID` that contains the ticket's portal token, `<ticket.{portal_token}.{unique}@{host}>`, which the [email webhook](inbound-email.md#threading-replies) uses, along with the portal link, to thread replies from the ticket's contact back into the ticket. The ticket number alone doesn't thread a reply.
 
 Tickets created by the [chat widget](chat-widget.md) don't go through `CreateTicketAction`, so they send no confirmation email.
 

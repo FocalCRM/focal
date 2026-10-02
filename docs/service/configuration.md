@@ -20,6 +20,7 @@ Settings shared by all Focal modules, such as the user model and rate limits, ar
 | `FOCAL_SERVICE_PREFIX` | `focal-service.routes.web.prefix` | `''` (no prefix) |
 | `FOCAL_SERVICE_API_PREFIX` | `focal-service.routes.api.prefix` | `api/service` |
 | `FOCAL_SERVICE_API_TOKEN` | `focal-service.api.token` | `null` (token endpoints disabled) |
+| `FOCAL_SERVICE_INBOUND_REQUIRE_AUTH` | `focal-service.inbound_email.require_authenticated_sender` | `false` |
 
 The rate limits come from Core: `FOCAL_PUBLIC_RATE_LIMIT` (default 30 per minute) and `FOCAL_API_RATE_LIMIT` (default 600 per minute). See [Rate limits](#rate-limits).
 
@@ -50,7 +51,7 @@ The models and migrations both read these names. Change them before you run the 
 ],
 ```
 
-`prefix` is used for generated ticket numbers (`TICK-2026-7WBPJ`) and for recognizing ticket numbers in [inbound email](inbound-email.md#threading-replies). Use uppercase letters: generated numbers keep the prefix as written, while inbound email looks up the matched number in uppercase.
+`prefix` is used for generated ticket numbers (`TICK-2026-7WBPJ`). Generated numbers keep the prefix as written. [Inbound email](inbound-email.md#threading-replies) doesn't use ticket numbers to thread replies.
 
 `priority` and `source` are not read by the package. A new ticket's defaults come from the model and the database columns (`medium` and `web_portal`) and from the arguments you pass to `CreateTicketAction`.
 
@@ -89,6 +90,16 @@ Generate links with `route()` and the route names below, so prefix and domain ch
 ```
 
 Protects the [inbound email webhook](inbound-email.md#api-token). Until it is set, that endpoint returns `403`.
+
+### Inbound email
+
+```php
+'inbound_email' => [
+    'require_authenticated_sender' => (bool) env('FOCAL_SERVICE_INBOUND_REQUIRE_AUTH', false),
+],
+```
+
+When `true`, the [inbound email webhook](inbound-email.md#requiring-sender-authentication) only threads a reply onto an existing ticket if the request has `sender_authenticated` set to a true value or `dmarc` set to `pass`. Otherwise the email opens a new ticket.
 
 ## Routes
 
