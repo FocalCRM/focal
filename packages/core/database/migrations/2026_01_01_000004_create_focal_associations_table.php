@@ -17,11 +17,12 @@ return new class extends Migration
 
         Schema::create($tableName, function (Blueprint $table): void {
             $table->id();
-            $table->string('parent_type');
+            // Lengths keep the unique index under MySQL's 3072-byte key limit with utf8mb4.
+            $table->string('parent_type', 191);
             $table->unsignedBigInteger('parent_id');
-            $table->string('child_type');
+            $table->string('child_type', 191);
             $table->unsignedBigInteger('child_id');
-            $table->string('type')->default('default');
+            $table->string('type', 100)->default('default');
             $table->timestamps();
 
             $table->index(['parent_type', 'parent_id'], 'focal_assoc_parent_idx');

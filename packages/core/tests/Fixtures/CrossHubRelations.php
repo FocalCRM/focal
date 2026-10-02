@@ -8,38 +8,16 @@ use Closure;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Registers `deals` and `tickets` on Contact and Company with resolveRelationUsing(), the way
  * the Sales and Service service providers do, so Core can be tested against dynamic relations
- * without installing those packages.
+ * without installing those packages. Their tables come from tests/Fixtures/migrations.
  */
 final class CrossHubRelations
 {
     public static function install(): void
     {
-        Schema::create('fixture_deals', function (Blueprint $table): void {
-            $table->id();
-            $table->string('name');
-            $table->string('status')->default('open');
-            $table->timestamps();
-        });
-
-        Schema::create('fixture_tickets', function (Blueprint $table): void {
-            $table->id();
-            $table->string('subject');
-            $table->unsignedBigInteger('contact_id')->nullable();
-            $table->unsignedBigInteger('company_id')->nullable();
-            $table->string('status')->default('open');
-            $table->string('priority')->default('medium');
-            $table->boolean('is_sla_response_breached')->default(false);
-            $table->boolean('is_sla_resolution_breached')->default(false);
-            $table->unsignedTinyInteger('csat_rating')->nullable();
-            $table->timestamps();
-        });
-
         foreach ([Contact::class, Company::class] as $model) {
             $model::resolveRelationUsing('deals', fn (Model $record) => $record->belongsToMany(
                 Deal::class,
