@@ -105,7 +105,7 @@ Check how your provider names its events before relying on this. Only the names 
 
 An event is linked to a `CampaignRecipient` by its tracking token if the payload carries one. Otherwise, it's linked to the most recent recipient with the same email address.
 
-To match exactly, pass the recipient's `tracking_token` to your provider as metadata named `focal_token` when you send (Mailgun user variables, Postmark metadata, SendGrid custom args, Resend tags). For SES, the configured path (`mail.headersTruncated`) is a boolean in SES events, so SES events always fall back to matching by address.
+To match exactly, pass the recipient's `tracking_token` to your provider as metadata named `focal_token` when you send (Mailgun user variables, Postmark metadata, SendGrid custom args, Resend tags). Campaign messages carry the token in an `X-Focal-Tracking-Token` header, so you can copy it into your provider's metadata in a `MessageSending` listener or your provider's header-mapping settings. For SES, the configured path (`mail.headersTruncated`) is a boolean in SES events, so SES events always fall back to matching by address.
 
 ### Amazon SES
 

@@ -7,7 +7,7 @@ description: Install the Focal packages, run the migrations, and schedule the co
 
 - PHP 8.3 or newer
 - Laravel 12 or 13
-- A database supported by Laravel. Focal is tested on SQLite and PostgreSQL.
+- SQLite 3.26+, MySQL 8.0+, or PostgreSQL 15+. Every package is tested against all three in CI.
 - Filament 5.9 or newer, only if you install the [Filament admin](filament/index.md)
 
 ## Install the packages
@@ -76,14 +76,33 @@ Then make sure the scheduler runs, with `php artisan schedule:work` locally or a
 
 ## Configure mail
 
-Focal sends these emails with your application's default mailer, synchronously, from the request or command that triggers them:
+Configure a mailer in `config/mail.php` before you use any of the email features.
 
-- Service ticket notifications: confirmation, replies, resolution with a CSAT survey, and SLA breach alerts to the ticket owner
-- Marketing campaign proofs and the [transactional email API](marketing/transactional-email.md)
+> **Run a queue worker.** From v0.3, Focal queues every email it sends. Nothing is delivered from the request or command that triggers it: each email is pushed to the queue and a queue worker sends it. Without a worker, mail stays on the queue and is never delivered. This covers:
+>
+> - Marketing: campaign messages, workflow email steps, campaign proofs, and the [transactional email API](marketing/transactional-email.md)
+> - Sales: [sequence email steps](sales/sequences.md#email-steps) and [meeting confirmations](sales/meeting-links.md#confirmation-emails)
+> - Service: [ticket notifications](service/tickets.md#notifications) (confirmation, agent replies, resolution with a CSAT survey, and SLA breach alerts)
+>
+> The one exception is the **Send Test** preview action on marketing templates in the [Filament admin](filament/resources.md#other-marketing-resources), which sends during the request.
 
-Configure a mailer in `config/mail.php` before you use them.
+Run a worker in production, for example with Supervisor:
 
-Campaigns, workflow email steps, and sales sequence email steps don't deliver mail yet: they compile and record each message without sending it. See [delivering campaign messages](marketing/campaigns.md#delivering-the-messages) for how to send them yourself.
+```bash
+php artisan queue:work
+```
+
+By default each package uses your default queue connection, its default queue, and your default mailer. Each package can send its mail on its own connection and queue:
+
+| Package | Config keys | Environment variables |
+|---|---|---|
+| Marketing | `focal-marketing.mail.mailer`, `.connection`, `.queue` | `FOCAL_MARKETING_MAILER`, `FOCAL_MARKETING_MAIL_CONNECTION`, `FOCAL_MARKETING_MAIL_QUEUE` |
+| Sales | `focal-sales.mail.mailer`, `.connection`, `.queue` | `FOCAL_SALES_MAILER`, `FOCAL_SALES_QUEUE_CONNECTION`, `FOCAL_SALES_MAIL_QUEUE` |
+| Service | `focal-service.notifications.connection`, `.queue` | `FOCAL_SERVICE_NOTIFICATIONS_CONNECTION`, `FOCAL_SERVICE_NOTIFICATIONS_QUEUE` |
+
+Service notifications always use your default mailer. If you set a queue name, include it in your worker's `--queue` list, for example `php artisan queue:work --queue=marketing-mail,sales-mail,support-mail,default`. See [Sending mail](marketing/index.md#sending-mail), [Sales `mail` configuration](sales/configuration.md#mail) (which also sets the Sales "from" address), and [Service notifications](service/tickets.md#notifications).
+
+With the `sync` queue connection the mail is sent during the request, which is fine for local development only.
 
 ## Next steps
 

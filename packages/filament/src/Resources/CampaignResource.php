@@ -33,6 +33,7 @@ use Focal\Marketing\Actions\EvaluateAbTestWinnerAction;
 use Focal\Marketing\Actions\GenerateAiSubjectLinesAction;
 use Focal\Marketing\Actions\SendCampaignProofAction;
 use Focal\Marketing\Enums\CampaignStatus;
+use Focal\Marketing\Exceptions\CampaignHasNoAudienceException;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\MarketingSubscriptionTopic;
 use Focal\Marketing\Models\MarketingTemplate;
@@ -294,7 +295,17 @@ class CampaignResource extends Resource
                     ->modalHeading('Send Broadcast Campaign')
                     ->modalDescription('Are you sure you want to broadcast this campaign immediately to all targeted list recipients?')
                     ->action(function (Campaign $record): void {
-                        $results = (new DispatchCampaignAction)->execute($record);
+                        try {
+                            $results = app(DispatchCampaignAction::class)->execute($record);
+                        } catch (CampaignHasNoAudienceException) {
+                            Notification::make()
+                                ->title('Campaign Has No Audience')
+                                ->body('Choose a list for this campaign before sending it.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
 
                         Notification::make()
                             ->title('Campaign Broadcast Sent')

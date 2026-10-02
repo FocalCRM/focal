@@ -73,7 +73,7 @@ The Sales, Marketing, and Service packages don't extend Core's models. They:
 - build their route groups with `RouteGroup::attributes()`, protect webhooks with the `RequireApiToken` middleware, and throttle public endpoints with the `focal-public` and `focal-api` limiters. See [Users, routes, and configuration](integration.md).
 - add their own columns to `focal_contacts`. For example, Marketing adds `marketing_topics`, `sms_consent`, and `is_unengaged`. These are already fillable and cast on `Contact`, but the columns only exist once that package's migrations have run.
 
-Some Core actions look for tables owned by other modules. For example, merging contacts moves rows in the deals, tickets, and form submission tables when those tables exist.
+Some Core actions use what other modules add without depending on them. The [customer health score](contacts-and-companies.md#customer-health-scores) reads the `deals` and `tickets` relations when Sales and Service have registered them, and on a merge each module moves its own data by listening for [`ContactsMerged` and `CompaniesMerged`](duplicates-and-merging.md#what-each-module-moves).
 
 ## Pages in this section
 

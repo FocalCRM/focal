@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Focal\Filament\Resources;
 
 use BackedEnum;
+use Closure;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -25,6 +27,7 @@ use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\CreateSalesMeetingLi
 use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\EditSalesMeetingLink;
 use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\ListSalesMeetingLinks;
 use Focal\Sales\Models\SalesMeetingLink;
+use Focal\Sales\Services\MeetingAvailability;
 use UnitEnum;
 
 class SalesMeetingLinkResource extends Resource
@@ -86,7 +89,75 @@ class SalesMeetingLinkResource extends Resource
                             ->default(true),
                     ])
                     ->columns(2),
+
+                Section::make('Availability')
+                    ->description('Slots are offered inside these weekly working hours, in the timezone below. Leave every day empty to use the default hours from focal-sales.meetings.default_working_hours (Monday to Friday, 09:00-17:00 unless changed).')
+                    ->schema([
+                        Select::make('timezone')
+                            ->label('Timezone')
+                            ->options(fn (): array => array_combine(timezone_identifiers_list(), timezone_identifiers_list()))
+                            ->placeholder('App timezone ('.config('app.timezone', 'UTC').')')
+                            ->searchable(),
+                        TextInput::make('buffer_minutes')
+                            ->label('Buffer Between Meetings')
+                            ->helperText('Minutes kept free before and after each booking.')
+                            ->numeric()
+                            ->integer()
+                            ->minValue(0)
+                            ->maxValue(240)
+                            ->suffix('min')
+                            ->default(0)
+                            ->required(),
+                        ...array_map(
+                            fn (string $day): TagsInput => TagsInput::make("working_hours.{$day}")
+                                ->label(ucfirst($day))
+                                ->placeholder('Add window (e.g. 09:00-12:00)')
+                                ->nestedRecursiveRules([
+                                    fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                                        if (! is_string($value) || MeetingAvailability::parseWindow($value) === null) {
+                                            $fail('Each window must be HH:MM-HH:MM with the start before the end, for example 09:00-17:00.');
+                                        }
+                                    },
+                                ]),
+                            MeetingAvailability::DAYS,
+                        ),
+                    ])
+                    ->columns(2),
             ]);
+    }
+
+    /**
+     * Tidy the working hours from the form: trimmed windows, days without windows dropped, and
+     * null when no day has any (so the link falls back to the configured default hours).
+     *
+     * @return array<string, list<string>>|null
+     */
+    public static function normalizeWorkingHours(mixed $hours): ?array
+    {
+        if (! is_array($hours)) {
+            return null;
+        }
+
+        $normalized = [];
+
+        foreach (MeetingAvailability::DAYS as $day) {
+            $windows = $hours[$day] ?? [];
+
+            if (! is_array($windows)) {
+                continue;
+            }
+
+            $windows = array_values(array_filter(
+                array_map(fn (mixed $window): string => is_string($window) ? trim($window) : '', $windows),
+                fn (string $window): bool => $window !== '',
+            ));
+
+            if ($windows !== []) {
+                $normalized[$day] = $windows;
+            }
+        }
+
+        return $normalized === [] ? null : $normalized;
     }
 
     public static function table(Table $table): Table

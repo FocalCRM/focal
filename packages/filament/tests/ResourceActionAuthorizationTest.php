@@ -6,6 +6,7 @@ namespace Focal\Filament\Tests;
 
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
+use Focal\Core\Models\CrmList;
 use Focal\Filament\Resources\CampaignResource\Pages\ListCampaigns;
 use Focal\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Focal\Filament\Resources\ContactResource\Pages\ListContacts;
@@ -152,11 +153,15 @@ class ResourceActionAuthorizationTest extends TestCase
 
     private function draftCampaign(string $name): Campaign
     {
+        $list = CrmList::create(['name' => "{$name} audience", 'type' => 'static']);
+        $list->addMember(Contact::create(['first_name' => 'Ada', 'email' => strtolower($name).'@example.com']));
+
         return Campaign::create([
             'name' => $name,
             'subject' => 'Live now',
             'sender_name' => 'Focal',
             'sender_email' => 'news@focal.test',
+            'list_id' => $list->id,
             'status' => CampaignStatus::Draft,
         ]);
     }

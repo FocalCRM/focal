@@ -62,7 +62,7 @@ Tables without a config key use fixed names.
 | :--- | :--- |
 | `CampaignStatus` | `Draft`, `Scheduled`, `Sending`, `Sent`, `Cancelled` |
 | `CampaignType` | `Regular`, `Automated` |
-| `RecipientStatus` | `Pending`, `Sent`, `Opened`, `Clicked`, `Bounced`, `Unsubscribed` |
+| `RecipientStatus` | `Pending`, `Sent`, `Opened`, `Clicked`, `Bounced`, `Unsubscribed`, `Suppressed` |
 | `SubscriptionStatus` | `Subscribed`, `Unsubscribed`, `Bounced` |
 
 Each enum has `getLabel()`, and all but `CampaignType` have `getColor()` (a Filament color name).
@@ -80,14 +80,31 @@ When the package boots, it adds these relations to `Focal\Core\Models\Contact`:
 | `workflowEnrollments` | `HasMany` of `WorkflowEnrollment` |
 | `customBehavioralEvents` | `HasMany` of `CustomBehavioralEvent` |
 
+When Core [merges two contacts](../core/duplicates-and-merging.md#what-each-module-moves), Marketing moves every row it keys to the duplicate contact over to the surviving one, and on a company merge it moves custom behavioural events. Where both contacts have a row that can only exist once, such as two recipients of the same campaign, it keeps one. Opt-outs carry over: see [Merging contacts](subscriptions-and-compliance.md#merging-contacts).
+
 Core's `contacts` table also carries the marketing columns this package migrates in: `marketing_topics`, `marketing_verification_token`, `marketing_email_verified_at`, `last_marketing_email_sent_at`, `is_unengaged`, `unengaged_since`, and `sunset_stage`.
 
 ## Sending mail
 
-Read this before you rely on campaigns:
+Every email the package sends is queued, never sent during the request or command that triggers it:
 
-- **Campaign dispatch doesn't hand messages to a mailer.** `DispatchCampaignAction`, `marketing:dispatch-scheduled`, and `marketing:evaluate-ab-tests` create recipient rows, compile each message's HTML, log a task on the contact, and update counters, but they never call `Mail`. To deliver campaign email you need to send it yourself. [Campaigns](campaigns.md#delivering-the-messages) shows how.
-- **These do send mail**, with your application's default mailer, synchronously: the [transactional API](transactional-email.md) and campaign proofs (`SendCampaignProofAction`).
+- campaign messages, from `DispatchCampaignAction`, `marketing:dispatch-scheduled`, and `marketing:evaluate-ab-tests` (see [Campaigns](campaigns.md#delivering-the-messages))
+- workflow [`send_email`](workflows.md#step-types) steps
+- campaign proofs (`SendCampaignProofAction`)
+- the [transactional API](transactional-email.md)
+
+**Run a queue worker**, or nothing is delivered. Every marketing mailable (`MarketingMessageMailable`, `CampaignProofMailable`, and `TransactionalTemplateMailable`) is pushed to the queue only after the surrounding database transaction commits, like Sales and Service mail, so mail queued inside a transaction that rolls back is never sent. The mail goes on your default queue connection and queue unless you set `FOCAL_MARKETING_MAIL_CONNECTION` and `FOCAL_MARKETING_MAIL_QUEUE`, and through your default mailer unless you set `FOCAL_MARKETING_MAILER`:
+
+```env
+FOCAL_MARKETING_MAIL_QUEUE=marketing-mail
+FOCAL_MARKETING_MAILER=ses
+```
+
+```bash
+php artisan queue:work --queue=marketing-mail,default
+```
+
+With the `sync` queue connection, messages are sent as they're queued, inside the request or command. That works for development but not for a real list.
 
 ## Scheduled commands
 
@@ -112,9 +129,12 @@ php artisan vendor:publish --tag=focal-marketing-config
 | Key | Default | Environment variable | What it does |
 | :--- | :--- | :--- | :--- |
 | `tables.*` | `focal_marketing_*` names | | Table names for the models listed above and the lead-side models |
-| `defaults.sender_name` | `Focal Marketing` | `MARKETING_FROM_NAME` | Sender name for campaign proofs when the campaign has none |
-| `defaults.sender_email` | `newsletter@focal.test` | `MARKETING_FROM_EMAIL` | Sender address for campaign proofs when the campaign has none |
-| `defaults.reply_to` | `support@focal.test` | `MARKETING_REPLY_TO` | Reply-to address for campaign proofs when the campaign has none |
+| `defaults.sender_name` | `Focal Marketing` | `MARKETING_FROM_NAME` | Sender name for campaign messages and proofs when the campaign has none, and for workflow emails |
+| `defaults.sender_email` | `newsletter@focal.test` | `MARKETING_FROM_EMAIL` | Sender address for campaign messages and proofs when the campaign has none, and for workflow emails |
+| `defaults.reply_to` | `support@focal.test` | `MARKETING_REPLY_TO` | Reply-to address for campaign proofs when the campaign has none, and for workflow emails |
+| `mail.mailer` | `null` | `FOCAL_MARKETING_MAILER` | Mailer (from `config/mail.php`) for all marketing mail. Empty uses the default mailer |
+| `mail.connection` | `null` | `FOCAL_MARKETING_MAIL_CONNECTION` | Queue connection for marketing mail. Empty uses the default connection |
+| `mail.queue` | `null` | `FOCAL_MARKETING_MAIL_QUEUE` | Queue name for marketing mail. Empty uses the connection's default queue |
 | `fatigue_protection.enabled` | `false` | `MARKETING_FATIGUE_PROTECTION_ENABLED` | Skip contacts who were emailed too recently during campaign dispatch |
 | `fatigue_protection.max_emails_per_7_days` | `2` | `MARKETING_MAX_EMAILS_7_DAYS` | Campaign emails a contact may receive in a rolling 7 days |
 | `fatigue_protection.min_hours_between_sends` | `24` | `MARKETING_MIN_HOURS_BETWEEN_SENDS` | Minimum hours between two campaign emails to one contact |

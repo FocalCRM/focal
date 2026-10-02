@@ -57,8 +57,8 @@ If no step has that number, the enrollment is completed. Conditions use `next_st
 
 | Case | Value | `config` keys | What it does |
 | --- | --- | --- | --- |
-| `SendEmail` | `send_email` | `template_id`, `subject` (default `Marketing Update`), `body` | Renders the template's `body_html` (or `body`) with the contact's merge tags (values HTML-escaped), logs a `Workflow Email: {subject}` task on the contact, and writes a log entry. It doesn't send an email; see the note below. |
-| `SendSms` | `send_sms` | `message` (default `Marketing Update`), `requires_consent` (default `true`) | Sends an SMS through `DispatchSmsAction`. The log status is `success` when delivered and `skipped` otherwise (no phone or no consent). See the note below. |
+| `SendEmail` | `send_email` | `template_id`, `subject` (default the template's subject, then `Marketing Update`), `body`, `topic_id`, `from_email`, `from_name`, `reply_to` | Renders the template's `body_html` (or `body`) with the contact's merge tags (values HTML-escaped) and queues it to the contact. See [the email step](#the-email-step). |
+| `SendSms` | `send_sms` | `message` (default `Marketing Update`), `requires_consent` (default `true`) | Sends an SMS through `DispatchSmsAction`. The log status is `success` when delivered and `skipped` otherwise (no phone or no consent). |
 | `Delay` | `delay` | `delay_minutes` (default 60, minimum 1) | Moves to the next step and sets `next_run_at` that many minutes ahead. If there's no next step, completes the enrollment. |
 | `Condition` | `condition` | `property` (default `lead_score`), `operator` (default `>=`), `value` (default 50) | Compares a contact value and branches. See [conditions](#conditions). |
 | `UpdateContact` | `update_contact` | `lifecycle_stage` | Sets the contact's lifecycle stage. It's the only supported field. |
@@ -70,9 +70,16 @@ If no step has that number, the enrollment is completed. Conditions use `next_st
 
 Every step writes a `WorkflowLog` row. Each case has `label()` and `getLabel()`.
 
-> **`send_email` doesn't send mail.** The step compiles the message and records it on the timeline and in the workflow log, but no mailable is sent or queued. To email contacts from a workflow, call your own code from a `webhook` step, or send a [transactional email](transactional-email.md) yourself.
->
-> **`send_sms` falls through to `assign_owner`.** After the SMS step runs, execution continues into the `assign_owner` code: the contact is assigned to `config.owner_id` or, without one, to the first user, and a second log entry is written. Avoid `send_sms` steps on contacts whose owner you want to keep, or set `owner_id` in the SMS step's `config` to the intended owner.
+### The email step
+
+`send_email` uses the same delivery as [campaigns](campaigns.md#delivering-the-messages): it queues a `Focal\Marketing\Mail\MarketingMessageMailable` on the `focal-marketing.mail` queue, through the `focal-marketing.mail.mailer` mailer, so a queue worker must be running (see [Sending mail](index.md#sending-mail)).
+
+- **Subject.** `config.subject`, or the template's subject, or `Marketing Update`. The subject gets the same merge tags as the body, unescaped.
+- **Sender.** `config.from_email`, `config.from_name`, and `config.reply_to`, falling back to the `defaults.*` [config values](index.md#configuration).
+- **Body.** HTML plus a plain-text alternative generated from it. There's no open pixel or click tracking: workflow emails don't create campaign recipients.
+- **Unsubscribe.** `{{unsubscribe_url}}` and the `List-Unsubscribe` header point at the contact's [preference center](subscriptions-and-compliance.md#preference-center). There's no `List-Unsubscribe-Post` header, because the preference center has no one-click endpoint.
+
+The step skips the email when the contact's address is empty, unsubscribed or bounced, or on the [suppression list](deliverability.md#the-suppression-list), or, if `config.topic_id` is set, unsubscribed from that topic. A skipped email is logged with status `skipped` and `Skipped email (unsubscribed or suppressed): {subject}`, and no task is logged. Otherwise the step logs a `Workflow Email: {subject}` task on the contact and a `Sent email: {subject}` entry once the message is queued. Either way, the workflow moves on to the next step.
 
 ### Conditions
 
@@ -178,6 +185,8 @@ php artisan marketing:process-workflows
 
 It loads every `active` enrollment with a `next_run_at` in the past and runs its current step (and the steps after it, up to the next delay). It prints the number of enrollments advanced. `Focal\Marketing\Actions\ProcessDueWorkflowsAction::execute(): int` does the same from code.
 
+Each step is claimed before it runs: `ExecuteWorkflowStepAction` first calls `$enrollment->claimStep($stepId)`, a single conditional `UPDATE` that only matches while the enrollment is `active`, still on that step, and due (`next_run_at` set), and clears `next_run_at`. If two workers pick up the same enrollment at once (overlapping scheduler runs, or the scheduler racing the immediate run after enrolment), only one sends the step's email, SMS, or webhook; the other does nothing. Completing an enrollment is claimed the same way, so `completed_count` goes up once. Because of this, `ExecuteWorkflowStepAction::execute()` does nothing for an enrollment whose `next_run_at` is `null`; set it to `now()` to run one by hand.
+
 A delay is only as precise as your schedule: with the command every five minutes, a 60-minute delay resumes 60 to 65 minutes later.
 
 ## Enrollment webhook
@@ -203,9 +212,9 @@ curl -X POST https://your-app.test/api/marketing/workflows/7/enroll \
 | `first_name`, `last_name`, `company` | Optional strings, max 255. |
 | `phone` | Optional string, max 50. |
 | `trigger_event` | Optional string, max 100. Used in the timeline entry; defaults to `inbound_webhook`. |
-| `properties` | Optional object of custom properties. See the note below. |
+| `properties` | Optional object of custom properties. Scalar values are saved on the contact (overwriting existing values with the same key); nested arrays and objects are ignored. |
 
-The endpoint loads or creates the contact (new contacts are `lead` / `new`), fills empty name and phone fields, associates the company with that exact name (creating it if needed), logs a `Webhook Enrollment: {workflow}` task, and enrolls the contact. It returns `201`:
+The endpoint loads or creates the contact (new contacts are `lead` / `new`), fills empty name and phone fields, saves the scalar `properties` before enrolling (so the workflow's conditions can read them), associates the company with that exact name (creating it if needed), logs a `Webhook Enrollment: {workflow}` task, and enrolls the contact. It returns `201`:
 
 ```json
 {
@@ -220,8 +229,6 @@ The endpoint loads or creates the contact (new contacts are `lead` / `new`), fil
 ```
 
 `status` is the enrollment status after the first steps ran, so it's `completed` for a workflow without delays. If the workflow has no steps, `enrollment_id` is `null`, `status` is `pending_steps`, and `message` is `Contact registered; workflow has no defined steps yet.` An unknown workflow returns `404` and an inactive one `422`, both with `success: false` and a `message`.
-
-> Scalar values in `properties` are set on the contact but never saved, so they're currently lost. Send custom properties through the [external lead webhook](inbound-webhooks.md#external-lead-webhook) instead, or set them in your own code.
 
 ## Journey view
 

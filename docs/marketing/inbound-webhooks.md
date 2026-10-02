@@ -17,7 +17,7 @@ They're rate limited by `focal-api` (600 requests per minute per IP by default, 
 
 | Endpoint | Route name | Token | Rate limiter | Documented in |
 | --- | --- | --- | --- | --- |
-| `POST /api/marketing/leads/webhook/{source}` | `focal.marketing.leads.webhook` | Yes | `focal-api` | [below](#external-lead-webhook) |
+| `POST /api/marketing/leads/webhook/{source?}` | `focal.marketing.leads.webhook` | Yes | `focal-api` | [below](#external-lead-webhook) |
 | `POST /api/marketing/events/track` | `focal.marketing.events.track` | Yes | `focal-api` | [below](#custom-behavioral-events) |
 | `POST /api/marketing/workflows/{workflow}/enroll` | `focal.marketing.workflows.enroll-webhook` | Yes | `focal-api` | [Workflows](workflows.md#enrollment-webhook) |
 | `POST /api/marketing/events/{slug}/attendance-webhook` | `focal.marketing.events.attendance-webhook` | Yes | `focal-api` | [Events](events-and-assets.md#attendance-webhook) |
@@ -32,9 +32,9 @@ All of these are CSRF exempt. Email delivery webhooks (ESP bounces and complaint
 
 | Method | URI | Route name |
 | --- | --- | --- |
-| `POST` | `/api/marketing/leads/webhook/{source}` | `focal.marketing.leads.webhook` |
+| `POST` | `/api/marketing/leads/webhook/{source?}` | `focal.marketing.leads.webhook` |
 
-`{source}` names the lead source, for example `zapier`, `linkedin`, or `zoom`. It's stored on the contact as the `lead_source` custom property.
+`{source}` names the lead source, for example `zapier`, `linkedin`, or `zoom`. It's stored on the contact as the `lead_source` custom property. The segment is optional: without it (`/api/marketing/leads/webhook`) the `source` field of the payload is used, or `webhook` if that's missing too. A source segment takes precedence over the payload's `source`.
 
 ```bash
 curl -X POST https://your-app.test/api/marketing/leads/webhook/linkedin \
@@ -68,8 +68,6 @@ curl -X POST https://your-app.test/api/marketing/leads/webhook/linkedin \
     "message": "Lead successfully ingested into Focal CRM."
 }
 ```
-
-The route declares `{source}` as optional, but a request without it (`/api/marketing/leads/webhook`) fails with a `500` error. Always include a source segment.
 
 `Focal\Marketing\Actions\IngestExternalLeadAction` processes the lead in a database transaction:
 

@@ -3,7 +3,7 @@ title: Meeting links
 description: Give reps public booking pages that create contacts and meeting activities.
 ---
 
-A meeting link is a public page at `/meet/{slug}` where a prospect picks a date and time to meet a rep. Booking creates or updates the contact, logs a pending meeting activity owned by the rep, and stops any active sequences for that contact.
+A meeting link is a public page at `/meet/{slug}` where a prospect picks an open slot to meet a rep. Slots come from the link's working hours, duration, buffer, and timezone, and slots the rep already has booked are left out. Booking records the booking, creates or updates the contact, logs a pending meeting activity owned by the rep, stops any active sequences for that contact, and emails a confirmation with an .ics calendar invite to both the visitor and the rep.
 
 ## Creating a link
 
@@ -14,9 +14,11 @@ A meeting link is a public page at `/meet/{slug}` where a prospect picks a date 
 | `user_id` | int | The rep. Deleting the user deletes their links. |
 | `slug` | string | Unique; used in the URL. |
 | `title` | string | Defaults to `30 Min Meeting`. |
-| `duration_minutes` | int | Defaults to `30`. Stored in the meeting activity's metadata. |
-| `description` | text, nullable | Shown on the booking page. |
-| `working_hours` | array, nullable | Stored but not used by the package. |
+| `duration_minutes` | int | Defaults to `30`. Length of each meeting; stored in the meeting activity's metadata. |
+| `buffer_minutes` | int | Defaults to `0`. Gap kept free between meetings. |
+| `description` | text, nullable | Shown on the booking page and in the confirmation. |
+| `working_hours` | array, nullable | When the rep can be booked. See [Working hours](#working-hours). Empty uses `focal-sales.meetings.default_working_hours`. |
+| `timezone` | string, nullable | Timezone identifier the working hours are in, such as `America/New_York`. Empty or invalid uses `app.timezone`. |
 | `is_active` | bool | Defaults to `true`. Inactive links return 404. |
 
 ```php
@@ -27,14 +29,73 @@ $link = SalesMeetingLink::create([
     'slug' => 'beth-discovery',
     'title' => 'Discovery call',
     'duration_minutes' => 30,
+    'buffer_minutes' => 15,
+    'timezone' => 'America/New_York',
+    'working_hours' => [
+        'monday' => ['09:00-12:00', '13:00-17:00'],
+        'wednesday' => ['09:00-17:00'],
+        'friday' => ['09:00-12:00'],
+    ],
 ]);
 
 $url = route('focal.meetings.show', ['slug' => $link->slug]); // https://your-app.test/meet/beth-discovery
 ```
 
+## Working hours
+
+`working_hours` maps lowercase English day names (`monday` to `sunday`) to a list of `"HH:MM-HH:MM"` windows in the link's timezone. Days that are missing or have an empty list can't be booked. The end of a window can be `24:00`. Windows that don't match the format, or that end before they start, are ignored.
+
+```php
+'working_hours' => [
+    'monday' => ['09:00-12:00', '13:00-17:00'],
+    'tuesday' => ['09:00-17:00'],
+],
+```
+
+A link with no working hours uses `focal-sales.meetings.default_working_hours`, which is Monday to Friday, `09:00-17:00` (see [Configuration](configuration.md#meetings)).
+
+In the [Filament admin](../filament/resources.md#other-sales-resources), the meeting link form has an **Availability** section for the timezone, the buffer, and one input per weekday for its windows. The form rejects windows that don't match the format, and saves no working hours when every day is left empty.
+
+### How slots are computed
+
+`Focal\Sales\Services\MeetingAvailability` works out the open slots:
+
+- Within each window, slots start at the window's start and repeat every `duration_minutes + buffer_minutes`, as long as the meeting ends inside the window. A Monday `09:00-10:30` window with 30-minute meetings and a 15-minute buffer gives 09:00 and 09:45.
+- Slots that have already started, dates before today, and dates more than `focal-sales.meetings.booking_window_days` (default 60) ahead are left out.
+- A slot is left out if it overlaps one of the rep's active bookings on any of their meeting links, with this link's buffer kept clear before and after.
+
+```php
+use Focal\Sales\Services\MeetingAvailability;
+
+$availability = app(MeetingAvailability::class);
+
+$availability->slotsFor($link, '2030-01-07');         // list of CarbonImmutable starts, in the link's timezone
+$availability->isAvailable($link, $startsAt);         // can a meeting start exactly then?
+$availability->firstAvailableDate($link);             // "2030-01-07", or null
+```
+
+The package doesn't read external calendars. Only bookings made through meeting links block slots.
+
+## Bookings
+
+Each booking is a `Focal\Sales\Models\SalesMeetingBooking` in `focal_sales_meeting_bookings`:
+
+| Attribute | Notes |
+| --- | --- |
+| `uid` | UUID, also used as the calendar event's UID. |
+| `meeting_link_id` | The link booked. Deleting the link deletes its bookings. |
+| `user_id` | The rep (host). |
+| `contact_id`, `activity_id` | The contact and the meeting activity created for the booking. |
+| `invitee_name`, `invitee_email` | As entered by the visitor (email lower-cased). |
+| `starts_at`, `ends_at` | Stored in `app.timezone`. |
+| `timezone` | The link's timezone at booking time. Times in the confirmation are shown in it. |
+| `cancelled_at` | Set by `$booking->cancel()`. Cancelled bookings no longer block the slot. |
+
+`$link->bookings` lists a link's bookings. Cancelling a booking doesn't change the meeting activity or send any email.
+
 ## The booking page
 
-`GET /meet/{slug}` (`focal.meetings.show`) renders `focal-sales::meetings.book`. The page offers fixed time slots (09:00, 10:00, 11:00, 13:00, 14:00, 15:00, and 16:00) on any date. It does not read `working_hours`, check the rep's calendar, or prevent two people booking the same slot. Override the view at `resources/views/vendor/focal-sales/meetings/book.blade.php` if you need different slots.
+`GET /meet/{slug}` (`focal.meetings.show`) renders `focal-sales::meetings.book` with the open slots for one date, labelled with the link's timezone. The date comes from the `?date=YYYY-MM-DD` query string; without it, the page shows the first date that has open slots. Changing the date reloads the page. If a date has no slots, the page says so and the confirm button is disabled. Override the view at `resources/views/vendor/focal-sales/meetings/book.blade.php` to change the layout; it receives `$link`, `$date`, `$slots` (a list of `CarbonImmutable`), `$timezone`, `$minDate`, and `$maxDate`.
 
 The form posts to `focal.meetings.book` (`POST /meet/{slug}/book`), which is rate limited by Core's `focal-public` limiter and validates:
 
@@ -43,11 +104,11 @@ The form posts to `focal.meetings.book` (`POST /meet/{slug}/book`), which is rat
 | `name` | required, string, 2–255 characters |
 | `email` | required, email, max 255 |
 | `phone` | nullable, string, max 30 |
-| `date` | required, date, today or later |
-| `time` | required, string |
+| `date` | required, `Y-m-d` |
+| `time` | required, `H:i` |
 | `notes` | nullable, string, max 1000 |
 
-The date and time are combined with `Carbon::parse()` in the app's timezone. After booking, the visitor is redirected back to the page with a `status` flash message. That message says an invitation has been dispatched, but the package sends no email or calendar invitation; send one yourself if you need it.
+The date and time are read in the link's timezone. If that time is not an open slot, for example because someone else booked it a moment earlier, the visitor is sent back with a validation error on `time` and nothing is booked. Otherwise they are redirected to the booking page with a `status` flash message such as "Meeting booked for Monday, January 7 at 9:30 AM (America/New_York). A confirmation with a calendar invite is on its way to dana@example.com."
 
 ## What booking does
 
@@ -61,25 +122,42 @@ public function execute(
     CarbonInterface $scheduledAt,
     ?string $phone = null,
     ?string $notes = null,
-): array // ['contact' => Contact, 'activity' => Activity]
+): array // ['contact' => Contact, 'activity' => Activity, 'booking' => SalesMeetingBooking]
 ```
 
 ```php
 use Focal\Sales\Actions\BookMeetingAction;
+use Focal\Sales\Exceptions\MeetingSlotUnavailableException;
 use Illuminate\Support\Carbon;
 
-$result = app(BookMeetingAction::class)->execute(
-    link: $link,
-    fullName: 'Dana Scully',
-    email: 'dana@example.com',
-    scheduledAt: Carbon::tomorrow()->setTime(14, 0),
-    phone: '+1 555 0100',
-);
+try {
+    $result = app(BookMeetingAction::class)->execute(
+        link: $link,
+        fullName: 'Dana Scully',
+        email: 'dana@example.com',
+        scheduledAt: Carbon::parse('2030-01-07 09:30', $link->timezoneName()),
+        phone: '+1 555 0100',
+    );
+} catch (MeetingSlotUnavailableException $e) {
+    // Not an open slot: outside working hours, in the past, too far ahead, or already booked.
+}
 
+$result['booking'];  // Focal\Sales\Models\SalesMeetingBooking
 $result['contact'];  // Focal\Core\Models\Contact
 $result['activity']; // Pending meeting activity
 ```
 
-1. The email is trimmed and lower-cased, and an existing contact with that email is reused. Otherwise a contact is created with the name split on the first space into `first_name` and `last_name`, `lead_status` `Open`, and `owner_id` set to the rep. An existing contact's phone is filled in only if it was empty; its owner and other fields are not changed.
-2. A `meeting` activity is logged on the contact with status `pending`, `due_at` set to the scheduled time, the rep as creator, and the title `{link title} with {contact name}`. The body is the visitor's notes, or `Booked online via /meet/{slug}`. Metadata holds `duration_minutes` and `booking_slug`.
-3. All of the contact's `active` [sequence enrollments](sequences.md#enrollment-status) are set to `unenrolled`.
+Everything runs in one database transaction:
+
+1. The rep's meeting link rows are locked (`SELECT ... FOR UPDATE`), so bookings for the same rep happen one at a time, and the slot is checked again with `MeetingAvailability::isAvailable()`. If `$scheduledAt` is not exactly the start of an open slot, `MeetingSlotUnavailableException` is thrown and nothing is written. SQLite has no row locks, but its single-writer locking makes a conflicting concurrent booking fail with a database error instead of double-booking.
+2. The email is trimmed and lower-cased, and an existing contact with that email is reused, ignoring case and surrounding whitespace in the stored address too (see [Looking up contacts by email](../core/contacts-and-companies.md#looking-up-contacts-by-email)). Otherwise a contact is created with the name split on the first space into `first_name` and `last_name`, `lead_status` `Open`, and `owner_id` set to the rep. An existing contact's phone is filled in only if it was empty; its owner and other fields are not changed.
+3. A `meeting` activity is logged on the contact with status `pending`, `due_at` set to the scheduled time, the rep as creator, and the title `{link title} with {contact name}`. The body is the visitor's notes, or `Booked online via /meet/{slug}`. Metadata holds `duration_minutes` and `booking_slug`.
+4. All of the contact's `active` [sequence enrollments](sequences.md#enrollment-status) are set to `unenrolled`.
+5. The `SalesMeetingBooking` is created.
+6. A `Focal\Sales\Mail\MeetingBookedMail` is queued to the visitor and another to the rep (if the rep's user has an email address). They are dispatched after the transaction commits.
+
+## Confirmation emails
+
+`MeetingBookedMail` implements `ShouldQueue`, so a queue worker must be running. It uses the mailer, queue, and from address in [`focal-sales.mail`](configuration.md#mail). The visitor's copy is titled `Confirmed: {link title} with {rep name} on {date}` with the rep as reply-to; the rep's copy is titled `New booking: {link title} with {visitor name} on {date}` with the visitor as reply-to. The body is the `focal-sales::mail.meeting-booked` view, which you can override like the booking page.
+
+Both copies attach `invite.ics` (`text/calendar; method=REQUEST`, or `method=PUBLISH` as below), built by `Focal\Sales\Services\MeetingInvite`. The event has the booking's `uid`, start and end in UTC, the link title, rep, and visitor as its summary, the rep as organizer, and the visitor as an attendee. If the rep has no email address the invite is sent with `METHOD:PUBLISH` and no organizer. Text values are escaped as RFC 5545 requires, and every line break in them (CRLF, LF, or a lone CR) becomes an escaped `\n`, so a visitor's name or a link description can't add lines to the invite.

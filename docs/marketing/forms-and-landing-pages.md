@@ -138,7 +138,7 @@ Two optional attributes on the container turn the form into a popup:
 
 Closing a popup sets a `sessionStorage` flag, so it isn't shown again in that browser session. The script is served with `Cache-Control: public, max-age=3600`.
 
-On submit the script posts the field values as JSON. If the visitor has a `_focal_visitor_token` cookie or a `_focal_vid` `localStorage` entry, it also sends that value as `visitor_token`. Note that the [tracking script](web-tracking.md) stores its token in a cookie named `focal_vid`, which the embed script doesn't read.
+On submit the script posts the field values as JSON together with the visitor's id as `visitor_token`. It uses the same id as the [tracking script](web-tracking.md#visitor-tokens-and-cross-domain-tracking) (`_focal_vid` in `localStorage` and a first-party cookie on your site, created if missing), so the contact the submission creates or matches is [stitched](web-tracking.md#identity-stitching) to the pages the visitor viewed before, even when your site is on another domain.
 
 ## Headless forms
 
@@ -285,7 +285,7 @@ Other attributes: `subheadline`, `meta_title`, `meta_description`, `og_image_url
 | `GET` | `/p/{slug}` | `focal.marketing.landing-pages.show` | 404 unless `is_published`. |
 | `POST` | `/p/{slug}/submit` | `focal.marketing.landing-pages.submit` | CSRF protected, rate limited by `focal-public`. |
 
-Each view increments `views_count` and records a [page view](web-tracking.md#recording-visits-from-php) with the `utm_source`, `utm_medium` and `utm_campaign` query parameters, using the visitor's `focal_vid` cookie if there is one. The page also loads the [tracking script](web-tracking.md).
+Each view increments `views_count` and records a [page view](web-tracking.md#recording-visits-from-php) with the `utm_source`, `utm_medium` and `utm_campaign` query parameters, using the visitor's `focal_vid` cookie if there is one. The page also loads the [tracking script](web-tracking.md), whose pageview sets that cookie to the visitor's id (see [visitor tokens](web-tracking.md#visitor-tokens-and-cross-domain-tracking)), so the submission is stitched to the pages viewed before it.
 
 A submission is passed to `ProcessFormSubmissionAction` with the page's form (with the `focal_vid` cookie value as `visitor_token`), increments `submissions_count`, and redirects back with the success message in the `success` session key. Unlike hosted forms, landing page submissions aren't validated against the form's fields. A page without a form returns 404 on submit.
 

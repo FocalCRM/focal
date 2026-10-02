@@ -30,7 +30,22 @@ Helpers on `Contact`:
 - `markContacted(?CarbonInterface $at = null)`: sets `last_contacted_at` (default `now()`) with `updateQuietly()`, so no model events fire and no history is recorded.
 - `owner()`: `BelongsTo` your user model (see [the user model](integration.md#the-user-model)).
 - `companies()`: `BelongsToMany` companies through `focal_associations`, where the contact is the parent and the company the child, of any association type. The pivot includes `id` and `type`.
-- `whereEmail(string $email)` scope: lowercases and trims the value before matching.
+- `whereEmail(string $email)` scope: lowercases and trims the value before matching. It compares the stored value exactly, so it won't find a contact saved with mixed case; use `ContactLookup` below for that.
+
+### Looking up contacts by email
+
+`Focal\Core\Support\ContactLookup` finds and creates contacts by email address, ignoring case and surrounding whitespace. The Service portal, chat widget, and inbound email, and Sales meeting booking all use it, so one person is one contact however they type their address.
+
+- `ContactLookup::normalizeEmail(string $email): string` lowercases and trims.
+- `ContactLookup::findByEmail(string $email): ?Contact` first looks for a contact stored with exactly the normalized address, which can use the `email` index. Only when there's none does it compare `LOWER(TRIM(email))`, which also matches older contacts saved with mixed case or spaces (this query can't use the index). Among several matches, the oldest wins. An empty address returns `null`.
+- `ContactLookup::findOrCreate(string $email, array $attributes = []): Contact` returns the match, or creates a contact with the given attributes and the normalized email.
+
+```php
+use Focal\Core\Support\ContactLookup;
+
+$contact = ContactLookup::findOrCreate(' Dana@Example.com', ['first_name' => 'Dana']);
+$contact->email; // "dana@example.com" for a new contact
+```
 
 `Contact` also uses Laravel's `Notifiable` trait and has `isSubscribedToTopic()` and `getPreferenceCenterUrl()`. Those read the `marketing_topics` and `marketing_verification_token` columns, which the Marketing package adds. They fail without it.
 
@@ -248,7 +263,11 @@ The score starts at 70 and is adjusted as follows:
 | Average CSAT of 4.0 or more / 2.5 or less | +15 / -25 |
 | No CSAT ratings, all tickets resolved, no breaches | +10 |
 
-Only activities logged directly on the company count, not activities rolled up from associated contacts. The deal and ticket signals only apply when `method_exists($company, 'deals')` or `method_exists($company, 'tickets')` is true.
+Only activities logged directly on the company count, not activities rolled up from associated contacts.
+
+The deal and ticket signals use the company's `deals` and `tickets` relations. Core doesn't define them: Sales and Service register them with `resolveRelationUsing()`, and the action detects them with `isRelation()`, so it finds relations declared as methods or registered at boot. Without Sales the deal signals are skipped, and without Service the ticket signals are skipped. In that case the lowest possible score is 40, so a company can only reach `AtRisk` once at least one of those packages is installed. Deals count by their `status` (`won`, `open`, `lost`, from a string or backed enum). Tickets use `status`, `priority`, `is_sla_response_breached`, `is_sla_resolution_breached`, and `csat_rating`.
+
+`SummarizeTimelineAction` uses the same relations for its deal and ticket counts.
 
 The status is `Healthy` at 70 or above, `Neutral` from 40 to 69, and `AtRisk` below 40.
 

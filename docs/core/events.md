@@ -3,7 +3,7 @@ title: Events
 description: The events Focal Core dispatches, what triggers each one, and how to listen for them.
 ---
 
-Core dispatches plain Laravel events from its action classes. They are dispatched synchronously after the write, inside the same request. None of them implement `ShouldBroadcast` or `ShouldQueue`. Make your listener queued if it does slow work.
+Core dispatches plain Laravel events from its action classes. They are dispatched synchronously after the write, inside the same request. The merge events are dispatched inside the merge's database transaction, so an exception in a listener rolls the merge back. None of them implement `ShouldBroadcast` or `ShouldQueue`. Make your listener queued if it does slow work, except for merge listeners that move data, which must run inside the transaction.
 
 All events are in `Focal\Core\Events`.
 
@@ -17,15 +17,16 @@ All events are in `Focal\Core\Events`.
 | `LifecycleStageChanged` | `Model $record`, `LifecycleStageTransition $transition` | `TransitionLifecycleStageAction` |
 | `CustomObjectDefinitionCreated` | `CustomObjectDefinition $definition` | `CreateCustomObjectDefinitionAction` |
 | `CustomObjectRecordCreated` | `CustomObjectRecord $record` | `CreateCustomObjectRecordAction` |
+| `ContactsMerged` | `Contact $primary`, `Contact $secondary` | `MergeContactsAction`, inside its transaction, after Core's own data has moved and before the secondary is soft-deleted |
+| `CompaniesMerged` | `Company $primary`, `Company $secondary` | `MergeCompaniesAction`, inside its transaction, after Core's own data has moved and before the health score is recalculated and the secondary is soft-deleted |
 
 ## What does not dispatch events
 
 Events come only from the actions above. These do not dispatch them:
 
 - `Contact::create()`, `Company::create()`, and factories.
-- `logActivity()`, `logNote()`, `logCall()`, and `logTask()` on a record, including the notes the merge actions log and the churn-risk task the health score action logs.
+- `logActivity()`, `logNote()`, `logCall()`, and `logTask()` on a record, including the notes the merge actions log (the merge itself dispatches `ContactsMerged` or `CompaniesMerged`) and the churn-risk task the health score action logs.
 - Updating `lifecycle_stage` with `update()` or `save()`.
-- Merging records.
 
 If you need to react to every change regardless of how it was made, use Eloquent model events or observers on the models instead.
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Focal\Filament\Tests;
 
+use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\CreateSalesMeetingLink;
+use Focal\Filament\Resources\SalesMeetingLinkResource\Pages\EditSalesMeetingLink;
 use Focal\Filament\Tests\Fixtures\User;
 use Focal\Sales\Database\Seeders\SalesDatabaseSeeder;
 use Focal\Sales\Enums\LeadRoutingStrategy;
@@ -14,6 +16,7 @@ use Focal\Sales\Models\SalesMeetingLink;
 use Focal\Sales\Models\SalesPlaybook;
 use Focal\Sales\Models\SalesSequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 
 class EnterpriseSalesResourcesTest extends TestCase
 {
@@ -65,6 +68,88 @@ class EnterpriseSalesResourcesTest extends TestCase
 
         $response->assertSuccessful();
         $response->assertSee('Demo Strategy Session');
+    }
+
+    public function test_meeting_link_form_saves_working_hours_buffer_and_timezone(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSalesMeetingLink::class)
+            ->fillForm([
+                'user_id' => $user->id,
+                'title' => 'Discovery Call',
+                'slug' => 'discovery-call',
+                'duration_minutes' => 30,
+                'buffer_minutes' => 15,
+                'timezone' => 'Europe/London',
+                'working_hours' => [
+                    'monday' => ['09:00-12:00', '13:00-17:00'],
+                    'wednesday' => [' 10:00-16:00 '],
+                    'friday' => [],
+                ],
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $link = SalesMeetingLink::query()->where('slug', 'discovery-call')->firstOrFail();
+
+        $this->assertSame(15, $link->buffer_minutes);
+        $this->assertSame('Europe/London', $link->timezone);
+        $this->assertSame([
+            'monday' => ['09:00-12:00', '13:00-17:00'],
+            'wednesday' => ['10:00-16:00'],
+        ], $link->working_hours);
+
+        Livewire::actingAs($user)
+            ->test(EditSalesMeetingLink::class, ['record' => $link->getRouteKey()])
+            ->assertFormSet([
+                'buffer_minutes' => 15,
+                'timezone' => 'Europe/London',
+                'working_hours.monday' => ['09:00-12:00', '13:00-17:00'],
+            ])
+            ->fillForm([
+                'buffer_minutes' => 0,
+                'timezone' => null,
+                'working_hours' => array_fill_keys(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'], []),
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $link->refresh();
+
+        $this->assertSame(0, $link->buffer_minutes);
+        $this->assertNull($link->timezone);
+        $this->assertNull($link->working_hours);
+    }
+
+    public function test_meeting_link_form_rejects_malformed_working_hours_and_unknown_timezones(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(CreateSalesMeetingLink::class)
+            ->fillForm([
+                'user_id' => $user->id,
+                'title' => 'Discovery Call',
+                'slug' => 'discovery-call',
+                'duration_minutes' => 30,
+                'buffer_minutes' => -5,
+                'timezone' => 'Mars/Olympus_Mons',
+                'working_hours' => [
+                    'monday' => ['9am-5pm'],
+                    'tuesday' => ['17:00-09:00'],
+                ],
+            ])
+            ->call('create')
+            ->assertHasFormErrors([
+                'buffer_minutes',
+                'timezone',
+                'working_hours.monday.0',
+                'working_hours.tuesday.0',
+            ]);
+
+        $this->assertFalse(SalesMeetingLink::query()->where('slug', 'discovery-call')->exists());
     }
 
     public function test_authenticated_user_can_access_lead_routing_rules_index(): void

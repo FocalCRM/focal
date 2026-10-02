@@ -21,6 +21,10 @@ Settings shared by all Focal modules, such as the user model and rate limits, ar
 | `FOCAL_SERVICE_API_PREFIX` | `focal-service.routes.api.prefix` | `api/service` |
 | `FOCAL_SERVICE_API_TOKEN` | `focal-service.api.token` | `null` (token endpoints disabled) |
 | `FOCAL_SERVICE_INBOUND_REQUIRE_AUTH` | `focal-service.inbound_email.require_authenticated_sender` | `false` |
+| `FOCAL_SERVICE_REOPEN_ON_CUSTOMER_REPLY` | `focal-service.reopen_on_customer_reply` | `true` |
+| `FOCAL_SERVICE_CHAT_CONFIRMATION_EMAIL` | `focal-service.chat.confirmation_email` | `false` |
+| `FOCAL_SERVICE_NOTIFICATIONS_CONNECTION` | `focal-service.notifications.connection` | `null` (default queue connection) |
+| `FOCAL_SERVICE_NOTIFICATIONS_QUEUE` | `focal-service.notifications.queue` | `null` (the connection's default queue) |
 
 The rate limits come from Core: `FOCAL_PUBLIC_RATE_LIMIT` (default 30 per minute) and `FOCAL_API_RATE_LIMIT` (default 600 per minute). See [Rate limits](#rate-limits).
 
@@ -100,6 +104,35 @@ Protects the [inbound email webhook](inbound-email.md#api-token). Until it is se
 ```
 
 When `true`, the [inbound email webhook](inbound-email.md#requiring-sender-authentication) only threads a reply onto an existing ticket if the request has `sender_authenticated` set to a true value or `dmarc` set to `pass`. Otherwise the email opens a new ticket.
+
+### Customer replies
+
+```php
+'reopen_on_customer_reply' => (bool) env('FOCAL_SERVICE_REOPEN_ON_CUSTOMER_REPLY', true),
+```
+
+When `true` (the default), a customer reply by email, on the portal, or in the chat widget reopens a `Resolved` or `Closed` ticket: the status becomes `Open` and `resolved_at` and `closed_at` are cleared. When `false`, the reply is added and the status is left alone. Either way, a reply by email to a [merged](routing.md#merging-tickets) ticket is posted on its primary ticket; see [Replies to merged tickets](routing.md#replies-to-merged-tickets) for the portal and chat rules. See [Statuses](tickets.md#statuses).
+
+### Chat widget
+
+```php
+'chat' => [
+    'confirmation_email' => (bool) env('FOCAL_SERVICE_CHAT_CONFIRMATION_EMAIL', false),
+],
+```
+
+Whether a ticket started from the [chat widget](chat-widget.md#confirmation-email) emails the visitor `TicketCreatedNotification`. Off by default, because the chat endpoint is public and doesn't verify the email address. Chat tickets are routed and logged on the contact's timeline either way.
+
+### Notifications
+
+```php
+'notifications' => [
+    'connection' => env('FOCAL_SERVICE_NOTIFICATIONS_CONNECTION'),
+    'queue' => env('FOCAL_SERVICE_NOTIFICATIONS_QUEUE'),
+],
+```
+
+The [ticket notifications](tickets.md#notifications) are queued (`ShouldQueue`) on this connection and queue. `null` uses your default queue connection (`QUEUE_CONNECTION`) and its default queue. Run a worker for the queue, for example `php artisan queue:work --queue=support-mail,default` when `FOCAL_SERVICE_NOTIFICATIONS_QUEUE=support-mail`. With the `sync` connection, notifications are sent during the request.
 
 ## Routes
 

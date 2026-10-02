@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Focal\Filament\Tests;
 
 use Focal\Core\Models\Contact;
+use Focal\Core\Models\CrmList;
 use Focal\Filament\Pages\MarketingCockpit;
 use Focal\Filament\Pages\UtmLinkBuilder;
 use Focal\Filament\Resources\MarketingTemplateResource;
@@ -95,16 +96,19 @@ class MarketingFilamentTest extends TestCase
     {
         $user = User::factory()->create();
 
-        Contact::factory()->create([
+        $contact = Contact::factory()->create([
             'first_name' => 'Ada',
             'email' => 'ada@lovelace.org',
         ]);
+        $list = CrmList::create(['name' => 'Newsletter', 'type' => 'static']);
+        $list->addMember($contact);
 
         $campaign = Campaign::create([
             'name' => 'Immediate Blast',
             'subject' => 'Live now',
             'sender_name' => 'Focal Team',
             'sender_email' => 'news@focal.test',
+            'list_id' => $list->id,
             'status' => CampaignStatus::Draft,
         ]);
 
@@ -116,6 +120,30 @@ class MarketingFilamentTest extends TestCase
         $campaign->refresh();
         $this->assertSame(CampaignStatus::Sent, $campaign->status);
         $this->assertSame(1, $campaign->delivered_count);
+    }
+
+    public function test_marketing_cockpit_refuses_to_send_a_campaign_without_an_audience(): void
+    {
+        $user = User::factory()->create();
+
+        Contact::factory()->create(['email' => 'ada@lovelace.org']);
+
+        $campaign = Campaign::create([
+            'name' => 'No Audience',
+            'subject' => 'Live now',
+            'sender_name' => 'Focal Team',
+            'sender_email' => 'news@focal.test',
+            'status' => CampaignStatus::Draft,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(MarketingCockpit::class)
+            ->call('sendCampaignNow', $campaign->id)
+            ->assertSuccessful()
+            ->assertNotified('Campaign Has No Audience');
+
+        $this->assertSame(CampaignStatus::Draft, $campaign->fresh()?->status);
+        $this->assertSame(0, $campaign->recipients()->count());
     }
 
     public function test_authenticated_user_can_access_marketing_attribution_dashboard(): void

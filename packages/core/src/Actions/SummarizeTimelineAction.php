@@ -7,6 +7,7 @@ namespace Focal\Core\Actions;
 use Focal\Core\Models\Activity;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
+use Focal\Core\Support\OptionalRelation;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,12 +56,13 @@ class SummarizeTimelineAction
             $sentiment = 'at_risk';
         }
 
-        // Check Deals if method exists
+        // Check Deals when Sales has registered the relation (via resolveRelationUsing)
         $openDealsCount = 0;
         $wonDealsCount = 0;
-        if (method_exists($subject, 'deals')) {
+        $dealsRelation = OptionalRelation::on($subject, 'deals');
+        if ($dealsRelation !== null) {
             /** @var Collection<int, Model> $deals */
-            $deals = $subject->deals()->get();
+            $deals = $dealsRelation->get();
             foreach ($deals as $deal) {
                 $rawStatus = $deal->getAttribute('status');
                 $status = $rawStatus instanceof \BackedEnum ? (string) $rawStatus->value : (string) $rawStatus;
@@ -73,12 +75,13 @@ class SummarizeTimelineAction
             }
         }
 
-        // Check Tickets if method exists
+        // Check Tickets when Service has registered the relation (via resolveRelationUsing)
         $unresolvedTicketsCount = 0;
         $slaBreachedCount = 0;
-        if (method_exists($subject, 'tickets')) {
+        $ticketsRelation = OptionalRelation::on($subject, 'tickets');
+        if ($ticketsRelation !== null) {
             /** @var Collection<int, Model> $tickets */
-            $tickets = $subject->tickets()->get();
+            $tickets = $ticketsRelation->get();
             foreach ($tickets as $ticket) {
                 $rawTicketStatus = $ticket->getAttribute('status');
                 $status = $rawTicketStatus instanceof \BackedEnum ? (string) $rawTicketStatus->value : (string) $rawTicketStatus;

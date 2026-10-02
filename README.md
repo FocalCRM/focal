@@ -71,7 +71,7 @@ graph TD
 - PHP 8.3, 8.4, or 8.5
 - Composer 2.x
 - Node.js & npm (for assets)
-- SQLite, MySQL 8+, or PostgreSQL 15+
+- SQLite 3.26+, MySQL 8.0+, or PostgreSQL 15+
 
 ### Setup
 

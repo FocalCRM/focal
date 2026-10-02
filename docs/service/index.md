@@ -25,6 +25,7 @@ The service provider, `Focal\Service\ServiceHubServiceProvider`, is auto-discove
 Service works on Core's records rather than defining its own customers:
 
 - Every ticket can belong to a Core `Contact` and `Company`. The service provider adds a `tickets()` relationship to both models at runtime, so `$contact->tickets` and `$company->tickets` work without changes to Core.
+- When Core [merges](../core/duplicates-and-merging.md) two contacts or two companies, Service moves the duplicate's tickets (soft-deleted ones included) to the surviving record, and on a contact merge its ticket messages too.
 - Ticket owners, message authors, and article authors are your application's user model, resolved through Core's user model setting (see [Configuration](../configuration.md#the-user-model)).
 - Creating, routing, replying to, and resolving tickets writes notes and tasks to the contact's activity timeline.
 - Customers who submit a ticket, start a chat, or email support are matched to an existing contact by email address, or a new contact is created.

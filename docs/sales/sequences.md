@@ -15,7 +15,7 @@ A `Focal\Sales\Models\SalesSequence` has a `name`, an optional `description`, `i
 | `type` | `email`, `call`, `linkedin`, or anything else (treated as a task). |
 | `delay_days` | Days to wait before this step. |
 | `title` | Used in the activity title. |
-| `template_id` | Optional. A `SalesEmailTemplate` ID for `email` steps. |
+| `template_id` | A `SalesEmailTemplate` ID. Required for `email` steps to send anything; see [Email steps](#email-steps). |
 
 ```php
 use Focal\Sales\Models\SalesSequence;
@@ -69,6 +69,16 @@ Contacts are unenrolled automatically when:
 
 To remove a contact yourself, update the enrollment's `status` to `unenrolled`.
 
+### Merging contacts
+
+When two contacts are [merged](../core/duplicates-and-merging.md), Sales moves the secondary contact's enrollments and meeting bookings to the primary contact, inside the merge's transaction.
+
+A contact has one enrollment per sequence, so if both contacts are enrolled in the same sequence only one enrollment is kept and the other is deleted:
+
+1. A `completed` or `unenrolled` enrollment wins over an `active` one, so a merge never restarts outreach that already finished or was stopped.
+2. Otherwise the enrollment with the higher `current_step` wins.
+3. Otherwise the older enrollment wins.
+
 ## Processing due steps
 
 Steps are only executed by `Focal\Sales\Actions\ProcessCadencesAction`, usually through the Artisan command:
@@ -81,7 +91,7 @@ The command prints a table of counts. The package does not schedule it; see [Sch
 
 The action picks up `active` enrollments whose `next_step_due_at` is today or earlier (or empty), skipping enrollments in inactive sequences. For each one:
 
-**Email steps** log a completed `email` activity on the contact, mark the contact as contacted, change a `New` lead status to `InProgress`, and advance to the next step. If the step has a `template_id`, the subject and body come from the rendered template; otherwise the subject is `Outbound: {title}`. **No email is sent.** The activity records the touch; to deliver mail, listen for the activity being created or send it from your own job.
+**Email steps** queue the step's rendered template to the contact. See [Email steps](#email-steps).
 
 **Call, LinkedIn, and task steps** create a pending `call`, `linkedin`, or `task` activity on the contact, due now, titled `{type label}: {title}`. The enrollment then waits. On each later run, once the rep has marked that activity as completed, the contact is marked as contacted and the enrollment advances. While the activity is still pending nothing happens.
 
@@ -96,7 +106,22 @@ $stats = app(ProcessCadencesAction::class)->execute();
 // ['processed' => 1, 'emails_sent' => 1, 'tasks_created' => 0, 'unenrolled' => 0, 'completed' => 0]
 ```
 
-`emails_sent` counts email activities logged, not emails delivered.
+`emails_sent` counts emails queued for delivery, and `emails_skipped` counts email steps that were not sent. The command's table shows both, as "Emails Queued for Delivery" and "Emails Skipped (no address or template)".
+
+Each step runs at most once. Advancing the enrollment is an atomic update that only succeeds while the enrollment is still on that step, and the step's activity and email are created in the same database transaction, so running the command again, or two runs overlapping, never sends the same step twice. Completing a manual step is guarded the same way.
+
+### Email steps
+
+When an email step is due, the action:
+
+1. Renders the step's template with `renderWithContext()`, passing the contact and the enrollment's owner as the user. The owner is the user who enrolled the contact (`enrolled_by_id`), or the sequence's `user_id` if there isn't one, so `{{ sender.name }}`, `{{ rep.email }}`, and the other user tags refer to them. The subject goes through `TemplateParser::parse()` and the body through `parseHtml()`, so merge values are HTML-escaped in the body.
+2. Queues a `Focal\Sales\Mail\SequenceStepMail` to the contact's email address. The mailable implements `ShouldQueue`, so a queue worker must be running; it is dispatched after the database transaction commits. The mailer, queue connection, and queue come from [`focal-sales.mail`](configuration.md#mail).
+3. Logs a completed `email` activity on the contact with the rendered subject as its title and the rendered HTML as its body. Its metadata holds `sequence_id`, `sequence_enrollment_id`, `step`, `template_id`, and `to`.
+4. Marks the contact as contacted, changes a `New` lead status to `InProgress`, and advances the enrollment.
+
+The email is sent from `focal-sales.mail.from` if set, otherwise from your app's `mail.from`. The owner's address is used as the reply-to. Set `focal-sales.mail.sequences.send_as_owner` to `true` to send from the owner's address and name instead; your mail provider must be allowed to send as those addresses.
+
+A step is skipped, not sent, when the contact has no email address, the address is not valid, or the step has no `template_id` (or its template was deleted). The package never sends placeholder text. A skipped step logs a `cancelled` `email` activity titled `Not sent: {title}` whose body gives the reason, with `skipped => true` and `skip_reason` (`missing_email`, `invalid_email`, or `missing_template`) in its metadata. The contact is not marked as contacted, and the enrollment still advances so later steps run. `ProcessCadencesAction::SKIP_REASONS` maps each reason to its message.
 
 ## Email templates
 
@@ -104,7 +129,7 @@ A `Focal\Sales\Models\SalesEmailTemplate` has `name`, `subject`, `body_html`, `c
 
 ### Rendering with CRM context
 
-`renderWithContext(?Contact $contact = null, ?Deal $deal = null, ?Model $user = null, array $extra = [])` returns `['subject' => ..., 'body_html' => ...]` with merge tags replaced. Sequence email steps call it with the contact only.
+`renderWithContext(?Contact $contact = null, ?Deal $deal = null, ?Model $user = null, array $extra = [])` returns `['subject' => ..., 'body_html' => ...]` with merge tags replaced. Sequence email steps call it with the contact and the enrollment's owner as `$user`.
 
 ```php
 use Focal\Sales\Models\SalesEmailTemplate;

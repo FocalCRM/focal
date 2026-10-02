@@ -100,10 +100,10 @@ A request without a sender or body returns `422`:
 
 When the email isn't a reply that passes every [threading](#threading-replies) check:
 
-1. The sender is matched to a Core `Contact` by exact email address. If none exists, a contact is created with the parsed first and last name (first name `Customer` if no name could be parsed).
+1. The sender is matched to a Core `Contact` by email address, ignoring case and surrounding whitespace, so `Dana@Example.com` finds the contact `dana@example.com` (and older contacts saved with mixed case). If none exists, a contact is created with the email lowercased and trimmed and the parsed first and last name (first name `Customer` if no name could be parsed).
 2. A ticket is created through [`CreateTicketAction`](tickets.md#creating-tickets) with the subject, the body as description and first message, priority `Medium`, and source `Email`.
 
-Because it uses `CreateTicketAction`, the ticket is routed, a task is logged on the contact's timeline, and the customer receives `TicketCreatedNotification`. A failed check never returns an error; the email simply becomes a new ticket for its sender.
+Because it uses `CreateTicketAction`, the ticket is routed, a task is logged on the contact's timeline, and `TicketCreatedNotification` is queued for the customer. A failed check never returns an error; the email simply becomes a new ticket for its sender.
 
 ## Threading replies
 
@@ -115,7 +115,10 @@ A ticket number such as `TICK-2026-7WBPJ` is short and guessable, and the `From`
 
 Ticket numbers in the subject, body, or headers are ignored for threading. The `[#TICK-2026-7WBPJ]` in notification subjects is there for people to read.
 
-When a ticket is found, the body is added as a `Customer` message from the ticket's contact through [`ReplyTicketAction`](tickets.md#replying-and-internal-notes). A customer message reopens a `Resolved` ticket and moves `New` and `WaitingOnCustomer` tickets to `Open`. A `Closed` ticket stays closed, including a ticket that was [merged](routing.md#merging-tickets) into another.
+When a ticket is found, the body is added as a `Customer` message from that ticket's contact through [`ReplyTicketAction`](tickets.md#replying-and-internal-notes):
+
+- If the ticket was [merged](routing.md#merging-tickets) into another, the message is posted on the primary ticket, following the merge chain to its end. The token and sender checks above are always made against the ticket the email referenced, not the primary, so a merge never lets the primary's contact use the merged ticket's token, or the reverse. The response's `ticket_number` is the ticket the message landed on.
+- A customer message moves `New` and `WaitingOnCustomer` tickets to `Open`, and reopens a `Resolved` or `Closed` ticket (status `Open`, `resolved_at` and `closed_at` cleared) while `focal-service.reopen_on_customer_reply` is `true`, the default. With it `false`, the message is added and the status is left alone. The merged ticket itself stays closed; it's the primary that reopens.
 
 ### Where the token is found
 

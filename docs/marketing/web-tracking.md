@@ -28,9 +28,19 @@ Hosted [landing pages](forms-and-landing-pages.md#landing-pages) include the scr
 
 ### Visitor tokens and cross-domain tracking
 
-The pageview response sets a `focal_vid` cookie (one year) holding the visitor token. It's a regular Laravel cookie: encrypted by the `web` middleware group and HttpOnly. The script can't read it, so it relies on the browser sending the cookie back with the next request.
+Every visitor is identified by a visitor token, one mechanism shared by `focal.js`, the [embed script](forms-and-landing-pages.md#embedding-a-form-on-another-site) and hosted pages:
 
-That works when the script and the tracked pages share your app's origin. The script calls `fetch()` without `credentials: 'include'`, so on a different domain (a marketing site on another host, for example) the cookie is neither stored nor sent, and every pageview starts a new visitor session. If you need cross-domain sessions, call the [pageview endpoint](#pageview-endpoint) yourself and pass the `visitor_token` from the previous response.
+1. On first use the script generates a random 32-character hex id (with `crypto.getRandomValues()`) and stores it on the site the script is embedded in: in `localStorage` under `_focal_vid`, and in a readable first-party cookie `_focal_vid` (one year, `path=/`, `SameSite=Lax`, `Secure` on HTTPS). Later pageviews reuse the stored id; if `localStorage` is cleared the cookie restores it.
+2. The id is sent explicitly as `visitor_token` with every pageview, auto-capture and embedded form submission. Nothing depends on cookies of your Focal app's domain, and the requests don't send credentials, so tracking and stitching work when the scripts run on another domain.
+3. Pageviews and auto-captures are sent as JSON with a `text/plain` content type (`fetch()` with `keepalive`, or `navigator.sendBeacon()` for auto-capture). That's a CORS-safelisted request, so browsers send it cross-domain without a preflight, and the endpoints decode the raw body as JSON. Responses aren't read, so no CORS headers are needed.
+
+`focal.js` and `embed.js` include the same helper (`Focal\Marketing\Support\VisitorToken::javascript()`), so on a page that loads both, they use the same id.
+
+The server validates the format: a token must be 16 to 64 letters, digits, `-` or `_` (`VisitorToken::PATTERN`). Malformed tokens are ignored, as if none were sent.
+
+For hosted pages on your app's own domain ([landing pages](forms-and-landing-pages.md#landing-pages)), the pageview response also sets a `focal_vid` cookie (one year) holding the token in use. It's a regular Laravel cookie, encrypted and HttpOnly. Requests without an explicit `visitor_token` fall back to it, which is how landing page views and submissions are linked to the same session.
+
+> Upgrading: visitors tracked by earlier versions of `focal.js` had only the server-issued `focal_vid` cookie, which the script can't read. They get a new id once, so their next visit starts a new session; earlier sessions stay as they were. On hosted pages the explicit id replaces the `focal_vid` cookie value with the first pageview.
 
 ## Pageview endpoint
 
@@ -41,18 +51,18 @@ That works when the script and the tracked pages share your app's origin. The sc
 ```bash
 curl -X POST https://your-app.test/marketing/track/pageview \
   -H "Accept: application/json" -H "Content-Type: application/json" \
-  -d '{"url": "https://www.example.com/pricing?plan=pro", "path": "/pricing", "title": "Pricing", "referer": "https://google.com", "utm_source": "google"}'
+  -d '{"visitor_token": "3f9a1c0e8b7d4a6f9e2c1b0a5d4e3f21", "url": "https://www.example.com/pricing?plan=pro", "path": "/pricing", "title": "Pricing", "referer": "https://google.com", "utm_source": "google"}'
 ```
 
 ```json
 {
     "status": "success",
     "session_id": 12,
-    "visitor_token": "0yE6bFQ1x2...40 characters"
+    "visitor_token": "3f9a1c0e8b7d4a6f9e2c1b0a5d4e3f21"
 }
 ```
 
-Accepted fields: `visitor_token`, `url`, `path`, `title`, `referer`, `utm_source`, `utm_medium`, `utm_campaign`, and `duration_seconds`. None is validated. If `visitor_token` is missing, the `focal_vid` cookie is used, and if that's missing too a new random 40-character token is generated. `url` defaults to the `Referer` header, then `app.url`. `path` defaults to the path of `url`.
+The body can be sent as `application/json` or, as `focal.js` does, as a JSON object with a `text/plain` content type. Accepted fields: `visitor_token`, `url`, `path`, `title`, `referer`, `utm_source`, `utm_medium`, `utm_campaign`, and `duration_seconds`. Only `visitor_token` is validated (see [visitor tokens](#visitor-tokens-and-cross-domain-tracking)). If it's missing or malformed, a valid `focal_vid` cookie is used, and if there's none either a new random 40-character token is generated and returned. A pageview with a token that already has a session reuses it. `url` defaults to the `Referer` header, then `app.url`. `path` defaults to the path of `url`.
 
 The `focal-public` limit is per IP address and defaults to 30 requests per minute (see [rate limits](../configuration.md#rate-limits)). A busy visitor who opens many pages quickly can hit it, so raise `FOCAL_PUBLIC_RATE_LIMIT` if you track high-traffic pages.
 
@@ -104,11 +114,11 @@ $result['session'];    // VisitorSession
 $result['page_view'];  // PageView, with path "/enterprise"
 ```
 
-`url` is required. All other keys are optional: `visitor_token`, `contact_id`, `path`, `title`, `ip_address`, `user_agent`, `referer`, `utm_source`, `utm_medium`, `utm_campaign`, `duration_seconds`. A `contact_id` is set on the session only if the session doesn't have one yet. The HTTP endpoint never passes a `contact_id`; sessions are linked to contacts through stitching.
+`url` is required. All other keys are optional: `visitor_token` (a malformed one is replaced by a random token), `contact_id`, `path`, `title`, `ip_address`, `user_agent`, `referer`, `utm_source`, `utm_medium`, `utm_campaign`, `duration_seconds`. A `contact_id` is set on the session only if the session doesn't have one yet. The HTTP endpoint never passes a `contact_id`; sessions are linked to contacts through stitching.
 
 ## Identity stitching
 
-`Focal\Marketing\Actions\StitchVisitorToContactAction` links every session with a visitor token to a contact, and sets the contact on that session's page views that don't have one:
+`Focal\Marketing\Actions\StitchVisitorToContactAction` links the sessions with a visitor token to a contact, and sets the contact on those sessions' page views that don't have one:
 
 ```php
 use Focal\Marketing\Actions\StitchVisitorToContactAction;
@@ -116,9 +126,9 @@ use Focal\Marketing\Actions\StitchVisitorToContactAction;
 $stitched = app(StitchVisitorToContactAction::class)->execute($visitorToken, $contact); // number of sessions updated
 ```
 
-It runs automatically when a [form submission](forms-and-landing-pages.md#what-happens-on-submission) that resolves a contact by email includes a `visitor_token` field. Landing page submissions add the visitor's `focal_vid` cookie as `visitor_token` for you. For your own forms or the API endpoint, pass the token from the pageview response.
+It runs automatically when a [form submission](forms-and-landing-pages.md#what-happens-on-submission) that resolves a contact by email includes a `visitor_token` field, and on [form auto-capture](#form-auto-capture). The [embed script](forms-and-landing-pages.md#embedding-a-form-on-another-site) sends the visitor id for you, and landing page submissions add the visitor's `focal_vid` cookie as `visitor_token`. For your own forms or the API endpoint, read `localStorage.getItem('_focal_vid')` on a page that loads `focal.js` and send it as `visitor_token`.
 
-Stitching overwrites the `contact_id` of sessions that were already linked to another contact.
+Because the token is readable by scripts on the host site, stitching only claims sessions that are still anonymous or already belong to the same contact; sessions linked to another contact are left alone. A malformed token stitches nothing and returns `0`.
 
 ## Form auto-capture
 
@@ -157,8 +167,8 @@ The endpoint lowercases the email and loads or creates the contact. It fills `fi
 - A new contact gets `lifecycle_stage` `marketing_qualified_lead` and a `lead_score` of 15.
 - An existing contact gets 10 points added.
 
-If a `visitor_token` is given (or the request carries a `focal_vid` cookie), sessions with that token that aren't linked yet are linked to the contact. Their page views aren't updated. A `Website Form Auto-Captured` task activity is logged on the contact.
+If a valid `visitor_token` is given (or the request carries a `focal_vid` cookie), the visitor's sessions are [stitched](#identity-stitching) to the contact, page views included. A `Website Form Auto-Captured` task activity is logged on the contact.
 
 Auto-capture doesn't create a `FormSubmission`, store custom fields, or trigger workflows. Use a [Focal form](forms-and-landing-pages.md) when you need those.
 
-> In browsers that support `navigator.sendBeacon`, which is all current browsers, the script sends the payload with `sendBeacon()`. That sends the JSON string with a `text/plain` content type, which Laravel doesn't parse as JSON, so the endpoint answers `422` and nothing is captured. The `fetch()` fallback (used only when `sendBeacon` is unavailable) sends `application/json` and works. Until this is fixed, post to the endpoint yourself from your form handler.
+The script sends the payload with `navigator.sendBeacon()` (falling back to `fetch()` with `keepalive`), so it's delivered even when the form submission navigates away. The body is the JSON payload in a `text/plain` `Blob`; the endpoint accepts it, as well as regular `application/json` requests. A `text/plain` body that isn't a JSON object is treated as empty and answered with `422`.

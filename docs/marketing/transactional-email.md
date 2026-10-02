@@ -3,7 +3,7 @@ title: Transactional email
 description: Send a marketing template to one recipient or a batch over HTTP, with merge data, attachments, and signed webhook notifications.
 ---
 
-The transactional API sends a [template](email-templates.md) on demand, for example an order receipt from your checkout service or a password reset from another app. Each request sends straight away with your application's default mailer.
+The transactional API sends a [template](email-templates.md) on demand, for example an order receipt from your checkout service or a password reset from another app. Each request builds the email and puts it on the queue, then returns; a queue worker delivers it. Run a worker for the marketing mail queue (see [Sending mail](index.md#sending-mail)), or nothing is sent.
 
 Both endpoints are in the `api` route group, require the [API token](index.md#the-api-token), are CSRF exempt, and are limited by `throttle:focal-api`.
 
@@ -44,12 +44,13 @@ curl -X POST https://example.com/api/marketing/templates/order-receipt/send \
   }'
 ```
 
-The email reads "Hi Sam, your order A-1001 total is $49.50." The response:
+The email reads "Hi Sam, your order A-1001 total is $49.50." The response comes back once the email is queued, before it's delivered:
 
 ```json
 {
     "success": true,
-    "message": "Transactional email sent successfully.",
+    "message": "Transactional email queued for delivery.",
+    "queued": true,
     "template_id": 1,
     "template_slug": "order-receipt",
     "recipient": "sam@example.com",
@@ -77,7 +78,7 @@ The email reads "Hi Sam, your order A-1001 total is $49.50." The response:
 
 1. The variant's slots are compiled with the template's `theme`, the request's `context`, and the subject. Without slots, the variant's stored HTML is used. The template's preview text isn't passed to the compiler, so slot-built transactional emails have no preview text.
 2. The HTML, its plain-text version, and the subject are run through the mail builder [merge tag interpolator](email-templates.md#in-the-mail-builder) with `data`. Filters and conditionals work; tags without a value are left as written.
-3. The message is a `DoPHP\MailBuilder\Mail\TemplateMailable`, sent with `Mail::to($to, $name)->send()`.
+3. The message is a `Focal\Marketing\Mail\TransactionalTemplateMailable` (a queued `DoPHP\MailBuilder\Mail\TemplateMailable`), queued through the `focal-marketing.mail.mailer` mailer on the `focal-marketing.mail.connection` and `focal-marketing.mail.queue` queue. The HTML is final when it's queued, so later template edits don't change it.
 
 About `name` and `data`:
 
@@ -119,11 +120,11 @@ The API can't attach files from your server or fetch them from a URL. A request 
 | `422` | Validation failed. Send `Accept: application/json` to get the errors as JSON |
 | `429` | The `focal-api` rate limit was hit |
 
-Mailer exceptions aren't caught, so a failing mailer returns a `500`.
+A failure to queue the email (for example, the queue connection is down) isn't caught and returns a `500`. A delivery failure happens later, in the queue worker: the API has already returned `200`, and the job fails and is retried like any other queued job.
 
 ## Sending a batch
 
-`send-batch` sends the same template to up to 1,000 recipients, each with their own merge data:
+`send-batch` queues the same template to up to 1,000 recipients, each with their own merge data:
 
 ```bash
 curl -X POST https://example.com/api/marketing/templates/order-receipt/send-batch \
@@ -149,12 +150,13 @@ curl -X POST https://example.com/api/marketing/templates/order-receipt/send-batc
 | `webhook_url`, `webhook_secret` | as for a single send |
 | `throttle_domains` | optional boolean; adds a `throttle_plan` to the response |
 
-The response lists who was sent to:
+The response lists who was queued for:
 
 ```json
 {
     "success": true,
-    "message": "Batch transactional emails dispatched successfully.",
+    "message": "Batch transactional emails queued for delivery.",
+    "queued": true,
     "template_id": 1,
     "template_slug": "order-receipt",
     "dispatched_count": 2,
@@ -172,14 +174,14 @@ The response lists who was sent to:
 
 Differences from a single send:
 
-- Every email is sent synchronously within the request, one after another. A large batch can take longer than your web server's timeout, and if one send throws, the rest aren't sent and the response is a `500`.
-- `throttle_plan` is only a suggestion from [`DomainThrottler`](deliverability.md#throttling-by-domain). The emails have already been sent when you receive it.
+- Each email is queued as its own job. If queueing one throws, the rest aren't queued and the response is a `500`; the ones already queued are still delivered.
+- `throttle_plan` is only a suggestion from [`DomainThrottler`](deliverability.md#throttling-by-domain). The emails are already queued when you receive it.
 - The HTML is compiled once without a `context`, so conditional slots aren't filtered per recipient.
 - `attachments` isn't supported.
 
 ## Webhook notifications
 
-Pass `webhook_url` and the API posts a notification there after sending, signed with `webhook_secret` (or the `focal-marketing.webhooks.secret` config key):
+Pass `webhook_url` and the API posts a notification there once the email is queued (not when it's delivered; the event names are unchanged), signed with `webhook_secret` (or the `focal-marketing.webhooks.secret` config key):
 
 | Endpoint | Event | `data` |
 | :--- | :--- | :--- |
@@ -227,21 +229,21 @@ Route::post('/hooks/focal', function (Request $request) {
 
 ## Sending from PHP
 
-There's no action class for transactional sends, but the API is a thin layer over `TemplateMailable`, so you can do the same in your own code:
+There's no action class for transactional sends, but the API is a thin layer over `TransactionalTemplateMailable`, so you can do the same in your own code:
 
 ```php
-use DoPHP\MailBuilder\Mail\TemplateMailable;
+use Focal\Marketing\Mail\TransactionalTemplateMailable;
 use Focal\Marketing\Models\MarketingTemplate;
-use Illuminate\Support\Facades\Mail;
+use Focal\Marketing\Support\MarketingMailer;
 
 $template = MarketingTemplate::query()->where('slug', 'order-receipt')->firstOrFail();
 
-Mail::to('sam@example.com', 'Sam')->send(new TemplateMailable(
+MarketingMailer::queue(new TransactionalTemplateMailable(
     template: $template->getVariantHtml('A'),
     data: ['contact' => ['first_name' => 'Sam'], 'order' => ['number' => 'A-1001', 'total' => '49.5']],
     subjectLine: $template->getVariantSubject('A'),
     replyToEmail: 'support@acme.test',
-));
+), 'sam@example.com', 'Sam');
 ```
 
-`TemplateMailable` uses `Queueable`, so you can call `queue()` instead of `send()` to send it from your queue.
+`TransactionalTemplateMailable` implements `ShouldQueue` and picks up the `focal-marketing.mail` connection and queue when it's constructed. `MarketingMailer::queue()` sends it through the `focal-marketing.mail.mailer` mailer; with plain `Mail::to(...)->queue(...)` it goes through your default mailer instead.

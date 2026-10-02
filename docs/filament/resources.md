@@ -84,7 +84,7 @@ Relation managers: Associated Contacts, Associated Companies (attach/detach), Pr
 | `QuoteResource` | **Portal** opens the public quote page (route `focal.quotes.show`). **Accept & Sign** asks for a signer name and email, calls `Quote::accept()` and, if the deal is still open, `Deal::markWon()`. |
 | `SalesQuotaResource` | Attainment columns calculated with `CalculateQuotaAttainmentAction`. |
 | `SalesSequenceResource` | **Enroll Contact** row action (`EnrollContactInSequenceAction`). The list page has a **Process Due Cadences** header action that runs `ProcessCadencesAction` for every due enrollment, for all users, during the request. |
-| `SalesMeetingLinkResource` | Public URL column linking to route `focal.meetings.show`. |
+| `SalesMeetingLinkResource` | Public URL column linking to route `focal.meetings.show`. The form's **Availability** section edits the link's [booking settings](../sales/meeting-links.md#working-hours): a searchable **Timezone** select (empty uses the app timezone), **Buffer Between Meetings** in minutes (0 to 240), and one tag input per weekday for working-hour windows such as `09:00-12:00`. Each window must be `HH:MM-HH:MM` with the start before the end. Days without windows are dropped, and leaving every day empty saves `null`, so the link uses `focal-sales.meetings.default_working_hours`. |
 | `PipelineResource` | **Pipeline Stages** relation manager. |
 
 ## Service
@@ -141,7 +141,7 @@ Row actions:
 | **Send Now** | Shown for draft and scheduled campaigns. Runs `DispatchCampaignAction` immediately, during the request, against all targeted recipients. |
 | **Pick Winner & Deploy** | Shown for A/B campaigns that are sending and have no winner yet. Runs `EvaluateAbTestWinnerAction`, which also sends the winning variant to the remaining audience. |
 | **AI Copy Assistant** | Generates subject lines with `GenerateAiSubjectLinesAction` and saves the one you pick to the campaign. |
-| **Send Test** | Sends a proof to the addresses you enter with `SendCampaignProofAction`, optionally using a contact's data for merge tags. The mail is sent synchronously. |
+| **Send Test** | Sends a proof to the addresses you enter with `SendCampaignProofAction`, optionally using a contact's data for merge tags. The proof is queued like other marketing mail (see [Sending mail](../marketing/index.md#sending-mail)), so a queue worker must be running for it to arrive. |
 | **Duplicate** | Creates a draft copy named "Copy of …" with the delivery counters reset. |
 
 The edit page also has **Send Test** and **Duplicate** header actions.
@@ -150,7 +150,7 @@ The edit page also has **Send Test** and **Duplicate** header actions.
 
 | Resource | Extra actions |
 | --- | --- |
-| `MarketingTemplateResource` | Layout presets and reusable snippets in the form, **Generate AI Variants**, **Live Preview**, **Send Test** (sends with `Mail::html()` synchronously), **Evaluate A/B**, **Revisions**, **Export HTML**, **Export MJML**, **Download ZIP**, and **Replicate**. The presets and the block editor come from `dophp/laravel-mail-builder`, which `focalcrm/marketing` requires. |
+| `MarketingTemplateResource` | Layout presets and reusable snippets in the form, **Generate AI Variants**, **Live Preview**, **Send Test** (a one-off preview sent with `Mail::html()` during the request, not queued like campaign proofs), **Evaluate A/B**, **Revisions**, **Export HTML**, **Export MJML**, **Download ZIP**, and **Replicate**. The presets and the block editor come from `dophp/laravel-mail-builder`, which `focalcrm/marketing` requires. |
 | `MarketingFormResource` | **Embed Code** modal and a public URL column. |
 | `LandingPageResource` | **Embed Snippet** modal and a public URL column. |
 | `MarketingWorkflowResource` | **Visual Journey** modal and the **Workflow Execution Steps & Branching** relation manager. |

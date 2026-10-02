@@ -55,7 +55,7 @@ TicketRoutingRule::create([
 
 ### How routing runs
 
-`CreateTicketAction` calls `RouteTicketAction` for every ticket created without an owner, which includes tickets from the [support portal](customer-portal.md) and the [email webhook](inbound-email.md). Tickets started from the [chat widget](chat-widget.md) are not routed. You can route any ticket yourself:
+`CreateTicketAction` calls `RouteTicketAction` for every ticket created without an owner, which includes tickets from the [support portal](customer-portal.md), the [email webhook](inbound-email.md), and the [chat widget](chat-widget.md). Use `'source' => 'chat'` to send chat tickets to a dedicated pool. You can route any ticket yourself:
 
 ```php
 use Focal\Service\Actions\RouteTicketAction;
@@ -138,4 +138,15 @@ It returns a fresh copy of the primary ticket. Merging a ticket into itself thro
 
 Use `$ticket->mergedInto` and `$ticket->mergedTickets` to navigate merges.
 
-The secondary ticket keeps its number and portal token. Email replies that carry its portal token (its portal link, or the Message-ID of an email sent about it) are still added to the secondary (closed) ticket, not the primary, and do not reopen it. See [Email to ticket](inbound-email.md#threading-replies).
+The secondary ticket keeps its number and portal token, and stays closed.
+
+### Replies to merged tickets
+
+Customer replies that reference a merged ticket by email (its portal link, or the Message-ID of an email sent about it) are posted on the primary ticket instead, as the merge note says. If the primary was itself merged later, they follow the chain to the last ticket (`$ticket->mergeTarget()`). A reply reopens the primary if it is resolved or closed, unless `focal-service.reopen_on_customer_reply` is `false`. Who may reply is still decided by the secondary ticket: an email reply must come from the secondary ticket's contact. See [Email to ticket](inbound-email.md#threading-replies) and [Statuses](tickets.md#statuses).
+
+The portal and the chat widget are stricter, because they hand a ticket's token straight to whoever filled in the form and never verify the email address they typed. Anyone can open a portal ticket or a chat in another customer's name, and the ticket is attached to that customer's contact, so once an agent merges it into the customer's real ticket, its token must not lead there. `$ticket->portalTokenFollowsMerge()` decides: it is `true` only for tickets whose token reached the customer by email alone (source `Email`, `Phone`, or `Api`) and `false` for `WebPortal` and `Chat` tickets.
+
+- The portal page and the chat widget always show the token's own ticket, never the primary's thread, number, or status.
+- A portal reply with the token of a merged `Email`, `Phone`, or `Api` ticket is posted on the primary and redirects back with "This ticket was merged into ticket #{number}. Your reply has been posted there and our team will follow up." The primary's portal link isn't shown, because the primary may belong to a different contact.
+- A portal reply with the token of a merged `WebPortal` or `Chat` ticket is refused with a `body` validation error asking the customer to reply to the latest email from your team. Nothing is posted.
+- A chat message to a merged chat ticket is refused (`409`, `merged: true`), and fetching the chat's messages returns `merged: true` with a notice pointing the customer at their email. See [Chat widget](chat-widget.md#fetch-messages).

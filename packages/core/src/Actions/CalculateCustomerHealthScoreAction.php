@@ -6,6 +6,7 @@ namespace Focal\Core\Actions;
 
 use Focal\Core\Enums\CustomerHealthStatus;
 use Focal\Core\Models\Company;
+use Focal\Core\Support\OptionalRelation;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -47,9 +48,11 @@ class CalculateCustomerHealthScoreAction
             }
 
             // 3. Commercial / Sales Hub Signals (Deals)
-            if (method_exists($company, 'deals')) {
+            // Sales registers `deals` with resolveRelationUsing(), so look it up dynamically.
+            $dealsRelation = OptionalRelation::on($company, 'deals');
+            if ($dealsRelation !== null) {
                 /** @var Collection<int, Model> $deals */
-                $deals = $company->deals()->get();
+                $deals = $dealsRelation->get();
 
                 if ($deals->isNotEmpty()) {
                     $hasClosedWon = false;
@@ -85,9 +88,11 @@ class CalculateCustomerHealthScoreAction
             }
 
             // 4. Service Hub Signals (Tickets & CSAT)
-            if (method_exists($company, 'tickets')) {
+            // Service registers `tickets` with resolveRelationUsing(), so look it up dynamically.
+            $ticketsRelation = OptionalRelation::on($company, 'tickets');
+            if ($ticketsRelation !== null) {
                 /** @var Collection<int, Model> $tickets */
-                $tickets = $company->tickets()->get();
+                $tickets = $ticketsRelation->get();
 
                 if ($tickets->isNotEmpty()) {
                     $openUrgentHighCount = 0;

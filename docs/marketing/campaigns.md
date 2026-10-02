@@ -3,7 +3,7 @@ title: Email campaigns
 description: Create broadcast email campaigns, choose their audience, schedule them in each recipient's time zone, run A/B tests, and track opens and clicks.
 ---
 
-A campaign is a one-off email to an audience: a `Focal\Marketing\Models\Campaign` with a subject, a sender, a [template](email-templates.md), and a Core list. Dispatching it creates a `CampaignRecipient` row per contact, and those rows carry the tokens that power open tracking, click tracking, and unsubscribe links.
+A campaign is a one-off email to an audience: a `Focal\Marketing\Models\Campaign` with a subject, a sender, a [template](email-templates.md), and a Core list. Dispatching it creates a `CampaignRecipient` row per contact and queues each contact's email; those rows carry the tokens that power open tracking, click tracking, and unsubscribe links.
 
 ## Creating a campaign
 
@@ -22,7 +22,7 @@ $campaign = Campaign::create([
 ]);
 ```
 
-`name`, `subject`, `sender_name`, and `sender_email` are required by the database. The `defaults.sender_*` config values aren't applied to new campaigns; only [proofs](#sending-a-proof) fall back to them.
+`name`, `subject`, `sender_name`, and `sender_email` are required by the database. The `defaults.sender_*` config values aren't applied to new campaigns; messages and [proofs](#sending-a-proof) fall back to them only if a sender is empty.
 
 A new campaign is `CampaignStatus::Draft` and `CampaignType::Regular`. The other `type`, `Automated`, is a label only: nothing in the package treats it differently.
 
@@ -85,9 +85,9 @@ $list = CrmList::create([
 $campaign->update(['crm_list_id' => $list->id]);
 ```
 
-> **A campaign without a list goes to every contact in your CRM.** If neither `crm_list_id` nor `list_id` is set, dispatch uses `Contact::all()`.
+A campaign needs an audience. If neither `crm_list_id` nor `list_id` is set and you don't pass contacts, dispatch throws `Focal\Marketing\Exceptions\CampaignHasNoAudienceException` and changes nothing; it never falls back to every contact. `marketing:dispatch-scheduled` reports the error, leaves the campaign `Scheduled`, and exits with a failure code, so the campaign goes out on the next run after you assign a list.
 
-You can also pass the contacts yourself. The list is still synced, but your collection is used instead of its members:
+You can also pass the contacts yourself. Your collection is used instead of the list's members:
 
 ```php
 use Focal\Core\Models\Contact;
@@ -122,88 +122,51 @@ $result = app(DispatchCampaignAction::class)->execute($campaign);
 
 `execute(Campaign $campaign, ?Collection $explicitContacts = null): array` sets the campaign to `Sending`, then for each eligible contact:
 
-1. Creates a `CampaignRecipient` with status `Sent`, a 40-character `tracking_token`, and a 40-character `unsubscribe_token`.
-2. Compiles the message with `CompileCampaignMessageAction` (see [The compiled message](#the-compiled-message)).
-3. Logs a task activity on the contact titled `Marketing Campaign: {name}`.
-4. Sets the contact's `last_marketing_email_sent_at`.
+1. Finds or creates the contact's `CampaignRecipient` (status `Pending`, with a 40-character `tracking_token` and a 40-character `unsubscribe_token`). There's at most one recipient per campaign and contact, enforced by a unique index.
+2. Hands the recipient to `DeliverCampaignMessageAction`, which compiles the message with `CompileCampaignMessageAction` (see [The compiled message](#the-compiled-message)) and queues it (see [Delivering the messages](#delivering-the-messages)).
+3. Once the message is queued, marks the recipient `Sent` with a `sent_at`, logs a task activity on the contact titled `Marketing Campaign: {name}`, and sets the contact's `last_marketing_email_sent_at`.
 
-When it finishes, it sets `sent_at`, `total_recipients`, and `delivered_count`. The status becomes `Sent` if every eligible contact was handled, or stays `Sending` if some are waiting for their [local send time](#local-time-and-send-time-optimization) or an [A/B test](#ab-testing) result.
+When it finishes, it sets `sent_at` (on the first dispatch only), `total_recipients`, and `delivered_count` (the number of recipients sent so far). The status becomes `Sent` if no recipient is left `Pending`, or stays `Sending` if some are waiting for their [local send time](#local-time-and-send-time-optimization) or an [A/B test](#ab-testing) result. In the result, `delivered_count` is the number of messages queued by this call.
 
-Dispatch runs synchronously in the calling process, one contact at a time. It doesn't check the campaign's current status, so calling it twice creates a second set of recipients.
+Dispatch is idempotent. Dispatching a campaign again doesn't create a second set of recipients, and a recipient that was already sent isn't sent again; only list members who are new since the last dispatch (or who were held back and are now due) get a message. If queueing fails part-way, the exception propagates and the recipient it failed on stays `Pending`, so you can run dispatch again to finish the job.
+
+Dispatch runs in the calling process, one contact at a time. Only compiling and queueing happen there; the queue worker does the sending.
 
 ### Delivering the messages
 
-Dispatch doesn't send email. It compiles each message and then discards it. To deliver campaign email, extend `CompileCampaignMessageAction` and bind your class in the container.
+Every send path uses the same delivery: `DispatchCampaignAction`, the local-time release in `marketing:dispatch-scheduled`, and the A/B rollout in `marketing:evaluate-ab-tests` all call `DeliverCampaignMessageAction::execute()` once per recipient. It queues a `Focal\Marketing\Mail\MarketingMessageMailable` with:
 
-Every delivery path calls this class's `execute()` once per recipient: `DispatchCampaignAction`, the local-time release in `marketing:dispatch-scheduled`, and the A/B rollout in `marketing:evaluate-ab-tests`.
+- the compiled HTML, and a plain-text alternative generated from it (links become `label (url)`)
+- the subject for the recipient's variant, and the campaign's `sender_email`, `sender_name`, and `reply_to_email`
+- `List-Unsubscribe` and `List-Unsubscribe-Post: List-Unsubscribe=One-Click` headers pointing at the recipient's [one-click unsubscribe URL](subscriptions-and-compliance.md#one-click-unsubscribe)
+- an `X-Focal-Tracking-Token` header with the recipient's `tracking_token`, so your provider's events can be [matched to the recipient](deliverability.md#matching-events-to-recipients)
 
-```php
-namespace App\Marketing;
+The mailable implements `ShouldQueue`. It goes on the `focal-marketing.mail` connection and queue through the `focal-marketing.mail.mailer` mailer (each empty by default, meaning your defaults), so you need a queue worker running; see [Sending mail](index.md#sending-mail).
 
-use Focal\Marketing\Actions\CompileCampaignMessageAction;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Illuminate\Mail\Message;
-use Illuminate\Support\Facades\Mail;
+A recipient is sent at most once. `DeliverCampaignMessageAction` claims the recipient row (sets `sent_at`) with a conditional update before it queues the message, so a retry, a re-run, or a second worker finds the row already claimed and sends nothing. If queueing throws, the claim is released and the recipient stays `Pending`. Its `execute()` returns `DeliverCampaignMessageAction::QUEUED`, `ALREADY_SENT`, or `SUPPRESSED`.
 
-class SendCampaignMessage extends CompileCampaignMessageAction
-{
-    public function execute(Campaign $campaign, CampaignRecipient $recipient): string
-    {
-        $html = parent::execute($campaign, $recipient);
+Recipients held back for a local send time or an A/B result are checked again when they're released: if the address was unsubscribed, bounced, or suppressed, or unsubscribed from the campaign's `topic_id` or `topic`, in the meantime, nothing is sent and the recipient's status becomes `Suppressed`. Fatigue protection isn't re-applied at release; it was applied at dispatch.
 
-        $subject = $recipient->variant === 'B' && filled($campaign->variant_b_subject)
-            ? $campaign->variant_b_subject
-            : $campaign->subject;
-
-        Mail::html($html, function (Message $message) use ($campaign, $recipient, $subject): void {
-            $message->to($recipient->email)
-                ->from($campaign->sender_email, $campaign->sender_name)
-                ->subject($subject);
-
-            if (filled($campaign->reply_to_email)) {
-                $message->replyTo($campaign->reply_to_email);
-            }
-
-            $message->getHeaders()->addTextHeader('List-Unsubscribe', '<'.$recipient->getUnsubscribeUrl().'>');
-        });
-
-        return $html;
-    }
-}
-```
-
-```php
-// app/Providers/AppServiceProvider.php
-use App\Marketing\SendCampaignMessage;
-use Focal\Marketing\Actions\CompileCampaignMessageAction;
-
-public function register(): void
-{
-    $this->app->bind(CompileCampaignMessageAction::class, SendCampaignMessage::class);
-}
-```
-
-This sends each message synchronously inside the dispatch loop. For large lists, dispatch a queued job from `execute()` instead of calling `Mail` directly. To match bounces to recipients, also pass the recipient's `tracking_token` to your provider as described in [Deliverability](deliverability.md#matching-events-to-recipients).
+`CompileCampaignMessageAction` still builds the HTML, so you can extend it and bind your class to change the message. If you followed the earlier version of this page and bound a subclass that calls `Mail` itself, remove that binding, or every message is sent twice.
 
 ### Sending a proof
 
-`SendCampaignProofAction` sends a test copy of the campaign. Unlike dispatch, it does send mail, synchronously, with your default mailer.
+`SendCampaignProofAction` queues a test copy of the campaign to the addresses you give it, through the same `focal-marketing.mail` queue and mailer as campaign messages.
 
 ```php
 use Focal\Marketing\Actions\SendCampaignProofAction;
 
 $result = app(SendCampaignProofAction::class)->execute($campaign, 'me@acme.test, legal@acme.test');
 
-// ['success' => true, 'sent_to' => ['me@acme.test', 'legal@acme.test'], 'message' => 'Proof email successfully dispatched to me@acme.test, legal@acme.test']
+// ['success' => true, 'sent_to' => ['me@acme.test', 'legal@acme.test'], 'message' => 'Proof email queued for me@acme.test, legal@acme.test']
 ```
 
 `execute(Campaign $campaign, string|array $recipientEmails, ?Contact $sampleContact = null): array` accepts a comma-separated string or an array and drops invalid addresses.
 
-- The mailable is `Focal\Marketing\Mail\CampaignProofMailable`, and the subject is prefixed with `[TEST] `.
+- The mailable is `Focal\Marketing\Mail\CampaignProofMailable` (it implements `ShouldQueue`), and the subject is prefixed with `[TEST] `.
 - Merge tags are filled from `$sampleContact`, or the first contact on the campaign's `crm_list_id` list, or the first contact in the database.
 - The unsubscribe link points at a placeholder token, and no tracking is added.
-- Mail errors are caught and returned as `success: false` with the exception message.
+- Errors while queueing are caught and returned as `success: false` with the exception message. Delivery errors happen later, in the queue worker.
 
 ## Scheduling
 
@@ -221,7 +184,7 @@ $campaign->update([
 `marketing:dispatch-scheduled` does two things each run:
 
 1. Dispatches every `Scheduled` campaign whose `scheduled_at` is now or earlier.
-2. For every `Sending` campaign with `send_by_timezone`, `send_in_recipient_timezone`, or `use_sto` on, it releases each `Pending` recipient whose `scheduled_send_at` is past or within five minutes. When a campaign has no pending recipients left, it's marked `Sent`.
+2. For every `Sending` campaign with `send_by_timezone`, `send_in_recipient_timezone`, or `use_sto` on, it releases each `Pending` recipient whose `scheduled_send_at` is past or within five minutes, queueing its message through [the same delivery](#delivering-the-messages). When a campaign has no pending recipients left, it's marked `Sent`.
 
 Schedule it every minute; see [Installation](../installation.md#schedule-the-commands). To stop a scheduled campaign, change its status, for example to `CampaignStatus::Cancelled`.
 
@@ -238,7 +201,7 @@ $campaign->update([
 ]);
 ```
 
-When the campaign is dispatched, `CalculateRecipientOptimalSendTimeAction` works out each contact's send time. Recipients whose time is more than five minutes away are stored as `Pending` with a `scheduled_send_at`, and `marketing:dispatch-scheduled` releases them later. The rest are sent straight away.
+When the campaign is dispatched, `CalculateRecipientOptimalSendTimeAction` works out each contact's send time. Recipients whose time is more than five minutes away are stored as `Pending` with a `scheduled_send_at`, and `marketing:dispatch-scheduled` releases them later. The rest are queued straight away.
 
 The send time is calculated like this:
 
@@ -293,7 +256,7 @@ With 10 eligible contacts and a 40% sample, 2 get A, 2 get B, and 6 wait.
 `marketing:evaluate-ab-tests` looks at every `Sending` A/B campaign without a winner whose `sent_at` plus `ab_test_duration_hours` has passed. For each one it runs `EvaluateAbTestWinnerAction`, which:
 
 - compares the open or click rate of the two variants (B must be strictly higher to win, so a tie goes to A)
-- marks every pending recipient as `Sent` with the winning variant, compiles their message, and logs a task on the contact
+- queues the winning variant to every pending recipient through [the same delivery](#delivering-the-messages), marking each `Sent` and logging a task on the contact (recipients who unsubscribed during the test are marked `Suppressed` instead)
 - sets `ab_winner_variant`, `ab_test_evaluated_at`, and status `Sent`
 
 You can run the evaluation yourself at any time:
@@ -381,7 +344,7 @@ $check = app(CheckFatiguePolicyAction::class)->execute($contact);
 5. **Click tracking.** Every link except `mailto:`, `tel:`, `#` and unsubscribe links is rewritten to the recipient's [click-tracking URL](#tracking-opens-and-clicks).
 6. **Open pixel.** A 1×1 image pointing at the recipient's open-tracking URL is added before `</body>`, or at the end.
 
-The UTM parameters are added to the `href` HTML-escaped (`&amp;`), and the click-tracking step then encodes that escaped value. As a result, a tracked link redirects to a URL containing literal `&amp;`, which breaks every parameter after the first. Turn `utm_auto_tag` off, or put the parameters in the template links yourself, until this is fixed.
+Both link steps read each `href` as HTML: they decode it to the real URL (so `&amp;` in your template means `&`), work on that, and write the result back escaped once. The UTM parameters are appended after the link's own query string, which is kept exactly as written. So a template link `https://acme.test/sale?ref=news&amp;id=5` in a campaign named "Spring Sale" redirects, after the click is recorded, to `https://acme.test/sale?ref=news&id=5&utm_source=focal&utm_medium=email&utm_campaign=spring-sale`.
 
 ## Tracking opens and clicks
 

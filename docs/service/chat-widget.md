@@ -44,12 +44,17 @@ The chat endpoints are exempt from CSRF verification, so no token is needed. The
 
 `POST /chat/start`:
 
-1. Finds or creates a Core `Contact` by email (lowercased). New contacts get the name split at the first space and `lifecycle_stage` `customer`.
+1. Finds or creates a Core `Contact` by email. The lookup ignores case and surrounding whitespace, so `Dana@Example.com` finds the contact `dana@example.com` (and older contacts saved with mixed case). New contacts are stored with the email lowercased and trimmed, the name split at the first space, and `lifecycle_stage` `customer`.
 2. If `company` is given, finds or creates a Core `Company` with that exact name (new companies get `lifecycle_stage` `customer`) and associates the contact with it.
-3. Creates a ticket with subject `Live Chat inquiry from {full name}`, source `Chat`, priority `Medium`, and the message as description. The default SLA policy applies.
-4. Adds the visitor's message as a `Customer` message, which moves the ticket to `Open`, and a `System` welcome message: "Hi {first name}! Thanks for reaching out to support. A member of our team has received your message and will reply here momentarily." (with a wave emoji after the name).
+3. Creates the ticket with [`CreateTicketAction`](tickets.md#creating-tickets): subject `Live Chat inquiry from {full name}`, source `Chat`, priority `Medium`, the company from step 2 (or the contact's first company), and the message as description, which becomes the first `Customer` message. Like portal and email tickets, it starts as `New`, gets the default SLA policy, is [routed](routing.md#routing-rules) (a rule with `"source": "chat"` matches only chat tickets, and a matching rule moves it to `Open`), and a task is logged on the contact's timeline.
+4. Queues `TicketCreatedNotification` to the contact, only if `focal-service.chat.confirmation_email` is `true` (it is `false` by default, see below).
+5. Adds a `System` welcome message: "Hi {first name}! Thanks for reaching out to support. A member of our team has received your message and will reply here momentarily." (with a wave emoji after the name).
 
-Chat tickets don't go through `CreateTicketAction`, so they are not [routed](routing.md#routing-rules), no task is logged on the contact's timeline, and no confirmation email is sent. Route them yourself if you need an owner, for example from a model observer or a scheduled job that calls `RouteTicketAction` for unassigned `Chat` tickets.
+### Confirmation email
+
+By default a chat ticket doesn't send the confirmation email. `POST /chat/start` is public, exempt from CSRF verification, and never verifies the email address, so sending it would let anyone, from any site, make your app email any address. The visitor first hears from you by email when an agent replies.
+
+To send it anyway, set `FOCAL_SERVICE_CHAT_CONFIRMATION_EMAIL=true` (`focal-service.chat.confirmation_email`). The email is then the visitor's durable record of the conversation: it carries the portal link and a ticket `Message-ID`, so they can come back to it after clearing their browser, or simply reply by email (see [Email to ticket](inbound-email.md#threading-replies)). The subject and contact name in it are escaped, so Markdown or HTML typed into the chat form is shown as typed, not turned into links. Routing and the timeline task happen either way.
 
 The token returned is the ticket's `portal_token`, so the same conversation is also available at the [support portal](customer-portal.md#the-ticket-page) URL.
 
@@ -124,7 +129,7 @@ curl -X POST https://crm.example.com/api/service/chat/3Ekp9wqpTbwiMh55MGZdv1aOUu
   -d '{"message": "Thanks, that helps."}'
 ```
 
-`message` is required. The message is added as a `Customer` message, which moves a `New`, `WaitingOnCustomer`, or `Resolved` ticket to `Open`. The response is `{"success": true, "messages": [...]}` with the full public thread. An unknown token returns `404` with `{"error": "Chat session not found."}`.
+`message` is required. The message is added as a `Customer` message through [`ReplyTicketAction`](tickets.md#replying-and-internal-notes), which moves a `New` or `WaitingOnCustomer` ticket to `Open` and reopens a `Resolved` or `Closed` ticket unless `focal-service.reopen_on_customer_reply` is `false`. The response is `{"success": true, "merged": false, "messages": [...]}` with the full public thread. If the chat's ticket was [merged](routing.md#merging-tickets) into another, the message is refused: the response is `409` with `{"success": false, "merged": true, "error": "...", "notice": "...", "messages": [...]}`, where `messages` is the chat's own (now empty) thread and the notice tells the customer the conversation moved and to check their email. An unknown token returns `404` with `{"error": "Chat session not found."}`.
 
 ### Fetch messages
 
@@ -138,8 +143,14 @@ Response:
 {
     "ticket_number": "TICK-2026-7WBPJ",
     "status": "open",
+    "merged": false,
+    "notice": null,
     "messages": []
 }
 ```
 
-`messages` has the same shape as above. An unknown token returns `404` with `{"error": "Chat session not found."}`. This endpoint has no rate limit, since the widget polls it.
+`messages` has the same shape as above.
+
+A chat session never follows a merge. The chat widget doesn't verify the visitor's email address, so anyone can start a chat in another customer's name, and the chat ticket is attached to that customer's contact. Once the chat's ticket is merged into another ticket, both endpoints keep returning the chat's own ticket (its `ticket_number`, `status`, and public messages; the merge moved its messages to the primary, so the list is empty), with `merged` set to `true` and `notice` set to "This conversation has moved to another support ticket. Please check your email for updates from our support team and reply there." The bundled widget shows the notice and hides the message box. The primary ticket's thread, number, and status are never exposed through the chat token. See [Replies to merged tickets](routing.md#replies-to-merged-tickets).
+
+An unknown token returns `404` with `{"error": "Chat session not found."}`. This endpoint has no rate limit, since the widget polls it.

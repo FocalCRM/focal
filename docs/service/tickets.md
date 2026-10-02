@@ -52,7 +52,7 @@ When a ticket is created without an `sla_policy_id`, the policy with `is_default
 | Status | Set when |
 | :--- | :--- |
 | `New` | The ticket is created. |
-| `Open` | A routing rule assigns a `New` ticket, a customer replies to a `New`, `WaitingOnCustomer`, or `Resolved` ticket, or you call `reopen()`. |
+| `Open` | A routing rule assigns a `New` ticket, a customer replies to a `New` or `WaitingOnCustomer` ticket, a customer replies to a `Resolved` or `Closed` ticket while `reopen_on_customer_reply` is on, or you call `reopen()`. |
 | `WaitingOnCustomer` | The first public agent reply is posted (unless the ticket is `Resolved` or `Closed`). |
 | `WaitingOnAgent` | Defined for your own workflows. No package code path currently leaves a ticket in this status. |
 | `Resolved` | You call `resolve()` or `ResolveTicketAction`. |
@@ -61,7 +61,7 @@ When a ticket is created without an `sla_policy_id`, the policy with `is_default
 These transitions happen inside `Ticket::addMessage()`, which every action and public endpoint uses to post messages:
 
 - A public `Agent` message on a ticket with no `first_responded_at` sets `first_responded_at` to now, sets `is_sla_response_breached` to whether the response was late, and moves the status to `WaitingOnCustomer` unless the ticket is resolved or closed. Later agent replies don't change the status.
-- A public `Customer` message moves `Resolved` tickets back to `Open` and clears `resolved_at`, and moves `New` and `WaitingOnCustomer` tickets to `Open`. A customer message on a `Closed` ticket doesn't reopen it.
+- A public `Customer` message moves `New` and `WaitingOnCustomer` tickets to `Open`. On a `Resolved` or `Closed` ticket it reopens the ticket (status `Open`, `resolved_at` and `closed_at` cleared) when `focal-service.reopen_on_customer_reply` is `true`, the default (`FOCAL_SERVICE_REOPEN_ON_CUSTOMER_REPLY`). Set it to `false` to keep resolved and closed tickets as they are; the message is still added. A ticket that was [merged](routing.md#merging-tickets) into another is never reopened. Customer replies through `ReplyTicketAction` go to its primary instead, see [Replying](#replying-and-internal-notes).
 - Internal notes and `System` messages never change the status.
 
 These status updates are saved quietly (without model events).
@@ -100,7 +100,8 @@ public function execute(
     ?Company $company = null,
     ?Model $owner = null,
     ?SlaPolicy $slaPolicy = null,
-    array $properties = []
+    array $properties = [],
+    bool $notifyContact = true
 ): Ticket
 ```
 
@@ -111,7 +112,7 @@ The action does more than insert a row:
 3. If `$description` is not empty, it is also added as the first `Customer` message in the thread.
 4. If no `$owner` is given, [`RouteTicketAction`](routing.md#routing-rules) runs. A matching rule assigns an owner and moves the ticket to `Open`.
 5. If there is a contact, a pending task titled `Support Ticket #{number}: {subject}` is logged on the contact's timeline, due at the first response deadline.
-6. If the contact has an email address, `TicketCreatedNotification` is sent to them. See [Notifications](#notifications).
+6. If the contact has an email address and `$notifyContact` is `true`, `TicketCreatedNotification` is queued for them. See [Notifications](#notifications).
 
 `Ticket::create()` also works, and still generates the number, token, and SLA deadlines, but skips steps 1 and 3 to 6.
 
@@ -153,6 +154,8 @@ public function execute(
 ```
 
 For a public `Agent` reply on a ticket with a contact, the action also logs a note on the contact's timeline (the first 150 characters of the reply) and, if the contact has an email address, sends `TicketRepliedNotification`. Internal notes and customer messages send nothing.
+
+A public `Customer` message on a ticket that was [merged](routing.md#merging-tickets) into another is posted on the primary ticket instead, following the merge chain to its end (`$ticket->mergeTarget()`), as the merge note promises. If that primary is resolved or closed, the reply reopens it (see [Statuses](#statuses)). The returned message's `ticket_id` tells you where it landed. Agent messages and internal notes are always posted on the ticket you pass. Decide who may reply (for example, the sender check in the [email webhook](inbound-email.md#threading-replies)) against the ticket the customer referenced before calling the action. Don't pass a merged ticket on behalf of someone whose identity you haven't verified: the portal and chat widget refuse replies to merged `WebPortal` and `Chat` tickets instead (`$ticket->portalTokenFollowsMerge()`), see [Replies to merged tickets](routing.md#replies-to-merged-tickets).
 
 `$attachments` is stored as a JSON array on the message as given. The package doesn't upload or serve files; store them yourself and save whatever references you need.
 
@@ -208,7 +211,9 @@ The model methods on their own send no email:
 
 ## Notifications
 
-The package sends these notifications on the `mail` channel. None implements `ShouldQueue`, so they are sent during the request unless you configure otherwise. Customer notifications go to the Core `Contact`, which uses Laravel's `Notifiable` trait and its `email` attribute.
+The package sends these notifications on the `mail` channel. All four implement `ShouldQueue`, so they are pushed to the queue and sent by a queue worker, and a slow mail provider doesn't slow down the request or command that triggered them. They use the connection and queue in `focal-service.notifications.connection` and `focal-service.notifications.queue` (`FOCAL_SERVICE_NOTIFICATIONS_CONNECTION`, `FOCAL_SERVICE_NOTIFICATIONS_QUEUE`); both default to `null`, which means your default queue connection and its default queue. Run a worker that listens on that queue, for example `php artisan queue:work --queue=support-mail,default`. With the `sync` connection they are sent immediately, as before. Customer notifications go to the Core `Contact`, which uses Laravel's `Notifiable` trait and its `email` attribute.
+
+The ticket (and message) is serialized by ID and reloaded when the job runs, so the email reflects the ticket at sending time. The `Message-ID` is generated when the email is built in the worker, so threading works the same whether the notification is queued or sent synchronously.
 
 | Notification | Sent to | Sent by | Main link |
 | :--- | :--- | :--- | :--- |
@@ -219,7 +224,9 @@ The package sends these notifications on the `mail` channel. None implements `Sh
 
 Customer email subjects start with `[#{ticket_number}]` for the customer's reference. The three customer emails also set a `Message-ID` that contains the ticket's portal token, `<ticket.{portal_token}.{unique}@{host}>`, which the [email webhook](inbound-email.md#threading-replies) uses, along with the portal link, to thread replies from the ticket's contact back into the ticket. The ticket number alone doesn't thread a reply.
 
-Tickets created by the [chat widget](chat-widget.md) don't go through `CreateTicketAction`, so they send no confirmation email.
+Tickets created by the [chat widget](chat-widget.md) go through `CreateTicketAction` but only send the confirmation email when `focal-service.chat.confirmation_email` is `true` (it is `false` by default).
+
+Ticket subjects, contact names, and agent names in these emails are escaped for Markdown (`Focal\Service\Support\MailMarkdown::escape()`), and HTML is escaped by the mail template, so a subject like `[Reset](https://evil.example)` is shown as typed rather than as a link. Use `MailMarkdown::escape()` for customer-supplied values in your own `MailMessage` lines too.
 
 ## Automatic closing
 

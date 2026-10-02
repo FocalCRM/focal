@@ -20,6 +20,7 @@ use Focal\Marketing\Actions\AnalyzeConversionFunnelAction;
 use Focal\Marketing\Actions\CalculateClosedLoopMetricsAction;
 use Focal\Marketing\Actions\DispatchCampaignAction;
 use Focal\Marketing\Enums\CampaignStatus;
+use Focal\Marketing\Exceptions\CampaignHasNoAudienceException;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\FormSubmission;
 use Focal\Marketing\Models\MarketingForm;
@@ -203,7 +204,17 @@ class MarketingCockpit extends Page
     {
         $campaign = FocalAuthorization::findAndAuthorize(CampaignResource::class, Campaign::class, $campaignId, 'update');
 
-        $results = (new DispatchCampaignAction)->execute($campaign);
+        try {
+            $results = app(DispatchCampaignAction::class)->execute($campaign);
+        } catch (CampaignHasNoAudienceException) {
+            Notification::make()
+                ->title('Campaign Has No Audience')
+                ->body('Choose a list for this campaign before sending it.')
+                ->danger()
+                ->send();
+
+            return;
+        }
 
         Notification::make()
             ->title('Campaign Broadcast Sent')

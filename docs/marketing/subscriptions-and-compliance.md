@@ -9,7 +9,7 @@ Focal tracks consent per email address, in three layers:
 - per-topic preferences that people manage in a hosted preference center
 - an optional double opt-in confirmation
 
-Campaign dispatch checks the first two before it creates a recipient. The [suppression list](deliverability.md#the-suppression-list) adds a fourth check for addresses that bounced or complained.
+Campaign dispatch checks the first two before it creates a recipient, and checks them again when a recipient held back for a [local send time](campaigns.md#local-time-and-send-time-optimization) or an [A/B test](campaigns.md#ab-testing) is finally sent, so an unsubscribe in between is honored. The [suppression list](deliverability.md#the-suppression-list) adds a fourth check for addresses that bounced or complained. Workflow [`send_email`](workflows.md#step-types) steps check the global status and the suppression list too.
 
 ## Global subscription status
 
@@ -58,23 +58,28 @@ $recipient->getUnsubscribeUrl(); // route('focal.marketing.unsubscribe.show', $r
   1. Unsubscribes the address globally with `MarketingSubscription::unsubscribe()`.
   2. Sets the recipient's status to `Unsubscribed` and increments the campaign's `unsubscribes_count` (only once per recipient).
   3. Applies an `Unsubscribed` [lead scoring](lead-scoring.md) event to the contact.
-  4. Shows a confirmation page.
+  4. Shows a confirmation page with status `200`.
 
 The link unsubscribes from all marketing email, not from one topic. To let people choose, link to the [preference center](#preference-center) as well.
 
 ### One-click unsubscribe
 
-Gmail and Yahoo expect bulk senders to support one-click unsubscribe (RFC 8058): a `List-Unsubscribe` header plus a `List-Unsubscribe-Post: List-Unsubscribe=One-Click` header, so that the mailbox provider can POST to the URL.
+Gmail and Yahoo expect bulk senders to support one-click unsubscribe (RFC 8058). Every campaign email carries both headers, pointing at the recipient's unsubscribe URL:
 
-The unsubscribe `POST` route is in the `web` group and keeps CSRF verification, so a provider's POST is rejected with `419`. If you send these headers, exempt the route in `bootstrap/app.php`:
-
-```php
-->withMiddleware(function (Middleware $middleware): void {
-    $middleware->validateCsrfTokens(except: ['marketing/unsubscribe/*']);
-})
+```text
+List-Unsubscribe: <https://example.com/marketing/unsubscribe/{token}>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
 ```
 
-Add your `FOCAL_MARKETING_PREFIX` to the pattern if you set one. Campaign dispatch doesn't add these headers itself; see [Delivering the messages](campaigns.md#delivering-the-messages).
+```php
+$recipient->getOneClickUnsubscribeUrl(); // route('focal.marketing.unsubscribe.process', $recipient->unsubscribe_token)
+```
+
+It's the same URL as the unsubscribe link. A mail client that opens it gets the confirmation page; a mailbox provider's one-click `POST` (body `List-Unsubscribe=One-Click`) unsubscribes straight away and gets `200`. Repeating the `POST` is harmless.
+
+The `POST` route is exempt from CSRF verification, because providers send it without a session or CSRF token. The 40-character unsubscribe token in the URL is the credential, and an unknown token returns `404`. Because one provider sends many of these requests from a few addresses, the route uses the `focal-api` rate limit (`FOCAL_API_RATE_LIMIT`, 600 a minute per IP) rather than `focal-public`.
+
+[Workflow emails](workflows.md#step-types) carry `List-Unsubscribe` with the contact's [preference center](#preference-center) URL and no `List-Unsubscribe-Post`, since the preference center has no one-click endpoint.
 
 ## Preference center
 
@@ -113,7 +118,7 @@ The pages are Blade views in the `focal-marketing` namespace. The package doesn'
 | `preferences.blade.php` | Preference center (receives `$contact`, `$topics`, `$currentTopics`, `$token`, `$isSuppressed`) |
 | `confirmed.blade.php` | Double opt-in confirmation (receives `$contact`) |
 
-Keep the form actions pointed at the `focal.marketing.unsubscribe.process` and `focal.marketing.preferences.update` routes, and include `@csrf`.
+Keep the form actions pointed at the `focal.marketing.unsubscribe.process` and `focal.marketing.preferences.update` routes, and include `@csrf` (the unsubscribe route ignores it, but the preference route checks it).
 
 ## Subscription topics
 
@@ -190,6 +195,21 @@ $confirmed = $list->contacts()->whereNotNull('marketing_email_verified_at')->get
 
 app(DispatchCampaignAction::class)->execute($campaign, $confirmed);
 ```
+
+## Merging contacts
+
+When Core [merges two contacts](../core/duplicates-and-merging.md#what-each-module-moves), Marketing moves the secondary contact's subscription and topic rows to the primary contact. These rows are keyed by email, so they keep applying to the secondary's address.
+
+A merge never resubscribes anyone:
+
+- If the secondary is unsubscribed, the primary's address is unsubscribed too. Its `unsubscribed_at` is the secondary's. A primary that is already unsubscribed or bounced is left as it is.
+- If the secondary opted out of a topic, the primary's address is opted out of that topic too.
+- A primary that is unsubscribed stays unsubscribed, even if the secondary was subscribed.
+- Bounces belong to an address, so a bounced secondary address doesn't change the primary's status.
+
+The `marketingSubscription` relation is a `HasOne`. If both contacts had a subscription row with different addresses, the primary now has two, and the relation returns one of them. Use `MarketingSubscription::isSuppressed($contact->email)` to check whether you can mail a contact.
+
+When both contacts received the same campaign, the recipient that unsubscribed is kept, otherwise the most engaged one. The other recipient row is detached from the contact rather than deleted, so the unsubscribe and tracking links in the email it was sent keep working. Unsubscribing through that link suppresses the address it was sent to.
 
 ## What the transactional API checks
 

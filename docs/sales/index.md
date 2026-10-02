@@ -24,6 +24,7 @@ php artisan vendor:publish --tag=focal-sales-config
 
 - **Deals are Core records.** `Focal\Sales\Models\Deal` uses Core's `HasActivities`, `HasAssociations`, `HasCustomProperties`, `AuditsProperties`, and `BelongsToTeam` traits. You log activities on a deal, associate it with contacts and companies, and store custom properties on it the same way as on a contact.
 - **New relations on Core models.** The service provider registers `deals()` on `Focal\Core\Models\Contact` and `Focal\Core\Models\Company`, and `salesSequenceEnrollments()` on `Contact`. Deal links to contacts and companies are stored in Core's associations table.
+- **Merges move Sales data.** When Core merges two contacts, Sales moves the duplicate's sequence enrollments and meeting bookings to the surviving contact. Deals move with Core's associations. See [Merging contacts](sequences.md#merging-contacts).
 - **Activities written for you.** Many sales actions log activities on deals and contacts (stage automation tasks, quote views and signatures, routed leads, sequence emails and calls, booked meetings). These are ordinary Core `Activity` records.
 
 ## Models
