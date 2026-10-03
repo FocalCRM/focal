@@ -149,6 +149,8 @@ php artisan vendor:publish --tag=odden-marketing-config
 | `routes.api.prefix` | `api/marketing` | `ODDEN_MARKETING_API_PREFIX` | Path prefix for the `api` route group |
 | `routes.api.middleware` | `['web']` | | Middleware for the `api` route group |
 | `api.token` | `null` | `ODDEN_MARKETING_API_TOKEN` | Shared secret for the server-to-server endpoints |
+| `esp.mailgun.signing_key` | `null` | `ODDEN_MARKETING_MAILGUN_SIGNING_KEY` | Mailgun HTTP webhook signing key. When set, Mailgun's ESP webhook is authenticated by signature instead of the API token |
+| `esp.mailgun.tolerance` | `900` | `ODDEN_MARKETING_MAILGUN_SIGNATURE_TOLERANCE` | Seconds a Mailgun webhook signature stays valid |
 | `amp.allowed_origins` | `https://mail.google.com`, `https://outlook.live.com`, `https://mail.yahoo.com`, `https://mail.aol.com` | `ODDEN_MARKETING_AMP_ALLOWED_ORIGINS` (comma-separated) | Email client origins allowed to call the [AMP endpoints](email-templates.md#amp-for-email) |
 | `webhooks.outbound_url` | `null` | `ODDEN_MARKETING_WEBHOOK_URL` | Fallback URL for outbound webhook notifications when a request doesn't pass `webhook_url` |
 | `webhooks.secret` | `null` | `ODDEN_MARKETING_WEBHOOK_SECRET` | Fallback signing secret for outbound webhooks when a request doesn't pass `webhook_secret`. With no secret at all, the webhook isn't sent |

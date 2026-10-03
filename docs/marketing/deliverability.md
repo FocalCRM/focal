@@ -39,7 +39,7 @@ https://example.com/api/marketing/webhooks/deliverability?token=YOUR_TOKEN
 | `POST /marketing/webhooks/esp/{provider}` (`web` group) | `odden.marketing.webhooks.esp` | From the URL |
 | `POST /api/marketing/webhooks/deliverability` (`api` group) | `odden.marketing.webhooks.deliverability` | From a `provider` field in the body, default `generic` |
 
-Both are CSRF exempt and limited by `throttle:odden-api`. Neither verifies the provider's own signature; the API token is the only check.
+Both are CSRF exempt and limited by `throttle:odden-api`. The API token is the only check, with one exception: Mailgun webhooks can be authenticated by [Mailgun's own signature](#authenticating-mailgun-webhooks) instead.
 
 The body can be a single event object or a JSON array of events:
 
@@ -62,7 +62,7 @@ A single object returns `{"status": "received", "event_id": 42, "event_type": "b
 
 | Provider | Email | Event type | Tracking token |
 | :--- | :--- | :--- | :--- |
-| `mailgun` | `event-data.recipient` | `event-data.event` | `event-data.user-variables.odden_token` |
+| `mailgun` | `event-data.recipient` | `event-data.event`: `failed` with `event-data.severity` of `permanent` becomes `hard_bounce`, any other `failed` becomes `soft_bounce` (stored only), and `complained` becomes `complaint` | `event-data.user-variables.odden_token` |
 | `ses` | `mail.destination.0` | `eventType`, lowercased (default `bounce`) | `mail.headersTruncated.X-Odden-Token` |
 | `postmark` | `Recipient` or `Email` | `RecordType`, lowercased (default `bounce`) | `Metadata.odden_token` |
 | `sendgrid` | `email` | `event`: `bounce` and `dropped` become `bounce`, `spamreport` becomes `complaint`, `unsubscribe` becomes `unsubscribed` | `odden_token` |
@@ -97,9 +97,28 @@ For the first three, the contact also gets an `Unsubscribed` [lead scoring](lead
 
 Check how your provider names its events before relying on this. Only the names in the table above have an effect:
 
-- Mailgun's `failed` and `complained` events, and Postmark's `SpamComplaint` record type, are stored but don't suppress anyone.
+- Postmark's `SpamComplaint` record type is stored but doesn't suppress anyone.
+- A temporary Mailgun failure (`soft_bounce`) is stored but doesn't suppress anyone; only a permanent one does.
 - Every `bounce` is treated as permanent. SES and Postmark soft (transient) bounces and SendGrid `dropped` events suppress the address too.
 - With the `generic`, `ses`, and `postmark` formats, an event with no type is treated as a bounce.
+
+### Authenticating Mailgun webhooks
+
+Mailgun can't send an API token header, and putting `?token=` in its webhook URL leaves a secret in Mailgun's settings and in your access logs. Instead, set the HTTP webhook signing key from the Mailgun dashboard (Webhooks):
+
+```ini
+ODDEN_MARKETING_MAILGUN_SIGNING_KEY=your-mailgun-http-webhook-signing-key
+```
+
+Then point Mailgun's `permanent_fail` and `complained` webhooks (plus `unsubscribed`, if you use it) at the plain URL, with no token:
+
+```text
+https://example.com/marketing/webhooks/esp/mailgun
+```
+
+With a signing key set, `POST /marketing/webhooks/esp/mailgun` accepts a request only if Mailgun's `signature` block is valid: the HMAC-SHA256 of the `timestamp` and `token` values, keyed with the signing key. The API token no longer works on that URL, a signature older than 15 minutes (`ODDEN_MARKETING_MAILGUN_SIGNATURE_TOLERANCE`, in seconds) is rejected, and each signature token is accepted once, so a captured request can't be replayed. A failed check returns `401` and records nothing. Replay protection uses your application cache, so use a shared cache store when you run several servers.
+
+Without a signing key, Mailgun webhooks use the API token like every other provider. The `/api/marketing/webhooks/deliverability` endpoint always uses the API token.
 
 ### Matching events to recipients
 
